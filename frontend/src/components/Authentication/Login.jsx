@@ -6,7 +6,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { ChatState } from "../../Chatprovider";
+import { ChatState } from "../../Context/Chatprovider";
 
 const Login = () => {
   const { setUser, user } = ChatState();

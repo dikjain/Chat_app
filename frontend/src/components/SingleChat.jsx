@@ -14,7 +14,7 @@ import animationData from "../animations/typing.json";
 
 import io from "socket.io-client";
 import UpdateGroupChatModal from "../UpdateGroupChatmodal";
-import { ChatState } from "../Chatprovider";
+import { ChatState } from "../Context/Chatprovider";
 const ENDPOINT = "http://localhost:3000";
 var socket, selectedChatCompare;
 

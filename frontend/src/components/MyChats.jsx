@@ -5,10 +5,10 @@ import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { getSender } from "../configs/ChatLogics";
-import ChatLoading from "./Chatloading";
+import ChatLoading from "../Chatloading";
 import GroupChatModal from "../GroupChatmodal";
 import { Button } from "@chakra-ui/react";
-import { ChatState } from "../Chatprovider";
+import { ChatState } from "../Context/Chatprovider";
 import io from "socket.io-client";
 const ENDPOINT = "http://localhost:3000";
 

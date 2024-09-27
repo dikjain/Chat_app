@@ -1,9 +1,9 @@
 import { Box } from "@chakra-ui/layout";
 import { useState } from "react";
-import Chatbox from "../components/Chatbox";
+import Chatbox from "../Chatbox";
 import MyChats from "../components/MyChats";
 import SideDrawer from "../SideDrawer";
-import { ChatState } from "../Chatprovider";
+import { ChatState } from "../Context/Chatprovider";
 
 const Chatpage = () => {
   const [fetchAgain, setFetchAgain] = useState(false);
