@@ -8,7 +8,7 @@ import { getSender } from "../configs/ChatLogics";
 import ChatLoading from "./Chatloading";
 import GroupChatModal from "./miscellenaeous/GroupChatmodal";
 import { Button } from "@chakra-ui/react";
-import { ChatState } from "../Context/ChatProvider";
+import { ChatState } from "../Chatprovider";
 import io from "socket.io-client";
 const ENDPOINT = "http://localhost:3000";
 

@@ -30,7 +30,7 @@ import NotificationBadge from "react-notification-badge";
 import { Effect } from "react-notification-badge";
 import { getSender } from "../../configs/ChatLogics";
 import UserListItem from "../UserAvatar/UserListItem";
-import { ChatState } from "../../Context/ChatProvider";
+import { ChatState } from "../../Chatprovider";
 import { FaSearch } from "react-icons/fa";
 
 function SideDrawer() {
