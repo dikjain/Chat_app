@@ -14,5 +14,5 @@ createRoot(document.getElementById('root')).render(
     <App />
     </ChakraProvider>
   </ChatProvider>
-    </BrowserRouter>
+  </BrowserRouter>
 )
