@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Atomic+Age&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+*{
+    color: black;
+    transition: 0.3s all ease-out;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+*::-webkit-scrollbar{
+    display: none;
+}
+
+.op{
+    /* font-family: "Atomic Age", system-ui; */
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background:linear-gradient(45deg, rgba(0,255,0,0.7) , black,rgba(0,255,0,0.7)); */
+    background:linear-gradient(45deg, black,black,rgba(0,255,0,0.7),black,black);
+}
+
+.oii{
+    font-weight: bold;
+    color: white;
+    font-size: 50px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-bottom: 2px #48bb78 solid;
+}
+.oil{
+
+    font-size: 35px;
+
+}
+
+/* Smooth trail styling */
+.oii:first-child{
+    text-decoration: line-through #48bb78;
+}
+
+#online{
+    box-shadow: #48bb78 0px 0px 5px 1px;
+    /* border: 1px solid green; */
+}
+
+
+.fa-solid{
+    background-color: #48bb78;
+    color: #48bb78;
+}
+
+.loop{
+    color: white !important;
+}
