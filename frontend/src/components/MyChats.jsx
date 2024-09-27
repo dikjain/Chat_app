@@ -6,7 +6,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { getSender } from "../configs/ChatLogics";
 import ChatLoading from "./Chatloading";
-import GroupChatModal from "./miscellenaeous/GroupChatmodal";
+import GroupChatModal from "../GroupChatmodal";
 import { Button } from "@chakra-ui/react";
 import { ChatState } from "../Chatprovider";
 import io from "socket.io-client";

@@ -23,14 +23,14 @@ import { useNavigate } from "react-router-dom"; // Changed to useNavigate
 import { useState } from "react";
 import axios from "axios";
 import { useToast } from "@chakra-ui/toast";
-import ChatLoading from "../Chatloading";
+import ChatLoading from "./components/Chatloading";
 import { Spinner } from "@chakra-ui/spinner";
 import ProfileModal from "./ProfileModal";
 import NotificationBadge from "react-notification-badge";
 import { Effect } from "react-notification-badge";
-import { getSender } from "../../configs/ChatLogics";
-import UserListItem from "../UserAvatar/UserListItem";
-import { ChatState } from "../../Chatprovider";
+import { getSender } from "./configs/ChatLogics";
+import UserListItem from "./components/UserAvatar/UserListItem";
+import { ChatState } from "./Chatprovider";
 import { FaSearch } from "react-icons/fa";
 
 function SideDrawer() {

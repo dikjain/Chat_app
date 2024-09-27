@@ -7,13 +7,13 @@ import { getSender, getSenderFull } from "../configs/ChatLogics";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import ProfileModal from "./miscellenaeous/ProfileModal";
+import ProfileModal from "../ProfileModal";
 import ScrollableChat from "./ScrollableChats";
 import Lottie from "react-lottie";
 import animationData from "../animations/typing.json";
 
 import io from "socket.io-client";
-import UpdateGroupChatModal from "./miscellenaeous/UpdateGroupChatmodal";
+import UpdateGroupChatModal from "../UpdateGroupChatmodal";
 import { ChatState } from "../Chatprovider";
 const ENDPOINT = "http://localhost:3000";
 var socket, selectedChatCompare;
