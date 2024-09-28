@@ -77,7 +77,7 @@ io.on("connection", (socket) => {
   })
   setTimeout(()=>{
     io.emit("onlineUsers", OnlineUsers);
-  },150)
+  },750)
   
   
   
