@@ -4,7 +4,7 @@ import { Box, Text } from "@chakra-ui/layout";
 import "./style.css";
 import { IconButton, Spinner, useToast, Button } from "@chakra-ui/react";
 import { getSender, getSenderFull } from "../configs/ChatLogics";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState , useRef    } from "react";
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import ProfileModal from "../ProfileModal";
@@ -18,7 +18,7 @@ import { ChatState } from "../Context/Chatprovider";
 const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
 var socket, selectedChatCompare;
 
-import Notification from "../assets/notification.mp3";
+import Notification from "../assets/notification.mp3"
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
@@ -31,7 +31,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const toast = useToast();
   const inputRef = useRef(null);
 
-  const sound = new Audio(Notification);
+  const sound = new Audio(Notification)
 
   const defaultOptions = {
     loop: true,
@@ -66,7 +66,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       socket.emit("join chat", selectedChat._id);
     } catch (error) {
       toast({
-        title: "Error Occurred!",
+        title: "Error Occured!",
         description: "Failed to Load the Messages",
         status: "error",
         duration: 5000,
@@ -99,7 +99,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setMessages([...messages, data]);
       } catch (error) {
         toast({
-          title: "Error Occurred!",
+          title: "Error Occured!",
           description: "Failed to send the Message",
           status: "error",
           duration: 5000,
@@ -128,18 +128,18 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, [selectedChat]);
 
   useEffect(() => {
-    socket.on("message received", (newMessageReceived) => {
+    socket.on("message recieved", (newMessageRecieved) => {
       if (
         !selectedChatCompare || // if chat is not selected or doesn't match current chat
-        selectedChatCompare._id !== newMessageReceived.chat._id
+        selectedChatCompare._id !== newMessageRecieved.chat._id
       ) {
-        if (!notification.includes(newMessageReceived)) {
-          setNotification([newMessageReceived, ...notification]);
-          sound.play();
+        if (!notification.includes(newMessageRecieved)) {
+          setNotification([newMessageRecieved, ...notification]);
+          sound.play()
           setFetchAgain(!fetchAgain);
         }
       } else {
-        setMessages([...messages, newMessageReceived]);
+        setMessages([...messages, newMessageRecieved]);
       }
     });
   });
@@ -164,6 +164,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       }
     }, timerLength);
   };
+
 
   const toggleSpeechRecognition = () => {
     if (!('webkitSpeechRecognition' in window)) {
@@ -250,7 +251,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     if (window.recognition) {
       window.recognition.stop();
     }
-  };
+  };    
 
   return (
     <>
@@ -275,7 +276,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               (!selectedChat.isGroupChat ? (
                 <>
                   {getSender(user, selectedChat.users)}
-                  <ProfileModal user={getSenderFull(user, selectedChat.users)} />
+                  <ProfileModal
+                    user={getSenderFull(user, selectedChat.users)}
+                  />
                 </>
               ) : (
                 <>
@@ -300,7 +303,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             overflowY="hidden"
           >
             {loading ? (
-              <Spinner size="xl" w={20} h={20} alignSelf="center" margin="auto" />
+              <Spinner
+                size="xl"
+                w={20}
+                h={20}
+                alignSelf="center"
+                margin="auto"
+              />
             ) : (
               <div className="messages">
                 <ScrollableChat messages={messages} />
@@ -317,7 +326,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 <div>
                   <Lottie
                     options={defaultOptions}
-                    height={50}
+                    // height={50}
                     width={70}
                     style={{ marginBottom: 15, marginLeft: 0 }}
                   />
@@ -325,7 +334,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               ) : (
                 <></>
               )}
-              <Box display="flex" alignItems="center">
+ <Box display="flex" alignItems="center">
                 <Input
                   variant="filled"
                   bg="#E0E0E0"
@@ -346,6 +355,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           </Box>
         </>
       ) : (
+        // to get socket.io on same page
         <Box display="flex" alignItems="center" justifyContent="center" h="100%">
           <Text fontSize="3xl" pb={3} fontFamily="Work sans">
             Click on a user to start chatting

@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',  // Backend API server
+        target: 'https://chat-app-3-2cid.onrender.com',  // Backend API server
         changeOrigin: true,
         rewrite: (path) => path.replace(/^/, ''),  // Optionally remove the '/api' prefix
       },
