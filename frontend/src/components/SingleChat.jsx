@@ -2,9 +2,9 @@ import { FormControl } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Box, Text } from "@chakra-ui/layout";
 import "./style.css";
-import { IconButton, Spinner, useToast } from "@chakra-ui/react";
+import { IconButton, Spinner, useToast, Button } from "@chakra-ui/react";
 import { getSender, getSenderFull } from "../configs/ChatLogics";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import ProfileModal from "../ProfileModal";
@@ -18,7 +18,7 @@ import { ChatState } from "../Context/Chatprovider";
 const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
 var socket, selectedChatCompare;
 
-import Notification from "../assets/notification.mp3"
+import Notification from "../assets/notification.mp3";
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
@@ -27,9 +27,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [socketConnected, setSocketConnected] = useState(false);
   const [typing, setTyping] = useState(false);
   const [istyping, setIsTyping] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const toast = useToast();
+  const inputRef = useRef(null);
 
-  const sound = new Audio(Notification)
+  const sound = new Audio(Notification);
 
   const defaultOptions = {
     loop: true,
@@ -64,7 +66,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       socket.emit("join chat", selectedChat._id);
     } catch (error) {
       toast({
-        title: "Error Occured!",
+        title: "Error Occurred!",
         description: "Failed to Load the Messages",
         status: "error",
         duration: 5000,
@@ -97,7 +99,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setMessages([...messages, data]);
       } catch (error) {
         toast({
-          title: "Error Occured!",
+          title: "Error Occurred!",
           description: "Failed to send the Message",
           status: "error",
           duration: 5000,
@@ -126,18 +128,18 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, [selectedChat]);
 
   useEffect(() => {
-    socket.on("message recieved", (newMessageRecieved) => {
+    socket.on("message received", (newMessageReceived) => {
       if (
         !selectedChatCompare || // if chat is not selected or doesn't match current chat
-        selectedChatCompare._id !== newMessageRecieved.chat._id
+        selectedChatCompare._id !== newMessageReceived.chat._id
       ) {
-        if (!notification.includes(newMessageRecieved)) {
-          setNotification([newMessageRecieved, ...notification]);
-          sound.play()
+        if (!notification.includes(newMessageReceived)) {
+          setNotification([newMessageReceived, ...notification]);
+          sound.play();
           setFetchAgain(!fetchAgain);
         }
       } else {
-        setMessages([...messages, newMessageRecieved]);
+        setMessages([...messages, newMessageReceived]);
       }
     });
   });
@@ -163,6 +165,93 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }, timerLength);
   };
 
+  const toggleSpeechRecognition = () => {
+    if (!('webkitSpeechRecognition' in window)) {
+      toast({
+        title: "Speech Recognition Not Supported",
+        description: "Your browser does not support speech recognition.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    }
+
+    if (isListening) {
+      stopSpeechRecognition();
+    } else {
+      startSpeechRecognition();
+    }
+  };
+
+  const startSpeechRecognition = () => {
+    const recognition = new webkitSpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (event) => {
+      let interimTranscript = "";
+      let finalTranscript = "";
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript + " ";
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+
+      const currentTranscript = finalTranscript + interimTranscript;
+      
+      // Fix: append only the new transcript to newMessage
+      const updatedMessage = newMessage + currentTranscript; 
+      setNewMessage(updatedMessage.trim());
+
+      // Ensure caret moves with the text
+      if (inputRef.current) {
+        inputRef.current.scrollLeft = inputRef.current.scrollWidth;
+      }
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Error occurred in recognition:", event.error);
+      if (event.error === "aborted") {
+        setIsListening(false);
+      } else {
+        toast({
+          title: "Speech Recognition Error",
+          description: `An error occurred: ${event.error}`,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+      }
+    };
+
+    recognition.onend = () => {
+      if (isListening) {
+        recognition.start();
+      } else {
+        setIsListening(false);
+      }
+    };
+
+    recognition.start();
+    setIsListening(true);
+    window.recognition = recognition;
+  };
+
+  const stopSpeechRecognition = () => {
+    setIsListening(false);
+    if (window.recognition) {
+      window.recognition.stop();
+    }
+  };
+
   return (
     <>
       {selectedChat ? (
@@ -186,9 +275,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               (!selectedChat.isGroupChat ? (
                 <>
                   {getSender(user, selectedChat.users)}
-                  <ProfileModal
-                    user={getSenderFull(user, selectedChat.users)}
-                  />
+                  <ProfileModal user={getSenderFull(user, selectedChat.users)} />
                 </>
               ) : (
                 <>
@@ -213,13 +300,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             overflowY="hidden"
           >
             {loading ? (
-              <Spinner
-                size="xl"
-                w={20}
-                h={20}
-                alignSelf="center"
-                margin="auto"
-              />
+              <Spinner size="xl" w={20} h={20} alignSelf="center" margin="auto" />
             ) : (
               <div className="messages">
                 <ScrollableChat messages={messages} />
@@ -236,7 +317,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 <div>
                   <Lottie
                     options={defaultOptions}
-                    // height={50}
+                    height={50}
                     width={70}
                     style={{ marginBottom: 15, marginLeft: 0 }}
                   />
@@ -244,18 +325,27 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               ) : (
                 <></>
               )}
-              <Input
-                variant="filled"
-                bg="#E0E0E0"
-                placeholder="Enter a message.."
-                value={newMessage}
-                onChange={typingHandler}
-              />
+              <Box display="flex" alignItems="center">
+                <Input
+                  variant="filled"
+                  bg="#E0E0E0"
+                  placeholder="Enter a message.."
+                  value={newMessage}
+                  onChange={typingHandler}
+                  ref={inputRef}
+                />
+                <Button
+                  onClick={toggleSpeechRecognition}
+                  colorScheme={isListening ? "red" : "green"}
+                  ml={2}
+                >
+                  {isListening ? "Stop" : "Speak"}
+                </Button>
+              </Box>
             </FormControl>
           </Box>
         </>
       ) : (
-        // to get socket.io on same page
         <Box display="flex" alignItems="center" justifyContent="center" h="100%">
           <Text fontSize="3xl" pb={3} fontFamily="Work sans">
             Click on a user to start chatting
