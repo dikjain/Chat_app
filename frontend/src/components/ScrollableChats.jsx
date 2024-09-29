@@ -84,7 +84,6 @@ const ScrollableChat = ({ messages }) => {
               {m.content}
               
               <span
-              id="tem"
               className={`yotem ${m.sender._id === user._id ? "raayit" : "lefat" }`}
               style={{
                 fontFamily:" 'Atomic Age', sans-serif,Roboto, Arial",
