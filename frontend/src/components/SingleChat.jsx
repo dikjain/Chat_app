@@ -41,7 +41,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       preserveAspectRatio: "xMidYMid slice",
     },
   };
-  const { selectedChat, setSelectedChat, user, notification, setNotification } =
+  const { selectedChat, setSelectedChat, setChats,user, notification, setNotification } =
     ChatState();
 
   const fetchMessages = async () => {
@@ -62,6 +62,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       );
       setMessages(data);
       setLoading(false);
+      const iol = await axios.get("/api/chat", config);        
+      setChats(iol.data);
+      
 
       socket.emit("join chat", selectedChat._id);
     } catch (error) {
@@ -97,6 +100,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         );
         socket.emit("new message", data);
         setMessages([...messages, data]);
+        const iop = await axios.get("/api/chat", config);        
+        setChats(iop.data);
       } catch (error) {
         toast({
           title: "Error Occured!",

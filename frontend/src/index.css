@@ -33,9 +33,7 @@
     border-bottom: 2px #48bb78 solid;
 }
 .oil{
-
     font-size: 35px;
-
 }
 
 /* Smooth trail styling */
@@ -57,3 +55,27 @@
 .loop{
     color: white !important;
 }
+
+#tem{
+    text-wrap: nowrap;
+    min-width: fit-content;
+
+}
+.lefat{
+    border-radius: 0px 99px 99px 99px;
+    
+}
+.raayit{
+    border-radius: 99px 0px 99px 99px;
+    
+}
+
+@media screen and (max-height: 770px) {
+    .oii{
+        font-size: 31px;
+    }
+    #smtxt{
+        font-size: 20px;
+    }
+
+  }

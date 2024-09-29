@@ -14,14 +14,14 @@ import Login from "../components/Authentication/Login";
 import Signup from "../components/Authentication/Signup";
 
 function Homepage() {
-  const [minH, setMinH] = useState("40vh"); // Initially set to 40vh for Login
+  const [minH, setMinH] = useState("50vh"); // Initially set to 40vh for Login
 
   const handleTabChange = (index) => {
     // Change the minHeight based on the selected tab
     if (index === 0) {
-      setMinH("40vh"); // Login tab
+      setMinH("50vh"); // Login tab
     } else if (index === 1) {
-      setMinH("60vh"); // Sign Up tab
+      setMinH("70vh"); // Sign Up tab
     }
   };
 
@@ -47,11 +47,12 @@ function Homepage() {
         color="green.400" // Brighter neon green text color
         boxShadow="0 0 15px 1px rgba(0, 255, 0, 0.7)" // Green box shadow
       >
-        <Text fontSize="4xl" fontFamily="Atomic Age" textColor="green.400">
+        <Text id="smtxt" fontSize="4xl" fontFamily="Atomic Age" textColor="green.400">
           A <span className="oii">Basic</span> <span className="oii">Chat</span> App
         </Text>
       </Box>
-      <Box
+      <Box 
+      id="liooo"
         bg="black" // Black background for the container
         h={minH}
         overflow={"hidden"}

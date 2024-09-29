@@ -23,6 +23,9 @@ const ScrollableChat = ({ messages }) => {
       utterance.onend = () => {
         setboling(false);
       };
+      setTimeout(() => {
+        if(setboling) setboling(false)
+      }, 7500);
       
       speechSynthesis.cancel(); // Cancel any ongoing speech
       speechSynthesis.speak(utterance);
@@ -38,11 +41,15 @@ const ScrollableChat = ({ messages }) => {
     }
   };
 
+  let todayIST = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }).slice(0, 9);
+  
+
   const handleTextClick = (index) => {
     setSpeakVisible(index === speakVisible ? null : index); // Toggle "Speak" button visibility
   };
 
   const { user } = ChatState();
+  const formatTime = (t) => new Date(t).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }).replace(',', ' -');
 
   return (
     <ScrollableFeed>
@@ -66,14 +73,33 @@ const ScrollableChat = ({ messages }) => {
               style={{
                 backgroundColor: `${m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0"}`,
                 marginLeft: isSameSenderMargin(messages, m, i, user._id),
-                marginTop: isSameUser(messages, m, i, user._id) ? 3 : 10,
+                marginTop: 10,
                 borderRadius: "20px",
-                padding: "5px 15px",
+                padding: "8px 15px",
                 maxWidth: "75%",
                 position: "relative",
               }}
             >
               {m.content}
+              
+              <span
+              id="tem"
+              className={`${m.sender._id === user._id ? "raayit" : "lefat" }`}
+              style={{
+                // backgroundColor: `${m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0"}`,
+                bottom:"-10px",
+                left:`${m.sender._id === user._id ? "" : "100%"}`,
+                right:`${m.sender._id === user._id ? "100%" : ""}`,
+                fontSize:"10px",
+                // backgroundColor:"transparent",
+                position: "absolute",
+                zIndex:"100",
+                backgroundColor:"grey",
+                opacity:"0.4",
+                padding:"5px 5px",
+                color:"white",
+              }}
+              >{formatTime(m.createdAt).slice(0, 9) === todayIST?`${Number(formatTime(m.createdAt).slice(11,14)) >9 ?  formatTime(m.createdAt).slice(11,17) + formatTime(m.createdAt).slice(20,23) : formatTime(m.createdAt).slice(11,16) + formatTime(m.createdAt).slice(19,23)}` : `${formatTime(m.createdAt)}`}</span>
               {speakVisible === i && !boling && (
                 <span
                 ref={messageRef}
