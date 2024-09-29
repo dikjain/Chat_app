@@ -21,7 +21,8 @@
 @media screen and (max-width: 480px) {
     .yotem {
         padding: 2px 2px;
-        font-size: 70px;
+        font-size: 7px;
         bottom:-10px;
+
     }    
 }    
