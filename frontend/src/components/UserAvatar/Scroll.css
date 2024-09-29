@@ -1,0 +1,25 @@
+.yotem {
+    font-size: 12px;
+    padding: 5px 5px;
+    text-wrap: nowrap;
+    min-width: fit-content;
+    bottom:-15px;
+   
+}
+@media screen and (max-width: 768px) {
+    .yotem {
+        font-size: 1px;
+        text-wrap: nowrap;
+        padding: 2px 2px;
+        font-size: 8px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .yotem {
+        text-wrap: nowrap;
+        padding: 2px 2px;
+        font-size: 7px;
+        bottom:-10px;
+    }
+}

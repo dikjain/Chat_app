@@ -4,6 +4,7 @@ import ScrollableFeed from "react-scrollable-feed";
 import { useState, useRef } from "react";
 import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from "../configs/ChatLogics";
 import { ChatState } from "../Context/Chatprovider";
+import "./UserAvatar/Scroll.css";
 
 const ScrollableChat = ({ messages }) => {
   const [speakVisible, setSpeakVisible] = useState(null); // State to control which message has the "Speak" button
@@ -84,22 +85,14 @@ const ScrollableChat = ({ messages }) => {
               
               <span
               id="tem"
-              className={`${m.sender._id === user._id ? "raayit" : "lefat" }`}
+              className={`yotem ${m.sender._id === user._id ? "raayit" : "lefat" }`}
               style={{
-                wordBreak:"keep-all",
-                textWrap:"nowrap",
-                minWidth:"fitContent",
-                // backgroundColor: `${m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0"}`,
-                bottom:"-10px",
-                left:`${m.sender._id === user._id ? "" : "100%"}`,
-                right:`${m.sender._id === user._id ? "100%" : ""}`,
-                fontSize:"10px",
-                // backgroundColor:"transparent",
+                left:`${m.sender._id === user._id ? "" : "50%"}`,
+                right:`${m.sender._id === user._id ? "50%" : ""}`,
                 position: "absolute",
                 zIndex:"100",
                 backgroundColor:"grey",
                 opacity:"0.4",
-                padding:"5px 5px",
                 color:"white",
               }}
               >{formatTime(m.createdAt).slice(0, 9) === todayIST?`${Number(formatTime(m.createdAt).slice(11,14)) >9 ?  formatTime(m.createdAt).slice(11,17) + formatTime(m.createdAt).slice(20,23) : formatTime(m.createdAt).slice(11,16) + formatTime(m.createdAt).slice(19,23)}` : `${formatTime(m.createdAt)}`}</span>
