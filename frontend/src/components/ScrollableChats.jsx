@@ -86,6 +86,9 @@ const ScrollableChat = ({ messages }) => {
               id="tem"
               className={`${m.sender._id === user._id ? "raayit" : "lefat" }`}
               style={{
+                wordBreak:"keep-all",
+                textWrap:"nowrap",
+                minWidth:"fitContent",
                 // backgroundColor: `${m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0"}`,
                 bottom:"-10px",
                 left:`${m.sender._id === user._id ? "" : "100%"}`,
