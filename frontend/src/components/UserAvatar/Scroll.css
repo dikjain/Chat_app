@@ -20,10 +20,8 @@
 
 @media screen and (max-width: 480px) {
     .yotem {
-        text-wrap: nowrap;
         padding: 2px 2px;
-        font-size: 7px;
+        font-size: 70px;
         bottom:-10px;
-        display: none;
     }    
 }    
