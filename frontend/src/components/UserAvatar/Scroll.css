@@ -9,15 +9,6 @@
     bottom:-20px;
    
 }
-@media screen and (max-width: 768px) {
-    .yotem {
-        font-size: 1px;
-        text-wrap: nowrap;
-        padding: 2px 2px;
-        font-size: 8px;
-    }
-}
-
 @media screen and (max-width: 480px) {
     .yotem {
         text-wrap: nowrap;
@@ -26,3 +17,12 @@
         bottom:-10px;
     }
 }
+@media screen and (max-width: 768px) {
+    .yotem {
+        font-size: 8px;
+        text-wrap: nowrap;
+        padding: 2px 2px;
+        font-size: 8px;
+    }
+}
+

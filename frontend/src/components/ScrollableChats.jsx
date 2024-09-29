@@ -87,7 +87,7 @@ const ScrollableChat = ({ messages }) => {
               id="tem"
               className={`yotem ${m.sender._id === user._id ? "raayit" : "lefat" }`}
               style={{
-                fontFamily:"Roboto, Arial, sans-serif",
+                fontFamily:" 'Atomic Age', sans-serif,Roboto, Arial",
                 left:`${m.sender._id === user._id ? "" : "50%"}`,
                 right:`${m.sender._id === user._id ? "50%" : ""}`,
                 position: "absolute",
