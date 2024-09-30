@@ -32,6 +32,7 @@ import { getSender } from "./configs/ChatLogics";
 import UserListItem from "./UserListItem";
 import { ChatState } from "./Context/Chatprovider";
 import { FaSearch } from "react-icons/fa";
+import ScrollableFeed from "react-scrollable-feed";
 
 function SideDrawer() {
   const [search, setSearch] = useState("");
@@ -254,11 +255,13 @@ function SideDrawer() {
               <ChatLoading />
             ) : (
               searchResult?.map((user) => (
+                <ScrollableFeed>
                 <UserListItem
                   key={user._id}
                   user={user}
                   handleFunction={() => accessChat(user._id)}
-                />
+                  />
+                  </ScrollableFeed>
               ))
             )}
             {loadingChat && (

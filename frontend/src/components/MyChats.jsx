@@ -11,6 +11,7 @@ import { Button } from "@chakra-ui/react";
 import { ChatState } from "../Context/Chatprovider";
 import io from "socket.io-client";
 const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
+import ScrollableFeed from "react-scrollable-feed";
 
 const MyChats = ({ fetchAgain }) => {
   let Socket;
@@ -75,15 +76,15 @@ const MyChats = ({ fetchAgain }) => {
 
   return (
     <Box
-      display={{ base: selectedChat ? "none" : "flex", md: "flex" }}
-      flexDir="column"
-      alignItems="center"
-      p={3}
-      bg="white"
-      w={{ base: "100%", md: "31%" }}
-      borderRadius="lg"
-      borderWidth="1px"
-      backgroundColor={"black"}
+    display={{ base: selectedChat ? "none" : "flex", md: "flex" }}
+    flexDir="column"
+    alignItems="center"
+    p={3}
+    bg="white"
+    w={{ base: "100%", md: "31%" }}
+    borderRadius="lg"
+    borderWidth="1px"
+    backgroundColor={"black"}
     >
       <Box
         pb={3}
@@ -96,7 +97,7 @@ const MyChats = ({ fetchAgain }) => {
         color={"#48bb78"}
         fontFamily={"Atomic Age"}
         
-      >
+        >
         My Chats
         <GroupChatModal>
           <Button
@@ -104,7 +105,7 @@ const MyChats = ({ fetchAgain }) => {
             fontSize={{ base: "17px", md: "10px", lg: "17px" }}
             rightIcon={<AddIcon />}
             fontFamily={"Roboto"}
-          >
+            >
             New Group Chat
           </Button>
         </GroupChatModal>
@@ -120,9 +121,9 @@ const MyChats = ({ fetchAgain }) => {
         overflowY="hidden"
         border={"2px solid #48bb78"}
         boxShadow={"0px 0px 10px 5px green"}
-      >
+        >
         {chats ? (
-          <Stack>
+            <ScrollableFeed>
             {chats.map((chat) => (
               <Box
                 onClick={() => setSelectedChat(chat)}
@@ -159,7 +160,7 @@ const MyChats = ({ fetchAgain }) => {
                 )}
               </Box>
             ))}
-          </Stack>
+        </ScrollableFeed>
         ) : (
           <ChatLoading />
         )}
