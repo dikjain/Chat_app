@@ -255,13 +255,11 @@ function SideDrawer() {
               <ChatLoading />
             ) : (
               searchResult?.map((user) => (
-                <ScrollableFeed>
                 <UserListItem
                   key={user._id}
                   user={user}
                   handleFunction={() => accessChat(user._id)}
                   />
-                  </ScrollableFeed>
               ))
             )}
             {loadingChat && (

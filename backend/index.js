@@ -115,8 +115,15 @@ io.on("connection", (socket) => {
     
   });
 
-
- 
+  // Handle disconnection
+  socket.on("disconnect", () => {
+    if (currUser) {
+      OnlineUsers = OnlineUsers.filter(user => user !== currUser._id);
+      setTimeout(() => {
+        io.emit("onlineUsers", OnlineUsers);
+      }, 750);
+    }
+  });
 
   socket.off("setup", () => {
     socket.leave(userData._id);

@@ -11,7 +11,6 @@ import { Button } from "@chakra-ui/react";
 import { ChatState } from "../Context/Chatprovider";
 import io from "socket.io-client";
 const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
-import ScrollableFeed from "react-scrollable-feed";
 
 const MyChats = ({ fetchAgain }) => {
   let Socket;
@@ -118,13 +117,12 @@ const MyChats = ({ fetchAgain }) => {
         w="100%"
         h="100%"
         borderRadius="lg"
-        overflowY="hidden"
+        overflowY="scroll"
         border={"2px solid #48bb78"}
         boxShadow={"0px 0px 10px 5px green"}
         >
         {chats ? (
-            <ScrollableFeed>
-            {chats.map((chat) => (
+            chats.map((chat) => (
               <Box
                 onClick={() => setSelectedChat(chat)}
                 cursor="pointer"
@@ -159,8 +157,7 @@ const MyChats = ({ fetchAgain }) => {
                   </Text>
                 )}
               </Box>
-            ))}
-        </ScrollableFeed>
+            ))
         ) : (
           <ChatLoading />
         )}
