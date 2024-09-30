@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 .yotem {
-    font-size: 12px;
+    font-size: 8px;
     padding: 5px 5px;
     text-wrap: nowrap;
     min-width: fit-content;
@@ -23,7 +23,7 @@
     .yotem {
         text-wrap: nowrap;
         padding: 2px 2px;
-        font-size: 7px;
+        font-size: 6px;
         bottom:-10px;
     }    
 }    
