@@ -84,7 +84,6 @@ const ScrollableChat = ({ messages }) => {
               {m.content}
               
               <span
-              className={`yotem ${m.sender._id === user._id ? "raayit" : "lefat" }`}
               style={{
                 fontFamily:" 'Atomic Age', sans-serif,Roboto, Arial",
                 left:`${m.sender._id === user._id ? "" : "50%"}`,
@@ -95,6 +94,7 @@ const ScrollableChat = ({ messages }) => {
                 opacity:"0.4",
                 color:"white",
               }}
+              className={`yotem ${m.sender._id === user._id ? "raayit" : "lefat" }`}
               >{formatTime(m.createdAt).slice(0, 9) === todayIST?`${Number(formatTime(m.createdAt).slice(11,14)) >9 ?  formatTime(m.createdAt).slice(11,17) + formatTime(m.createdAt).slice(20,23) : formatTime(m.createdAt).slice(11,16) + formatTime(m.createdAt).slice(19,23)}` : `${Number(formatTime(m.createdAt).slice(11,14)) >9 ? formatTime(m.createdAt).slice(0,9) +" -"+   formatTime(m.createdAt).slice(11,17) + formatTime(m.createdAt).slice(20,23) :formatTime(m.createdAt).slice(0,9) +" -"+  formatTime(m.createdAt).slice(11,16) + formatTime(m.createdAt).slice(19,23)}`}</span>
               {speakVisible === i && !boling && (
                 <span

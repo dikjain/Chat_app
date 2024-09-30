@@ -5,14 +5,13 @@
     font-size: 12px;
     padding: 5px 5px;
     text-wrap: nowrap;
-    min-width: 2vw;
-    width: 2vw;
+    min-width: fit-content;
+    width: fit-content;
     bottom:-20px;
     
 }
 @media screen and (max-width: 768px) {
     .yotem {
-        min-width: fit-content;
         font-size: 8px;
         text-wrap: nowrap;
         padding: 2px 2px;
@@ -22,11 +21,9 @@
 
 @media screen and (max-width: 480px) {
     .yotem {
-        min-width: fit-content;
         text-wrap: nowrap;
         padding: 2px 2px;
         font-size: 7px;
         bottom:-10px;
-
     }    
 }    
