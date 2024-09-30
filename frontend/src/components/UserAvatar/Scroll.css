@@ -8,6 +8,7 @@
     min-width: fit-content;
     width: fit-content;
     bottom:-20px;
+    opacity: 0.45;
     
 }
 @media screen and (max-width: 768px) {
@@ -16,6 +17,7 @@
         text-wrap: nowrap;
         padding: 2px 2px;
         font-size: 8px;
+        opacity: 0.52;
     }
 }
 
@@ -25,5 +27,6 @@
         padding: 2px 2px;
         font-size: 6px;
         bottom:-10px;
+        opacity: 0.65;
     }    
 }    

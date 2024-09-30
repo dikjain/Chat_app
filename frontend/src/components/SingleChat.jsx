@@ -32,15 +32,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const inputRef = useRef(null);
 
   const sound = new Audio(Notification)
-
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
   const { selectedChat, setSelectedChat, setChats, user, notification, setNotification } =
     ChatState();
 
@@ -79,16 +70,18 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   }, [selectedChat, setChats, toast, user.token]);
 
+  
+  const config = {
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${user.token}`,
+    },
+  };
+
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage && !sent) {
       setsent(true);
       try {
-        const config = {
-          headers: {
-            "Content-type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-          },
-        };
         setNewMessage("");
         const { data } = await axios.post(
           "/api/message",
@@ -129,8 +122,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     socket = io(ENDPOINT);
     socket.emit("setup", user);
     socket.on("connected", () => setSocketConnected(true));
-    console.log(selectedChat);
-
     return () => {
       socket.disconnect();
     };
@@ -163,24 +154,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   }, [notification, sound]);
 
-  const typingHandler = useCallback((e) => {
+  const typingHandler =((e) => {
     setNewMessage(e.target.value);
-
-    if (!socketConnected) return;
-
-    if (!typing) {
-      setTyping(true);
-    }
-    let lastTypingTime = new Date().getTime();
-    const timerLength = 3000;
-    setTimeout(() => {
-      const timeNow = new Date().getTime();
-      const timeDiff = timeNow - lastTypingTime;
-      if (timeDiff >= timerLength && typing) {
-        setTyping(false);
-      }
-    }, timerLength);
-  }, [socketConnected, typing]);
+  });
 
   const toggleSpeechRecognition = () => {
     if (!('webkitSpeechRecognition' in window)) {

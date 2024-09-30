@@ -94,7 +94,6 @@ const ScrollableChat = ({ messages }) => {
                 position: "absolute",
                 zIndex:"100",
                 backgroundColor:"grey",
-                opacity:"0.4",
                 color:"white",
               }}
               className={`yotem ${m.sender._id === user._id ? "raayit" : "lefat" }`}
