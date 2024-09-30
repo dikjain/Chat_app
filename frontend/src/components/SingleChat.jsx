@@ -28,6 +28,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [typing, setTyping] = useState(false);
   const [istyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [sent, setsent] = useState(false);
   const toast = useToast();
   const inputRef = useRef(null);
 
@@ -80,37 +81,53 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   const sendMessage = async (event) => {
+
     if (event.key === "Enter" && newMessage) {
-      socket.emit("stop typing", selectedChat._id);
-      try {
-        const config = {
-          headers: {
-            "Content-type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-          },
-        };
-        setNewMessage("");
-        const { data } = await axios.post(
-          "/api/message",
-          {
-            content: newMessage,
-            chatId: selectedChat,
-          },
-          config
-        );
-        socket.emit("new message", data);
-        setMessages([...messages, data]);
-        const iop = await axios.get("/api/chat", config);        
-        setChats(iop.data);
-      } catch (error) {
+      if(!sent){
+        setsent(true)
+        socket.emit("stop typing", selectedChat._id);
+        try {
+          const config = {
+            headers: {
+              "Content-type": "application/json",
+              Authorization: `Bearer ${user.token}`,
+            },
+          };
+          setNewMessage("");
+          const { data } = await axios.post(
+            "/api/message",
+            {
+              content: newMessage,
+              chatId: selectedChat,
+            },
+            config
+          );
+          socket.emit("new message", data);
+          setMessages([...messages, data]);
+          const iop = await axios.get("/api/chat", config);        
+          setChats(iop.data);
+          setsent(false)
+        } catch (error) {
+          toast({
+            title: "Error Occured!",
+            description: "Failed to send the Message",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+          });
+        }
+
+      }else{
         toast({
           title: "Error Occured!",
-          description: "Failed to send the Message",
+          description: "Wait before sending another message",
           status: "error",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
-          position: "bottom",
+          position: "top",
         });
+        
       }
     }
   };
@@ -140,14 +157,18 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       ) {
         if (!notification.includes(newMessageRecieved)) {
           setNotification([newMessageRecieved, ...notification]);
-          sound.play()
           setFetchAgain(!fetchAgain);
         }
       } else {
         setMessages([...messages, newMessageRecieved]);
       }
     });
-  });
+  },);
+  useEffect(()=>{
+    if(notification.length>0){
+      sound.play()
+    }
+  },[notification])
 
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
@@ -327,7 +348,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               isRequired
               mt={3}
             >
-              {istyping ? (
+              {istyping ?  (
                 <div>
                   <Lottie
                     options={defaultOptions}
@@ -339,7 +360,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               ) : (
                 <></>
               )}
- <Box display="flex" alignItems="center">
+               <Box display="flex" alignItems="center">
                 <Input
                   variant="filled"
                   bg="#E0E0E0"
