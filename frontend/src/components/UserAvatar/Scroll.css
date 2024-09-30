@@ -5,8 +5,8 @@
     font-size: 12px;
     padding: 5px 5px;
     text-wrap: nowrap;
-    min-width: fit-content;
-    width: fit-content;
+    min-width: 2vw;
+    width: 2vw;
     bottom:-20px;
     
 }
