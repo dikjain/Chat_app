@@ -111,7 +111,10 @@ io.on("connection", (socket) => {
 
   socket.on("userDisconnected", (usera) => {
     OnlineUsers = OnlineUsers.filter(user => user !== usera._id);
-    io.emit("onlineUsers", OnlineUsers);
+    setTimeout(()=>{
+      io.emit("onlineUsers", OnlineUsers);
+    },750)
+    
     
   });
 
