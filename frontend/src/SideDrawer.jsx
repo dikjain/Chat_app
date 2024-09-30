@@ -211,7 +211,7 @@ function SideDrawer() {
                 src={user.pic}
               />
             </MenuButton>
-            <MenuList bg="black" color="green.400">
+            <MenuList bg="black" color="green.400" zIndex="overlay">
               <ProfileModal user={user}>
                 <MenuItem bg="black" color="green.400">
                   My Profile

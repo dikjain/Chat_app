@@ -10,7 +10,7 @@ import GroupChatModal from "../GroupChatmodal";
 import { Button } from "@chakra-ui/react";
 import { ChatState } from "../Context/Chatprovider";
 import io from "socket.io-client";
-const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
+const ENDPOINT = "http://localhost:3000/";
 
 const MyChats = ({ fetchAgain }) => {
   let Socket;
@@ -58,11 +58,11 @@ const MyChats = ({ fetchAgain }) => {
     Socket.on("detailde",()=>{
       Socket.emit("dedi",user)
     })   
-    window.addEventListener("unload", ()=> Socket.emit("userDisconnected", user))
+    window.addEventListener("beforeunload", ()=> Socket.emit("userDisconnected", user))
 
     // Cleanup the event listener and disconnect socket when component unmounts
     return () => {
-      window.addEventListener("unload", ()=> Socket.emit("userDisconnected", user))
+      window.removeEventListener("beforeunload", ()=> Socket.emit("userDisconnected", user))
     };
 
   },[Socket,io])
