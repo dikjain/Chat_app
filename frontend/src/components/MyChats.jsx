@@ -10,7 +10,7 @@ import GroupChatModal from "../GroupChatmodal";
 import { Button } from "@chakra-ui/react";
 import { ChatState } from "../Context/Chatprovider";
 import io from "socket.io-client";
-const ENDPOINT = "http://localhost:3000/";
+const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
 
 const MyChats = ({ fetchAgain }) => {
   let Socket;
@@ -122,7 +122,7 @@ const MyChats = ({ fetchAgain }) => {
         boxShadow={"0px 0px 10px 5px green"}
       >
         {chats ? (
-          <Stack  >
+          <Stack bg="red">
             {chats.map((chat) => (
               <Box
                 onClick={() => setSelectedChat(chat)}
