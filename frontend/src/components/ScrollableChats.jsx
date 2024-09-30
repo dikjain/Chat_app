@@ -80,7 +80,8 @@ const ScrollableChat = ({ messages }) => {
                 padding: "8px 15px",
                 maxWidth: "75%",
                 position: "relative",
-                zIndex:"50"
+                zIndex:"50",
+                color:"black"
               }}
             >
               {m.content}

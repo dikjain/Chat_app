@@ -113,7 +113,7 @@ const MyChats = ({ fetchAgain }) => {
         display="flex"
         flexDir="column"
         p={3}
-        bg="#F8F8F8"
+        bg="#020202"
         w="100%"
         h="100%"
         borderRadius="lg"
@@ -122,15 +122,15 @@ const MyChats = ({ fetchAgain }) => {
         boxShadow={"0px 0px 10px 5px green"}
       >
         {chats ? (
-          <Stack bg="red">
+          <Stack>
             {chats.map((chat) => (
               <Box
                 onClick={() => setSelectedChat(chat)}
                 cursor="pointer"
                 bg={selectedChat === chat ? "#48bb78" : "#E8E8E8"}
                 color={selectedChat === chat ? "red" : "black"}
-                boxShadow={selectedChat === chat ? "black 0px 0px 10px" : ""}
-                border={selectedChat === chat ? "green solid 1px" : ""}
+                boxShadow={selectedChat === chat ? "green 0px 0px 12px 5px" : "green 0px 0px 7px 2px"}
+                border={"green solid 2px"}
                 transition={"all 0.2s ease-in-out"}
                 px={3}
                 py={2}
