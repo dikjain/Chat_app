@@ -144,7 +144,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         selectedChatCompare._id !== newMessageRecieved.chat._id
       ) {
         if (!notification.includes(newMessageRecieved)) {
-          setNotification((prevNotification) => [newMessageRecieved, ...prevNotification]);
+          setNotification([newMessageRecieved, ...notification]);
           setFetchAgain((prevFetchAgain) => !prevFetchAgain);
           getmessages();
           sound.play();

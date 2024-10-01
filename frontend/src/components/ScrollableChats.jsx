@@ -49,7 +49,7 @@ const ScrollableChat = ({ messages }) => {
     setSpeakVisible(index === speakVisible ? null : index); // Toggle "Speak" button visibility
   };
 
-  const { user } = ChatState();
+  const { user , selectedChat } = ChatState();
   const formatTime = (t) => new Date(t).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }).replace(',', ' -');
 
   const [vismsg, setvismsg] = useState(null)
@@ -60,7 +60,7 @@ const ScrollableChat = ({ messages }) => {
 
   return (
     <ScrollableFeed>
-    { messages.length -qq > 0 ? <button style={{width:"50%",padding:"3px 0px",transform:"translateX(50%)", borderRadius:"999px" , backgroundColor:"#48bb78",alignSelf:"center",justifySelf:"center"}} onClick={()=> messages.length -qq > 10 ?setqq((l)=>l+10) : setqq(messages.length)}>load more</button> : null}
+    { messages.length -qq > 0 ? <button style={{width:"50%",padding:"3px 0px",transform:"translateX(50%)", borderRadius:"999px" , backgroundColor:"#48bb78",alignSelf:"center",justifySelf:"center" , color:"white" }} onClick={()=> messages.length -qq > 10 ?setqq((l)=>l+10) : setqq(messages.length)}>load more</button> : null}
       {vismsg &&
         vismsg.map((m, i) => (
           <div style={{ display: "flex", position: "relative" }} key={m._id}>
@@ -76,6 +76,7 @@ const ScrollableChat = ({ messages }) => {
                 />
               </Tooltip>
             )}
+
             <span
               onClick={() => handleTextClick(i)} // Click event to show/hide "Speak" button
               style={{
@@ -91,7 +92,8 @@ const ScrollableChat = ({ messages }) => {
                 zIndex:"50",
                 color:"black"
               }}
-            >
+              >
+              {selectedChat.isGroupChat && <span style={{fontWeight:"bold", color:"#48bb78"}}>{m.sender._id === user._id ? "" : m.sender.name + " : "}</span>} 
               {m.content}
               
               <span

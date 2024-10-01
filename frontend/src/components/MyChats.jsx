@@ -3,7 +3,7 @@ import { AddIcon } from "@chakra-ui/icons";
 import { Box, Stack, Text } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getSender } from "../configs/ChatLogics";
 import ChatLoading from "../Chatloading";
 import GroupChatModal from "../GroupChatmodal";
@@ -73,7 +73,10 @@ const MyChats = ({ fetchAgain }) => {
     };
 
   },[Socket,io])
- 
+
+  const msgref = useRef()
+
+  
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
@@ -81,7 +84,8 @@ const MyChats = ({ fetchAgain }) => {
   }, [fetchAgain]);
   
   useGSAP(()=>{
-    gsap.to(".chat", {y:0,zIndex:500, opacity:1,stagger:0.15,ease:"power1.Out"})
+    gsap.to(".chat", {y:0,zIndex:500,opacity:1,stagger:0.15,ease: "power3.in"})
+    gsap.to(".yo", {y:0,zIndex:500,opacity:1,stagger:0.075,ease: "power2.in"})
 },[chats])
 
 
@@ -158,14 +162,14 @@ const MyChats = ({ fetchAgain }) => {
                 zIndex={"30"}
               >
                 {!chat.isGroupChat &&  (chat.users[0]._id == user._id ? onlinepeople.includes(chat.users[1]._id) :onlinepeople.includes(chat.users[0]._id)) && <div id="online" style={{right:"5%",width:"10px",top:"40%",translate:"0px 0px", height:"10px",borderRadius:"999px", position:"absolute",backgroundColor:"green"}}></div>}
-                <Text fontWeight={"500"} color={selectedChat === chat ? "white" : "black"}>
+                <Text className="yo" transform={"translateY(200px)"} opacity={0} fontWeight={"500"} color={selectedChat === chat ? "white" : "black"}>
                   {!chat.isGroupChat
                     ? getSender(loggedUser, chat.users)
                     : chat.chatName}
                 </Text>
 
                 {chat.latestMessage && (
-                  <Text fontSize="xs" color={selectedChat === chat ? "white" : "black"}>
+                  <Text className="yo" transform={"translateY(200px)"} opacity={0} fontSize="xs" color={selectedChat === chat ? "white" : "black"}>
                     <b>{chat.latestMessage.sender.name} : </b>
                     {chat.latestMessage.content.length > 50
                       ? chat.latestMessage.content.substring(0, 51) + "..."
