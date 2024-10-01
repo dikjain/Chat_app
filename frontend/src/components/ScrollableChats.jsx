@@ -1,7 +1,7 @@
 import { Avatar } from "@chakra-ui/avatar";
 import { Tooltip } from "@chakra-ui/tooltip";
 import ScrollableFeed from "react-scrollable-feed";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from "../configs/ChatLogics";
 import { ChatState } from "../Context/Chatprovider";
 import "./UserAvatar/Scroll.css";
@@ -13,7 +13,7 @@ const ScrollableChat = ({ messages }) => {
   const messageRef = useRef(null);
 
 
-  const speakText = (text) => {
+  const speakText = (text) => {   
     setboling(true);
     if ("speechSynthesis" in window) {
       const utterance = new SpeechSynthesisUtterance(text);
@@ -52,12 +52,19 @@ const ScrollableChat = ({ messages }) => {
   const { user } = ChatState();
   const formatTime = (t) => new Date(t).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }).replace(',', ' -');
 
+  const [vismsg, setvismsg] = useState(null)
+  const [qq, setqq] = useState(15)
+  useEffect(()=>{
+    setvismsg(messages.slice(messages.length-qq,messages.length))
+  },[messages,qq])
+
   return (
     <ScrollableFeed>
-      {messages &&
-        messages.map((m, i) => (
+    { messages.length -qq > 0 ? <button style={{width:"50%",padding:"3px 0px",transform:"translateX(50%)", borderRadius:"999px" , backgroundColor:"#48bb78",alignSelf:"center",justifySelf:"center"}} onClick={()=> messages.length -qq > 10 ?setqq((l)=>l+10) : setqq(messages.length)}>load more</button> : null}
+      {vismsg &&
+        vismsg.map((m, i) => (
           <div style={{ display: "flex", position: "relative" }} key={m._id}>
-            {(isSameSender(messages, m, i, user._id) || isLastMessage(messages, i, user._id)) && (
+            {isSameSender(vismsg, m, i, user._id)&& (
               <Tooltip label={m.sender.name} placement="bottom-start" hasArrow>
                 <Avatar
                   mt="7px"
@@ -73,7 +80,8 @@ const ScrollableChat = ({ messages }) => {
               onClick={() => handleTextClick(i)} // Click event to show/hide "Speak" button
               style={{
                 backgroundColor: `${m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0"}`,
-                marginLeft: isSameSenderMargin(messages, m, i, user._id),
+                marginLeft: `${m.sender._id === user._id ? "auto" : "0px"}`,
+                // marginLeft: isSameSenderMargin(messages, m, i, user._id),
                 marginTop: 10,
                 marginBottom:10,
                 borderRadius: "20px",

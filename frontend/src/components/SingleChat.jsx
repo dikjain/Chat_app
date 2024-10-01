@@ -141,6 +141,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         if (!notification.includes(newMessageRecieved)) {
           setNotification((prevNotification) => [newMessageRecieved, ...prevNotification]);
           setFetchAgain((prevFetchAgain) => !prevFetchAgain);
+          sound.play();
         }
       } else {
         setMessages((prevMessages) => [...prevMessages, newMessageRecieved]);
@@ -148,11 +149,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     });
   }, [notification, setFetchAgain]);
 
-  useEffect(() => {
-    if (notification.length > 0) {
-      sound.play();
-    }
-  }, [notification, sound]);
 
   const typingHandler =((e) => {
     setNewMessage(e.target.value);
@@ -299,11 +295,24 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           >
             {loading ? (
               <Spinner
+              borderRadius={"999px"}
                 size="xl"
-                w={20}
-                h={20}
+                w={10}
+                h={10}
                 alignSelf="center"
                 margin="auto"
+                backgroundColor={"#48bb78"}
+                _before={{
+                  content: '""',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  borderRadius: '50%',
+                  width: '90%',
+                  height: '90%',
+                  backgroundColor: 'black',
+                }}
               />
             ) : (
               <div className="messages">
@@ -341,7 +350,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       ) : (
         // to get socket.io on same page
         <Box display="flex" alignItems="center" justifyContent="center" h="100%">
-          <Text fontSize="3xl" pb={3} fontFamily="Work sans">
+          <Text fontSize="3xl" pb={3} color={"#48bb78"}  fontFamily="Atomic Age">
             Click on a user to start chatting
           </Text>
         </Box>

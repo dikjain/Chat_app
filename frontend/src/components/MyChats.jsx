@@ -11,6 +11,10 @@ import { Button } from "@chakra-ui/react";
 import { ChatState } from "../Context/Chatprovider";
 import io from "socket.io-client";
 const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+
+
 
 const MyChats = ({ fetchAgain }) => {
   let Socket;
@@ -52,7 +56,10 @@ const MyChats = ({ fetchAgain }) => {
   useEffect(()=>{
     Socket.on("onlineUsers",(dat)=>{
       setonlinepeople(dat)
-    })
+    },[])
+
+
+
 
 
     Socket.on("detailde",()=>{
@@ -72,6 +79,11 @@ const MyChats = ({ fetchAgain }) => {
     fetchChats();
     // eslint-disable-next-line
   }, [fetchAgain]);
+  
+  useGSAP(()=>{
+    gsap.to(".chat", {y:0,zIndex:500, opacity:1,stagger:0.15,ease:"power1.Out"})
+},[chats])
+
 
   return (
     <Box
@@ -124,14 +136,17 @@ const MyChats = ({ fetchAgain }) => {
         {chats ? (
             chats.map((chat) => (
               <Box
-                onClick={() => setSelectedChat(chat)}
-                cursor="pointer"
-                bg={selectedChat === chat ? "#48bb78" : "#E8E8E8"}
+              className="chat"
+              onClick={() => setSelectedChat(chat)}
+              cursor="pointer"
+              bg={selectedChat === chat ? "#48bb78" : "#E8E8E8"}
                 color={selectedChat === chat ? "red" : "black"}
                 boxShadow={selectedChat === chat ? "green 0px 0px 12px 5px" : "green 0px 0px 7px 2px"}
                 border={"green solid 2px"}
                 transition={"all 0.2s ease-in-out"}
                 px={3}
+                transform={"translateY(-100px)"}
+                opacity={0}
                 py={2}
                 mx={"7px"}
                 my={"2px"}
@@ -140,6 +155,7 @@ const MyChats = ({ fetchAgain }) => {
                 position="relative"
                 fontFamily={"Roboto"}
                 fontWeight={"300"}
+                zIndex={"30"}
               >
                 {!chat.isGroupChat &&  (chat.users[0]._id == user._id ? onlinepeople.includes(chat.users[1]._id) :onlinepeople.includes(chat.users[0]._id)) && <div id="online" style={{right:"5%",width:"10px",top:"40%",translate:"0px 0px", height:"10px",borderRadius:"999px", position:"absolute",backgroundColor:"green"}}></div>}
                 <Text fontWeight={"500"} color={selectedChat === chat ? "white" : "black"}>
