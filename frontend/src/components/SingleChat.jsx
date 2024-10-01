@@ -118,6 +118,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
+  const getmessages = async()=>{
+    const iol = await axios.get("/api/chat", config);        
+    setChats(iol.data);
+  }
+
   useEffect(() => {
     socket = io(ENDPOINT);
     socket.emit("setup", user);
@@ -141,9 +146,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         if (!notification.includes(newMessageRecieved)) {
           setNotification((prevNotification) => [newMessageRecieved, ...prevNotification]);
           setFetchAgain((prevFetchAgain) => !prevFetchAgain);
+          getmessages();
           sound.play();
+
         }
       } else {
+         getmessages();
         setMessages((prevMessages) => [...prevMessages, newMessageRecieved]);
       }
     });
