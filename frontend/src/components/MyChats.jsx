@@ -74,8 +74,6 @@ const MyChats = ({ fetchAgain }) => {
 
   },[Socket,io])
 
-  const msgref = useRef()
-
   
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));

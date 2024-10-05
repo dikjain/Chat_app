@@ -53,7 +53,7 @@ const generateContents = async (prompt) => {
       isClosable: true,
       position: "bottom",
     });
-    
+    setAITyping(false);
   }
 }
 

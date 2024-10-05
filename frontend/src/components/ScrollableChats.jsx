@@ -5,8 +5,6 @@ import { useState, useRef, useEffect } from "react";
 import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from "../configs/ChatLogics";
 import { ChatState } from "../Context/Chatprovider";
 import "./UserAvatar/Scroll.css";
-import { gsap } from "gsap";
-import { useGSAP } from "@gsap/react";
 
 
 const ScrollableChat = ({ messages }) => {
