@@ -5,6 +5,9 @@ import { useState, useRef, useEffect } from "react";
 import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from "../configs/ChatLogics";
 import { ChatState } from "../Context/Chatprovider";
 import "./UserAvatar/Scroll.css";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+
 
 const ScrollableChat = ({ messages }) => {
   const [speakVisible, setSpeakVisible] = useState(null); // State to control which message has the "Speak" button
@@ -58,6 +61,8 @@ const ScrollableChat = ({ messages }) => {
     setvismsg(messages.slice(messages.length-qq,messages.length))
   },[messages,qq])
 
+
+
   return (
     <ScrollableFeed>
     { messages.length -qq > 0 ? <button style={{width:"50%",padding:"3px 0px",transform:"translateX(50%)", borderRadius:"999px" , backgroundColor:"#48bb78",alignSelf:"center",justifySelf:"center" , color:"white" }} onClick={()=> messages.length -qq > 10 ?setqq((l)=>l+10) : setqq(messages.length)}>load more</button> : null}
@@ -76,7 +81,6 @@ const ScrollableChat = ({ messages }) => {
                 />
               </Tooltip>
             )}
-
             <span
               onClick={() => handleTextClick(i)} // Click event to show/hide "Speak" button
               style={{
@@ -90,7 +94,7 @@ const ScrollableChat = ({ messages }) => {
                 maxWidth: "75%",
                 position: "relative",
                 zIndex:"50",
-                color:"black"
+                color:"black",
               }}
               >
               {selectedChat.isGroupChat && <span style={{fontWeight:"bold", color:"#48bb78"}}>{m.sender._id === user._id ? "" : m.sender.name + " : "}</span>} 
@@ -113,13 +117,14 @@ const ScrollableChat = ({ messages }) => {
                 ref={messageRef}
                   onClick={() => speakText(m.content)}
                   onMouseEnter={() => {messageRef.current.style.backgroundColor = "green";}}
-                  onMouseLeave={() => {messageRef.current.style.backgroundColor = "black";}}
+                  onMouseLeave={() => {messageRef.current.style.backgroundColor = "grey";}}
+
                   style={{
                     position: "absolute",
                     left: `${m.sender._id === user._id ? "-50px" : ""}`,
                     right: `${m.sender._id === user._id ? "" : "-50px"}`,
                     top: "0",
-                    backgroundColor: "black",
+                    backgroundColor: "grey",
                     color: "white",
                     borderRadius: "5px",
                     padding: "2px 5px",

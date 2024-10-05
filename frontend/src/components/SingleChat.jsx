@@ -9,8 +9,9 @@ import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import ProfileModal from "../ProfileModal";
 import ScrollableChat from "./ScrollableChats";
-import Lottie from "react-lottie";
-import animationData from "../animations/typing.json";
+// import Lottie from "react-lottie";
+// import animationData from "../animations/typing.json";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 import io from "socket.io-client";
 import UpdateGroupChatModal from "../UpdateGroupChatmodal";
@@ -30,7 +31,33 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [sent, setsent] = useState(false);
   const toast = useToast();
   const inputRef = useRef(null);
+  const [aiMessage, setAIMessage] = useState("");
+  const [aiTyping, setAITyping] = useState(false);
 
+
+//api
+const generateContents = async (prompt) => {
+  try{
+  setAITyping(true);
+  const genAI = new GoogleGenerativeAI("AIzaSyBp2UduAnIpMswiu8JYu3uMX5F3fcFtVL0");
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const result = await model.generateContent("hey , you are message auto completer , here a user is chatting and has provided his half message as a prompt , complete the message making sure that the length of message is like a normal message , prompt : " + prompt);
+  setAIMessage(result.response.text());
+  setAITyping(false);
+  }catch(error){
+    toast({
+      title: "Error Occured!",
+      description: error.message,
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+      position: "bottom",
+    });
+    
+  }
+}
+
+//api
   const sound = new Audio(Notification)
   const { selectedChat, setSelectedChat, setChats, user, notification, setNotification } =
     ChatState();
@@ -80,6 +107,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage && !sent) {
+      setAIMessage("");
       setsent(true);
       try {
         setNewMessage("");
@@ -159,6 +187,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
 
   const typingHandler =((e) => {
+    
+    if(e.target.value.length == 0){
+      setAIMessage("");
+    }
+    if(!aiTyping){
+      generateContents(e.target.value);
+    } 
     setNewMessage(e.target.value);
   });
 
@@ -334,7 +369,21 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               isRequired
               mt={3}
             >
-               <Box display="flex" alignItems="center">
+               <Box display="flex" alignItems="center" mt={"20px"} pos="relative">
+                <Input
+                  onClick={()=>{setNewMessage(aiMessage); setAIMessage("");}}
+                  zIndex={"50"}
+                  h="70%"
+                  variant="filled"
+                  bg="black"
+                  color={"#48bb78"}
+                  pos="absolute"
+                  placeholder="Ai Assistant..."
+                  top={"-70%"}
+                  value={aiMessage}
+                  readOnly
+                  cursor={"pointer"}
+                />
                 <Input
                   variant="filled"
                   bg="#E0E0E0"
