@@ -34,6 +34,7 @@ import { ChatState } from "./Context/Chatprovider";
 import { FaSearch } from "react-icons/fa";
 import ScrollableFeed from "react-scrollable-feed";
 
+
 function SideDrawer() {
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);

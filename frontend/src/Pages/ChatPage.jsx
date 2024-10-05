@@ -30,7 +30,7 @@ const Chatpage = () => {
 
   setTimeout(()=>{
     setShow(true)
-  },2600)
+  },2700)
   
   const { user } = ChatState();
 

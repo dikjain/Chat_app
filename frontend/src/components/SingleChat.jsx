@@ -41,18 +41,10 @@ const generateContents = async (prompt) => {
   setAITyping(true);
   const genAI = new GoogleGenerativeAI("AIzaSyBp2UduAnIpMswiu8JYu3uMX5F3fcFtVL0");
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const result = await model.generateContent("hey , you are message auto completer , here a user is chatting and has provided his half message as a prompt , complete the message making sure that the length of message is like a normal message , prompt : " + prompt);
+  const result = await model.generateContent("hey complete this message and give me message only without any other text, message and make sure to complete it in a way that it seems like a message from the user and reply in the same language as the user's message ,here is the message : " + prompt);
   setAIMessage(result.response.text());
   setAITyping(false);
   }catch(error){
-    toast({
-      title: "Error Occured!",
-      description: error.message,
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-      position: "bottom",
-    });
     setAITyping(false);
   }
 }
@@ -383,6 +375,10 @@ const generateContents = async (prompt) => {
                   value={aiMessage}
                   readOnly
                   cursor={"pointer"}
+                  height={"fit-content"}
+                  style={{
+                    textWrap: 'wrap',
+                  }}
                 />
                 <Input
                   variant="filled"
