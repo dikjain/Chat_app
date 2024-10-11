@@ -80,8 +80,13 @@ const   ProfileModal = ({children }) => {
                   token: user.token,
                   email: user.email
               })
-              localStorage.removeItem("userInfo");
-              localStorage.setItem("userInfo", JSON.stringify(user));
+              localStorage.setItem("userInfo", JSON.stringify({
+                _id: user._id,
+                name: data.name,
+                pic: imgUrl,
+                token: user.token,
+                email: user.email
+              }));
                 toast({
                   title: "Profile Picture Updated!",
                   status: "success",
