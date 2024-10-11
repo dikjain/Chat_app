@@ -1,3 +1,4 @@
+
 import { ViewIcon } from "@chakra-ui/icons";
 import {
   Modal,
@@ -17,18 +18,23 @@ import {
 } from "@chakra-ui/react";
 
 import axios from "axios";
-// import { useState } from "react";
 import { ChatState } from "./Context/Chatprovider";
+import { useEffect } from "react";
 
-const ProfileModal = ({ children, profileUser }) => {
-  const { user, setUser } = ChatState(); // logged-in user
+const ProfileModal = ({children ,profileUser}) => {
+
+
+  const { user,setUser } = ChatState();
+  if(!profileUser) profileUser = user;
+
   const toast = useToast();
+
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleUpdate = () => {
-    // Your update logic here
-  };
 
+  }
   const changePic = () => {
     let imgUrl;
 
@@ -38,7 +44,7 @@ const ProfileModal = ({ children, profileUser }) => {
         Authorization: `Bearer ${user.token}`,
       },
     };
-
+  
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -46,10 +52,10 @@ const ProfileModal = ({ children, profileUser }) => {
       const file = event.target.files[0];
       if (file) {
         const filereader = new FileReader();
-        filereader.readAsDataURL(file);
+        filereader.readAsDataURL(file); // Start reading the file as Data URL
         if (file.type === "image/jpeg" || file.type === "image/png") {
           const data = new FormData();
-          data.append("file", file);
+          data.append("file", file); // Corrected the variable name from 'pics' to 'file'
           data.append("upload_preset", "chat-app");
           data.append("cloud_name", "ddtkuyiwb");
           fetch("https://api.cloudinary.com/v1_1/ddtkuyiwb/image/upload", {
@@ -57,7 +63,7 @@ const ProfileModal = ({ children, profileUser }) => {
             body: data,
           })
             .then((res) => res.json())
-            .then((dats) => { imgUrl = dats.url; })
+            .then( (dats) => {imgUrl = dats.url})
             .then(async () => {
               try {
                 const { data } = await axios.post(
@@ -71,12 +77,12 @@ const ProfileModal = ({ children, profileUser }) => {
                 );
                 setUser({
                   ...user,
-                  pic: imgUrl,
-                });
-                localStorage.setItem("userInfo", JSON.stringify({
-                  ...user,
-                  pic: imgUrl,
-                }));
+                  pic: imgUrl,    
+              })
+              localStorage.setItem("userInfo", JSON.stringify({
+                ...user,
+                pic: imgUrl,
+              }));
                 toast({
                   title: "Profile Picture Updated!",
                   status: "success",
@@ -86,15 +92,15 @@ const ProfileModal = ({ children, profileUser }) => {
                 });
               } catch (err) {
                 console.log(err);
-              }
-            });
+            }
+        });
         } else {
           Toast({
             title: "Please Select an Image!",
             status: "warning",
           });
         }
-      } else {
+      }else {
         Toast({
           title: "Please Select an Image!",
           status: "warning",
@@ -103,6 +109,7 @@ const ProfileModal = ({ children, profileUser }) => {
     };
     input.click(); // Trigger the input click to open the file dialog
   };
+  
 
   return (
     <>
@@ -120,8 +127,9 @@ const ProfileModal = ({ children, profileUser }) => {
             display="flex"
             justifyContent="center"
             color={"#48bb78"}
+
           >
-            {profileUser.name.toUpperCase()}
+            {profileUser && (profileUser.name).toUpperCase()}
           </ModalHeader>
           <ModalCloseButton bg={"#48bb78"} fontWeight={"bold"} />
           <ModalBody
@@ -131,30 +139,23 @@ const ProfileModal = ({ children, profileUser }) => {
             justifyContent="space-between"
           >
             <Image
-              border={"4px solid #48bb78"}
+            border={"4px solid #48bb78"}
               borderRadius="full"
               boxSize="150px"
-              src={profileUser.pic}
-              alt={profileUser.name}
+              src={profileUser && profileUser.pic}
+              alt={profileUser && profileUser.name}
             />
             <Text
               fontSize={{ base: "28px", md: "30px" }}
               color={"#48bb78"}
+
             >
-              Email: {profileUser.email}
+              {profileUser && `Email: ${profileUser.email}`}
             </Text>
           </ModalBody>
-          <ModalFooter w={"100%"} display={"flex"} justifyContent={"space-between"}>
-            {user._id === profileUser._id && (
-              <>
-                <Button bg={"#48bb78"} onClick={changePic} color={"white"} fontWeight={"bold"} my={"4px"} fontSize={"15px"} borderRadius={"10px"}>
-                  Change Picture
-                </Button>
-                <Button bg={"#48bb78"} onClick={handleUpdate} color={"white"} fontWeight={"bold"} my={"4px"} fontSize={"15px"} borderRadius={"10px"}>
-                  Edit Name
-                </Button>
-              </>
-            )}
+          <ModalFooter w={"100%"} display={"flex"} justifyContent={"space-between"} >
+          {(profileUser && user._id === profileUser._id) && <Button bg={"#48bb78"} onClick={changePic} color={"white"} fontWeight={"bold"} my={"4px"} fontSize={"15px"} borderRadius={"10px"} >Change Picture</Button>}
+          {(profileUser && user._id === profileUser._id) && <Button bg={"#48bb78"} onClick={handleUpdate} color={"white"} fontWeight={"bold"} my={"4px"} fontSize={"15px"} borderRadius={"10px"} >Edit Name</Button>}
             <Button onClick={onClose}>Close</Button>
           </ModalFooter>
         </ModalContent>
