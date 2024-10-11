@@ -305,7 +305,7 @@ const generateContents = async (prompt) => {
                 <>
                   {getSender(user, selectedChat.users)}
                   <ProfileModal
-                    user={getSenderFull(user, selectedChat.users)}
+                    profileUser={getSenderFull(user, selectedChat.users)}
                   />
                 </>
               ) : (
