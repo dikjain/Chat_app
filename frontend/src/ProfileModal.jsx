@@ -19,9 +19,11 @@ import {
 
 import axios from "axios";
 import { useState } from "react";
+import { ChatState } from "./Context/Chatprovider";
 
-const   ProfileModal = ({ user, children,setUser }) => {
-  const[pic,setPic] = useState(user.pic);
+const   ProfileModal = ({children }) => {
+
+  const { user,setUser } = ChatState();
 
   const toast = useToast();
 
