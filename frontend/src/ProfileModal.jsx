@@ -14,11 +14,18 @@ import {
   Text,
   Image,
   Toast,
+  useToast,
 } from "@chakra-ui/react";
 
 import axios from "axios";
+import { useState } from "react";
 
 const   ProfileModal = ({ user, children,setUser }) => {
+  const[pic,setPic] = useState(user.pic);
+
+  const toast = useToast();
+
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleUpdate = () => {
@@ -65,10 +72,13 @@ const   ProfileModal = ({ user, children,setUser }) => {
                   },
                   config
                 );
-                setUser(data);
-                Toast({
+                setPic(data.pic);
+                toast({
                   title: "Profile Picture Updated!",
                   status: "success",
+                  duration: 5000,
+                  isClosable: true,
+                  position: "bottom",
                 });
               } catch (err) {
                 console.log(err);
