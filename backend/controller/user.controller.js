@@ -60,7 +60,7 @@ const authUser = expressAsyncHandler (async (req,res) => {
     const {email, password} = req.body
     
     if (!email || !password) {
-        res.status(404);
+        res.status(409);
         throw new Error("Please provide all fields");
     }
     
@@ -83,6 +83,22 @@ const authUser = expressAsyncHandler (async (req,res) => {
 
     
 })
+const getuserdetails = expressAsyncHandler (async (req,res) => {
+    const {email} = req.body
+    const userExists = await User.findOne({email})
+    if(userExists){
+        res.json({
+            name: userExists.name,
+            pic: userExists.pic,
+        })
+        
+    } else {
+        res.status(401); // Unauthorized status for invalid credentials
+        throw new Error("Invalid email");
+      }
+
+    
+})
 
 
 const allUsers = expressAsyncHandler (async (req,res) => {
@@ -100,4 +116,4 @@ const allUsers = expressAsyncHandler (async (req,res) => {
 });
 
 
-export { authUser, registeruser,allUsers,updateUser }; 
+export { authUser, registeruser,allUsers,getuserdetails,updateUser }; 

@@ -7,6 +7,8 @@ import SideDrawer from "../SideDrawer";
 import { ChatState } from "../Context/Chatprovider";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
+import axios from "axios";
+
 
 
 
@@ -33,6 +35,51 @@ const Chatpage = () => {
   },2700)
   
   const { user } = ChatState();
+
+  const getdata =  async()=>{
+  try {
+    const email = user.email;
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+      },
+    };
+
+    const { data } = await axios.post(
+      "/api/user/getuserdetails",
+      { email },
+      config
+    );
+    if(user.name !== data.name || user.pic !== data.pic){
+      user.name = data.name;
+      user.pic = data.pic;
+      localStorage.setItem("userInfo", JSON.stringify(user));
+    }
+
+  } catch (error) {
+    console.log("kuch nhi hua");
+    console.error("Error details:", error); // Log full error
+    toast({
+      title: "Error Occurred!",
+      description: error.response?.data?.message || error.message || "Unknown error",
+      status: "error",
+      duration: 5000,
+      isClosable: true,
+      position: "bottom",
+    });
+    setLoading(false);
+  }
+  }
+
+  useEffect(()=>{
+    if(user && user.email){
+      getdata();
+    }
+  },[user])
+
+
+
+
 
   return (
     <div style={{ width: "100%" , overflow:"hidden"}}>
