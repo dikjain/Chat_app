@@ -7,6 +7,7 @@ import userRoutes from "./routes/userRoutes.js";
 import { errorHandler, notFound } from './Middleware/errorMiddleWare.js';
 import chatRoute from './routes/chatRoutes.js';
 import messageRoute from './routes/messageRoute.js';
+// import statusRoute from './routes/statusRoute.js';
 import { Server } from "socket.io";  // Import Socket.IO Server
 import http from 'http';  // Import http module
 import path from 'path';
@@ -31,6 +32,7 @@ app.use(express.json());
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoute);
 app.use("/api/message", messageRoute);
+// app.use("/api/status", statusRoute);
 
 
 const __dirname1 = path.resolve()
@@ -135,7 +137,6 @@ io.on("connection", (socket) => {
 
 server.listen(process.env.PORT || 5000, () => {
   connectDB();
-  console.log(`Server is running on port ${process.env.PORT || 5000}`);
 });
 
 

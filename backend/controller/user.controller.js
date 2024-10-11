@@ -2,6 +2,25 @@ import expressAsyncHandler from "express-async-handler"
 import User from "../models/user.model.js";
 import generateToken from "../db/GenerateToken.js";
 
+const updateUser = expressAsyncHandler(async (req, res) => {
+    const { name, pic, UserId } = req.body;
+    console.log(UserId);
+
+    try {
+        const updatedUser = await User.findByIdAndUpdate(UserId, { name, pic }, { new: true });
+
+        if (!updatedUser) {
+            res.status(404);
+            throw new Error("User not found");
+        }
+
+        res.json(updatedUser);
+        console.log(updatedUser);
+    } catch (error) {
+        res.status(500);
+        throw new Error("Error updating user");
+    }
+});
 
 const registeruser = expressAsyncHandler (async (req,res) => {
     const {name,email,password,pic} = req.body
@@ -83,4 +102,4 @@ const allUsers = expressAsyncHandler (async (req,res) => {
 });
 
 
-export { authUser, registeruser,allUsers }; 
+export { authUser, registeruser,allUsers,updateUser }; 

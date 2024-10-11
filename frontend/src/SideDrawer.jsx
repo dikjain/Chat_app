@@ -44,6 +44,7 @@ function SideDrawer() {
   const {
     setSelectedChat,
     user,
+    setUser,
     notification,
     setNotification,
     chats,
@@ -97,7 +98,6 @@ function SideDrawer() {
   };
 
   const accessChat = async (userId) => {
-    console.log(userId);
 
     try {
       setLoadingChat(true);
@@ -214,7 +214,7 @@ function SideDrawer() {
               />
             </MenuButton>
             <MenuList bg="black" color="green.400" zIndex="overlay">
-              <ProfileModal user={user}>
+              <ProfileModal user={user} setUser={setUser}>
                 <MenuItem bg="black" color="green.400">
                   My Profile
                 </MenuItem>{" "}

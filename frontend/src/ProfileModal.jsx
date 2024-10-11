@@ -13,10 +13,83 @@ import {
   IconButton,
   Text,
   Image,
+  Toast,
 } from "@chakra-ui/react";
 
-const ProfileModal = ({ user, children }) => {
+import axios from "axios";
+
+const   ProfileModal = ({ user, children,setUser }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const handleUpdate = () => {
+
+  }
+  const changePic = () => {
+    let imgUrl;
+
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${user.token}`,
+      },
+    };
+  
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const filereader = new FileReader();
+        filereader.readAsDataURL(file); // Start reading the file as Data URL
+        if (file.type === "image/jpeg" || file.type === "image/png") {
+          const data = new FormData();
+          data.append("file", file); // Corrected the variable name from 'pics' to 'file'
+          data.append("upload_preset", "chat-app");
+          data.append("cloud_name", "ddtkuyiwb");
+          fetch("https://api.cloudinary.com/v1_1/ddtkuyiwb/image/upload", {
+            method: "post",
+            body: data,
+          })
+            .then((res) => res.json())
+            .then( (data) => {imgUrl = data.url})
+            .then(async () => {
+              try {
+                console.log(imgUrl,user._id,user.name);
+                const { data } = await axios.post(
+                  "/api/user/update",
+                  {
+                    UserId: user._id,
+                    pic: imgUrl,
+                    name: user.name,
+                  },
+                  config
+                );
+                setUser(data);
+                Toast({
+                  title: "Profile Picture Updated!",
+                  status: "success",
+                });
+              } catch (err) {
+                console.log(err);
+            }
+        });
+        } else {
+          Toast({
+            title: "Please Select an Image!",
+            status: "warning",
+          });
+        }
+      }else {
+        Toast({
+          title: "Please Select an Image!",
+          status: "warning",
+        });
+      }
+    };
+    input.click(); // Trigger the input click to open the file dialog
+  };
+  
 
   return (
     <>
@@ -27,16 +100,18 @@ const ProfileModal = ({ user, children }) => {
       )}
       <Modal size="lg" onClose={onClose} isOpen={isOpen} isCentered>
         <ModalOverlay />
-        <ModalContent h="410px">
+        <ModalContent h="410px" bg={"#18191a"}>
           <ModalHeader
             fontSize="40px"
-            fontFamily="Work sans"
+            fontFamily="Roboto"
             display="flex"
             justifyContent="center"
+            color={"#48bb78"}
+
           >
-            {user.name}
+            {(user.name).toUpperCase()}
           </ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton bg={"#48bb78"} fontWeight={"bold"} />
           <ModalBody
             display="flex"
             flexDir="column"
@@ -44,6 +119,7 @@ const ProfileModal = ({ user, children }) => {
             justifyContent="space-between"
           >
             <Image
+            border={"4px solid #48bb78"}
               borderRadius="full"
               boxSize="150px"
               src={user.pic}
@@ -51,12 +127,15 @@ const ProfileModal = ({ user, children }) => {
             />
             <Text
               fontSize={{ base: "28px", md: "30px" }}
-              fontFamily="Work sans"
+              color={"#48bb78"}
+
             >
               Email: {user.email}
             </Text>
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter w={"100%"} display={"flex"} justifyContent={"space-between"} >
+          {user.token && <Button bg={"#48bb78"} onClick={changePic} color={"white"} fontWeight={"bold"} my={"4px"} fontSize={"15px"} borderRadius={"10px"} >Change Picture</Button>}
+          {user.token && <Button bg={"#48bb78"} onClick={handleUpdate} color={"white"} fontWeight={"bold"} my={"4px"} fontSize={"15px"} borderRadius={"10px"} >Edit Name</Button>}
             <Button onClick={onClose}>Close</Button>
           </ModalFooter>
         </ModalContent>

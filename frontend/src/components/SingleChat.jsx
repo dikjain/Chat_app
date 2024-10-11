@@ -12,6 +12,7 @@ import ScrollableChat from "./ScrollableChats";
 // import Lottie from "react-lottie";
 // import animationData from "../animations/typing.json";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import {gsap} from "gsap"
 
 import io from "socket.io-client";
 import UpdateGroupChatModal from "../UpdateGroupChatmodal";
@@ -71,8 +72,8 @@ const generateContents = async (prompt) => {
       );
       setMessages(data);
       setLoading(false);
-      const iol = await axios.get("/api/chat", config);        
-      setChats(iol.data);
+      // const iol = await axios.get("/api/chat", config);        
+      // setChats(iol.data);
       
 
       socket.emit("join chat", selectedChat._id);
@@ -275,6 +276,10 @@ const generateContents = async (prompt) => {
     }
   };    
 
+  useEffect(()=>{
+    gsap.fromTo("#msgdabba", {boxShadow: "0px 0px 10px 15px green"}, {boxShadow: "0px 0px 10px 5px green", duration: 1.5, ease: "power1.out"});
+  },[selectedChat]);
+
   return (
     <>
       {selectedChat ? (
@@ -315,6 +320,7 @@ const generateContents = async (prompt) => {
               ))}
           </Text>
           <Box
+            id="msgdabba"
             display="flex"
             flexDir="column"
             justifyContent="flex-end"
