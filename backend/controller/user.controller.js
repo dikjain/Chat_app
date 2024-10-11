@@ -4,7 +4,6 @@ import generateToken from "../db/GenerateToken.js";
 
 const updateUser = expressAsyncHandler(async (req, res) => {
     const { name, pic, UserId } = req.body;
-    console.log(UserId);
 
     try {
         const updatedUser = await User.findByIdAndUpdate(UserId, { name, pic }, { new: true });

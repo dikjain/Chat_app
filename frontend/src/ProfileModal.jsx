@@ -73,13 +73,6 @@ const   ProfileModal = ({children }) => {
                   },
                   config
                 );
-                setUser({
-                  _id: user._id,
-                  name: data.name,
-                  pic: imgUrl,    
-                  token: user.token,
-                  email: user.email
-              })
               localStorage.setItem("userInfo", JSON.stringify({
                 _id: user._id,
                 name: data.name,
