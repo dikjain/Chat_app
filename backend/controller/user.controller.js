@@ -14,7 +14,6 @@ const updateUser = expressAsyncHandler(async (req, res) => {
         }
 
         res.json(updatedUser)
-        console.log(updatedUser);
     } catch (error) {
         res.status(500);
         throw new Error("Error updating user");
