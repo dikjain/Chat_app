@@ -59,7 +59,7 @@ const   ProfileModal = ({ user, children,setUser }) => {
             body: data,
           })
             .then((res) => res.json())
-            .then( (data) => {imgUrl = data.url})
+            .then( (dats) => {imgUrl = dats.url})
             .then(async () => {
               try {
                 const { data } = await axios.post(
@@ -74,10 +74,11 @@ const   ProfileModal = ({ user, children,setUser }) => {
                 setUser({
                   _id: user._id,
                   name: data.name,
-                  pic: data.pic,    
+                  pic: imgUrl,    
                   token: user.token,
                   email: user.email
               })
+              localStorage.removeItem("userInfo");
               localStorage.setItem("userInfo", JSON.stringify(user));
                 toast({
                   title: "Profile Picture Updated!",
