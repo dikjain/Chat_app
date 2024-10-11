@@ -62,7 +62,6 @@ const   ProfileModal = ({ user, children,setUser }) => {
             .then( (data) => {imgUrl = data.url})
             .then(async () => {
               try {
-                console.log(imgUrl,user._id,user.name);
                 const { data } = await axios.post(
                   "/api/user/update",
                   {
@@ -72,7 +71,14 @@ const   ProfileModal = ({ user, children,setUser }) => {
                   },
                   config
                 );
-                setPic(data.pic);
+                setUser({
+                  _id: user._id,
+                  name: data.name,
+                  pic: data.pic,    
+                  token: user.token,
+                  email: user.email
+              })
+              localStorage.setItem("userInfo", JSON.stringify(user));
                 toast({
                   title: "Profile Picture Updated!",
                   status: "success",
