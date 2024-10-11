@@ -15,13 +15,19 @@ import {
   Image,
   Toast,
   useToast,
+  Input,
+  Spinner,
 } from "@chakra-ui/react";
 
 import axios from "axios";
 import { ChatState } from "./Context/Chatprovider";
-import { useEffect } from "react";
+import { useState } from "react";
 
 const ProfileModal = ({children ,profileUser}) => {
+  const[picupdate,setPicupdate] = useState(false);
+
+  const [isNaam,setisNaam] = useState(false);
+  const [naam,setNaam] = useState("");
 
 
   const { user,setUser } = ChatState();
@@ -33,24 +39,61 @@ const ProfileModal = ({children ,profileUser}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleUpdate = () => {
-
+    setNaam(user.name);
+    setisNaam((prev) => !prev);
   }
+  const config = {
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${user.token}`,
+    },
+  };  
+
+
+  const handleNameChange = async () => {
+    setisNaam(false);
+    setNaam(user.name);
+    try {
+      const { data } = await axios.post(
+        "/api/user/update",
+        {
+          UserId: user._id,
+          pic: user.pic,
+          name: naam,
+        },
+        config
+      );
+      if(data){ 
+        setUser({
+          ...user,
+          name: naam,
+        });
+        localStorage.setItem("userInfo", JSON.stringify({
+          ...user,
+          name: naam,
+        }));
+        toast({
+          title: "Name Updated!",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   const changePic = () => {
     let imgUrl;
-
-    const config = {
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${user.token}`,
-      },
-    };
-  
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
     input.onchange = (event) => {
       const file = event.target.files[0];
       if (file) {
+        setPicupdate(true);
         const filereader = new FileReader();
         filereader.readAsDataURL(file); // Start reading the file as Data URL
         if (file.type === "image/jpeg" || file.type === "image/png") {
@@ -66,7 +109,7 @@ const ProfileModal = ({children ,profileUser}) => {
             .then( (dats) => {imgUrl = dats.url})
             .then(async () => {
               try {
-                const { data } = await axios.post(
+                await axios.post(
                   "/api/user/update",
                   {
                     UserId: user._id,
@@ -83,6 +126,7 @@ const ProfileModal = ({children ,profileUser}) => {
                 ...user,
                 pic: imgUrl,
               }));
+              setPicupdate(false);
                 toast({
                   title: "Profile Picture Updated!",
                   status: "success",
@@ -99,12 +143,14 @@ const ProfileModal = ({children ,profileUser}) => {
             title: "Please Select an Image!",
             status: "warning",
           });
+          setPicupdate(false);
         }
       }else {
         Toast({
           title: "Please Select an Image!",
           status: "warning",
         });
+        setPicupdate(false);
       }
     };
     input.click(); // Trigger the input click to open the file dialog
@@ -122,6 +168,7 @@ const ProfileModal = ({children ,profileUser}) => {
         <ModalOverlay />
         <ModalContent h="410px" bg={"#18191a"}>
           <ModalHeader
+          position={"relative"}
             fontSize="40px"
             fontFamily="Roboto"
             display="flex"
@@ -129,7 +176,9 @@ const ProfileModal = ({children ,profileUser}) => {
             color={"#48bb78"}
 
           >
-            {profileUser && (profileUser.name).toUpperCase()}
+            { !isNaam && profileUser && (profileUser.name).toUpperCase()}
+            { isNaam && <Input type="text" placeholder="name" bg={"black"} color={"#48bb78"} fontSize={"20px"} fontWeight={"bold"} mx={"10px"} w={"50%"} h={"40px"} zIndex={"1000"} value={naam} onChange={(e) => setNaam(e.target.value)} />}
+            { isNaam && <Button onClick={handleNameChange} >Done</Button>}
           </ModalHeader>
           <ModalCloseButton bg={"#48bb78"} fontWeight={"bold"} />
           <ModalBody
@@ -138,13 +187,14 @@ const ProfileModal = ({children ,profileUser}) => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Image
+            {picupdate ? <Spinner size="xl" color="#48bb78" thickness="4px" speed="0.65s" /> : <Image 
+            transition={"all 0.3s ease"}
             border={"4px solid #48bb78"}
               borderRadius="full"
               boxSize="150px"
               src={profileUser && profileUser.pic}
               alt={profileUser && profileUser.name}
-            />
+            />}
             <Text
               fontSize={{ base: "28px", md: "30px" }}
               color={"#48bb78"}
