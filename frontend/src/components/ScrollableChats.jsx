@@ -51,7 +51,11 @@ const ScrollableChat = ({ messages }) => {
   };
 
   const { user , selectedChat } = ChatState();
-  const formatTime = (t) => new Date(t).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }).replace(',', ' -');
+  const formatTime = (t) => {
+    const date = new Date(t).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }).split('/').map(num => num.padStart(2, '0')).join('/');
+    const time = new Date(t).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' }).split(':').map(num => num.padStart(2, '0')).join(':');
+    return `${date} - ${time}`;
+  };
 
   const [vismsg, setvismsg] = useState(null)
   const [qq, setqq] = useState(15)
@@ -59,6 +63,7 @@ const ScrollableChat = ({ messages }) => {
     setvismsg(messages.slice(messages.length-qq,messages.length))
   },[messages,qq])
 
+  
 
 
   return (
@@ -109,7 +114,8 @@ const ScrollableChat = ({ messages }) => {
                 color:"white",
               }}
               className={`yotem ${m.sender._id === user._id ? "raayit" : "lefat" }`}
-              >{formatTime(m.createdAt).slice(0, 9) === todayIST?`${Number(formatTime(m.createdAt).slice(11,14)) >9 ?  formatTime(m.createdAt).slice(11,17) + formatTime(m.createdAt).slice(20,23) : formatTime(m.createdAt).slice(11,16) + formatTime(m.createdAt).slice(19,23)}` : `${Number(formatTime(m.createdAt).slice(11,14)) >9 ? formatTime(m.createdAt).slice(0,9) +" -"+   formatTime(m.createdAt).slice(11,17) + formatTime(m.createdAt).slice(20,23) :formatTime(m.createdAt).slice(0,9) +" -"+  formatTime(m.createdAt).slice(11,16) + formatTime(m.createdAt).slice(19,23)}`}</span>
+              >{formatTime(m.createdAt).slice(0, 9) === todayIST?`${Number(formatTime(m.createdAt).slice(13,15)) >9 ?  formatTime(m.createdAt).slice(13,17) + formatTime(m.createdAt).slice(20,24) : formatTime(m.createdAt).slice(13,17) + formatTime(m.createdAt).slice(20,24)}`: `${Number(formatTime(m.createdAt).slice(11,14)) >9 ? formatTime(m.createdAt).slice(0,9) +" -"+   formatTime(m.createdAt).slice(11,17) + formatTime(m.createdAt).slice(20,23) :formatTime(m.createdAt).slice(0,11) +  formatTime(m.createdAt).slice(11,16) + formatTime(m.createdAt).slice(19,24)}`}
+               </span>
               {speakVisible === i && !boling && (
                 <span
                 ref={messageRef}

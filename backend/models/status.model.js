@@ -8,7 +8,6 @@
 //       type: String, 
 //       default: "https://wallpapers.com/images/featured/plain-black-background-02fh7564l8qq4m6d.jpg" 
 //     },
-//     views: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 //     expiresAt: { 
 //       type: Date, 
 //       default: Date.now, // Set the default to current date
