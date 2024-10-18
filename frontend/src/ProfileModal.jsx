@@ -1,4 +1,3 @@
-
 import { ViewIcon } from "@chakra-ui/icons";
 import {
   Modal,
@@ -22,33 +21,31 @@ import {
 import axios from "axios";
 import { ChatState } from "./Context/Chatprovider";
 import { useState } from "react";
+import ViewStatusModal from "./ViewStatusModal";
 
-const ProfileModal = ({children ,profileUser}) => {
-  const[picupdate,setPicupdate] = useState(false);
+const ProfileModal = ({ children, profileUser }) => {
+  const [picupdate, setPicupdate] = useState(false);
+  const [isNaam, setisNaam] = useState(false);
+  const [naam, setNaam] = useState("");
+  const [isViewStatusModal, setIsViewStatusModal] = useState(false); // State to track modal type
 
-  const [isNaam,setisNaam] = useState(false);
-  const [naam,setNaam] = useState("");
-
-
-  const { user,setUser } = ChatState();
-  if(!profileUser) profileUser = user;
+  const { user, setUser } = ChatState();
+  if (!profileUser) profileUser = user;
 
   const toast = useToast();
-
-
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleUpdate = () => {
     setNaam(user.name);
     setisNaam((prev) => !prev);
-  }
+  };
+
   const config = {
     headers: {
       "Content-type": "application/json",
       Authorization: `Bearer ${user.token}`,
     },
-  };  
-
+  };
 
   const handleNameChange = async () => {
     setisNaam(false);
@@ -63,7 +60,7 @@ const ProfileModal = ({children ,profileUser}) => {
         },
         config
       );
-      if(data){ 
+      if (data) {
         setUser({
           ...user,
           name: naam,
@@ -83,22 +80,22 @@ const ProfileModal = ({children ,profileUser}) => {
     } catch (err) {
       console.log(err);
     }
-  }
+  };
 
   const changePic = () => {
     let imgUrl;
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
     input.onchange = (event) => {
       const file = event.target.files[0];
       if (file) {
         setPicupdate(true);
         const filereader = new FileReader();
-        filereader.readAsDataURL(file); // Start reading the file as Data URL
+        filereader.readAsDataURL(file);
         if (file.type === "image/jpeg" || file.type === "image/png") {
           const data = new FormData();
-          data.append("file", file); // Corrected the variable name from 'pics' to 'file'
+          data.append("file", file);
           data.append("upload_preset", "chat-app");
           data.append("cloud_name", "ddtkuyiwb");
           fetch("https://api.cloudinary.com/v1_1/ddtkuyiwb/image/upload", {
@@ -106,7 +103,9 @@ const ProfileModal = ({children ,profileUser}) => {
             body: data,
           })
             .then((res) => res.json())
-            .then( (dats) => {imgUrl = dats.url})
+            .then((dats) => {
+              imgUrl = dats.url;
+            })
             .then(async () => {
               try {
                 await axios.post(
@@ -120,13 +119,13 @@ const ProfileModal = ({children ,profileUser}) => {
                 );
                 setUser({
                   ...user,
-                  pic: imgUrl,    
-              })
-              localStorage.setItem("userInfo", JSON.stringify({
-                ...user,
-                pic: imgUrl,
-              }));
-              setPicupdate(false);
+                  pic: imgUrl,
+                });
+                localStorage.setItem("userInfo", JSON.stringify({
+                  ...user,
+                  pic: imgUrl,
+                }));
+                setPicupdate(false);
                 toast({
                   title: "Profile Picture Updated!",
                   status: "success",
@@ -136,26 +135,48 @@ const ProfileModal = ({children ,profileUser}) => {
                 });
               } catch (err) {
                 console.log(err);
-            }
-        });
+              }
+            });
         } else {
-          Toast({
+          toast({
             title: "Please Select an Image!",
             status: "warning",
           });
           setPicupdate(false);
         }
-      }else {
-        Toast({
+      } else {
+        toast({
           title: "Please Select an Image!",
           status: "warning",
         });
         setPicupdate(false);
       }
     };
-    input.click(); // Trigger the input click to open the file dialog
+    input.click();
   };
-  
+
+  const [status, setStatus] = useState([]);
+
+  const fetchStatus = async ({ id }) => {
+    try {
+      const { data } = await axios.post("/api/status/fetch", {
+        id: id,
+      });
+      setStatus(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleViewStatus = () => {
+    fetchStatus({ id: profileUser._id });
+    setIsViewStatusModal(true); // Set to view status modal
+  };
+
+  const handleCloseModal = () => {
+    setIsViewStatusModal(false); // Reset state when closing modal
+    onClose();
+  };
 
   return (
     <>
@@ -164,21 +185,35 @@ const ProfileModal = ({children ,profileUser}) => {
       ) : (
         <IconButton display={{ base: "flex" }} icon={<ViewIcon />} onClick={onOpen} />
       )}
-      <Modal size="lg" onClose={onClose} isOpen={isOpen} isCentered>
+ { !isViewStatusModal && <Modal size="lg" onClose={handleCloseModal} isOpen={isOpen} isCentered>
         <ModalOverlay />
         <ModalContent h="410px" bg={"#18191a"}>
           <ModalHeader
-          position={"relative"}
+            position={"relative"}
             fontSize="40px"
             fontFamily="Roboto"
             display="flex"
             justifyContent="center"
             color={"#48bb78"}
-
           >
-            { !isNaam && profileUser && (profileUser.name).toUpperCase()}
-            { isNaam && <Input type="text" placeholder="name" bg={"black"} color={"#48bb78"} fontSize={"20px"} fontWeight={"bold"} mx={"10px"} w={"50%"} h={"40px"} zIndex={"1000"} value={naam} onChange={(e) => setNaam(e.target.value)} />}
-            { isNaam && <Button onClick={handleNameChange} >Done</Button>}
+            {!isNaam && profileUser && profileUser.name.toUpperCase()}
+            {isNaam && (
+              <Input
+                type="text"
+                placeholder="name"
+                bg={"black"}
+                color={"#48bb78"}
+                fontSize={"20px"}
+                fontWeight={"bold"}
+                mx={"10px"}
+                w={"50%"}
+                h={"40px"}
+                zIndex={"1000"}
+                value={naam}
+                onChange={(e) => setNaam(e.target.value)}
+              />
+            )}
+            {isNaam && <Button onClick={handleNameChange}>Done</Button>}
           </ModalHeader>
           <ModalCloseButton bg={"#48bb78"} fontWeight={"bold"} />
           <ModalBody
@@ -187,29 +222,83 @@ const ProfileModal = ({children ,profileUser}) => {
             alignItems="center"
             justifyContent="space-between"
           >
-            {picupdate ? <Spinner size="xl" color="#48bb78" thickness="4px" speed="0.65s" /> : <Image 
-            transition={"all 0.3s ease"}
-            border={"4px solid #48bb78"}
-              borderRadius="full"
-              boxSize="150px"
-              src={profileUser && profileUser.pic}
-              alt={profileUser && profileUser.name}
-            />}
-            <Text
-              fontSize={{ base: "28px", md: "30px" }}
-              color={"#48bb78"}
-
-            >
+            {picupdate ? (
+              <Spinner size="xl" color="#48bb78" thickness="4px" speed="0.65s" />
+            ) : (
+              <Image
+                transition={"all 0.3s ease"}
+                border={"4px solid #48bb78"}
+                borderRadius="full"
+                boxSize="150px"
+                src={profileUser && profileUser.pic}
+                alt={profileUser && profileUser.name}
+              />
+            )}
+            <Text fontSize={{ base: "28px", md: "30px" }} color={"#48bb78"}>
               {profileUser && `Email: ${profileUser.email}`}
             </Text>
           </ModalBody>
-          <ModalFooter w={"100%"} display={"flex"} justifyContent={"space-between"} >
-          {(profileUser && user._id === profileUser._id) && <Button bg={"#48bb78"} onClick={changePic} color={"white"} fontWeight={"bold"} my={"4px"} fontSize={"15px"} borderRadius={"10px"} >Change Picture</Button>}
-          {(profileUser && user._id === profileUser._id) && <Button bg={"#48bb78"} onClick={handleUpdate} color={"white"} fontWeight={"bold"} my={"4px"} fontSize={"15px"} borderRadius={"10px"} >Edit Name</Button>}
-            <Button onClick={onClose}>Close</Button>
+          <ModalFooter w={"100%"} display={"flex"} justifyContent={"space-between"}>
+            {profileUser && user._id === profileUser._id && (
+              <>
+                <Button
+                  bg={"#48bb78"}
+                  onClick={changePic}
+                  color={"white"}
+                  fontWeight={"bold"}
+                  my={"4px"}
+                  fontSize={"15px"}
+                  borderRadius={"10px"}
+                >
+                  Change Picture
+                </Button>
+                <Button
+                  bg={"#48bb78"}
+                  onClick={handleUpdate}
+                  color={"white"}
+                  fontWeight={"bold"}
+                  my={"4px"}
+                  fontSize={"15px"}
+                  borderRadius={"10px"}
+                >
+                  Edit Name
+                </Button>
+              </>
+            )}
+            {profileUser && user._id !== profileUser._id && (
+              <Button
+                bg={"#48bb78"}
+                onClick={handleViewStatus}
+                color={"white"}
+                fontWeight={"bold"}
+                my={"4px"}
+                fontSize={"15px"}
+                borderRadius={"10px"}
+              >
+                View Status
+              </Button>
+            )}
+            <Button onClick={handleCloseModal}>Close</Button>
           </ModalFooter>
         </ModalContent>
-      </Modal>
+      </Modal>}
+      {/* Conditionally render ViewStatusModal content based on state */}
+      {isViewStatusModal && (
+        <Modal size="xl" onClose={handleCloseModal}  isOpen={isViewStatusModal} isCentered>
+          <ModalOverlay />
+          <ModalContent bg="black" color="#48bb78" borderColor="#48bb78" borderWidth={2}  rounded={"10px"}>
+            <ViewStatusModal
+              currUser={user}
+              isOpen={isViewStatusModal}
+              onClose={handleCloseModal}
+              setStatus={setStatus}
+              fetchStatus={fetchStatus}
+              status={status.status}
+              user={profileUser}
+            />
+          </ModalContent>
+        </Modal>
+      )}
     </>
   );
 };

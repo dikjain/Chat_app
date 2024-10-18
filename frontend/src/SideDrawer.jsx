@@ -33,6 +33,7 @@ import UserListItem from "./UserListItem";
 import { ChatState } from "./Context/Chatprovider";
 import { FaSearch } from "react-icons/fa";
 import ScrollableFeed from "react-scrollable-feed";
+import StatusModal from "./StatusModal";
 
 
 function SideDrawer() {
@@ -219,6 +220,12 @@ function SideDrawer() {
                   My Profile
                 </MenuItem>{" "}
               </ProfileModal>
+              <MenuDivider />
+              <StatusModal>
+                <MenuItem bg="black" color="green.400">
+                  My Status
+                </MenuItem>
+              </StatusModal>
               <MenuDivider />
               <MenuItem onClick={logoutHandler} bg="black" color="green.400">
                 Logout

@@ -1,15 +1,15 @@
-// import express from 'express';
+import express from 'express';
+import protect from '../Middleware/authMiddleware.js';
 
-// import {registeruser,authUser ,  allUsers} from '../controller/user.controller.js';
-// import protect from '../Middleware/authMiddleware.js';
+import {CreateStatus,fetchStatus,deleteStatus} from '../controller/status.controller.js';
+const router = express.Router();
 
-// const router = express.Router();
-
-// router.post("/",registeruser).get("/",protect,allUsers)
-// router.post("/login",authUser)
-
-
+router.post("/",protect,CreateStatus)
+router.post("/fetch",fetchStatus)
+router.post("/delete",deleteStatus)
 
 
 
-// export default router
+
+
+export default router

@@ -12,6 +12,10 @@ const userSchema = mongoose.Schema(
       default:
         "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
     },
+    status: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Status",
+    }],
     isAdmin: {
       type: Boolean,
       required: true,
