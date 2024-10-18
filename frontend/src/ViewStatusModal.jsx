@@ -42,8 +42,9 @@ function ViewStatusModal({ fetchStatus,user, status, currUser}) {
   return (
     <>
     <Box flex="1" alignItems={"center"} justifyContent={"center"}  mr={{ base: 0, md: 2 }} mb={{ base: 2, md: 0 }}>
-    <ModalHeader color="green.400">{user._id === currUser._id ? "Your Status" : `${user.name}'s Status`}</ModalHeader>
-    <Box  display={"flex"} alignItems={"center"} justifyContent={"center"} rounded={"md"} height={{base:"30vh",md:"70vh"}} >
+    <ModalHeader color="green.400" display={"flex"}><Image src={user.pic} border={"1px #48bb78 solid"} w={9} h={9} borderRadius={"full"} mr={2}/>{user._id === currUser._id ? "Your Status" : `${user.name}'s Status`}</ModalHeader>
+    <Box  display={"flex"} alignItems={"center"} justifyContent={"center"}  rounded={"md"} height={{base:"30vh",md:"70vh"}} >
+    {currentStatus && currentStatus.length === 0 && <Text color="green.400" position={"absolute"} top={"50%"} left={"50%"} transform={"translate(-50%,-50%)"}   fontSize={"lg"}  mt={4}>No status found</Text>}
     {currentStatus && < Swiper
         effect={'cards'}
         grabCursor={true}
@@ -54,14 +55,13 @@ function ViewStatusModal({ fetchStatus,user, status, currUser}) {
         <SwiperSlide key={index}>
           <Box bg={"rgba(0,0,0,0.5)"} w={"100%"} h={"100%"} display={"flex"}  justifyContent={"end"} flexDir={"column"} color="black" position="relative">
             <Image objectFit={"contain"} maxHeight={"100%"} src={item.mediaUrl} />
-            <Text position={"absolute"} bottom={0} h={"fit-content"} maxW={"100%"} px={3} bg={"black"} opacity={0.6} color={"white"} >{item.content}</Text>
+            <Text position={"absolute"} bottom={0} h={"fit-content"} maxW={"100%"} w={"100%"} display={"flex"} justifyContent={"center"} px={3} bg={"black"} opacity={0.6} color={"white"} >{item.content}</Text>
             {user._id === currUser._id && <Button  position={"absolute"}  top={2}  right={2}  colorScheme="red"  size="sm" onClick={() => deleteStatus(item._id)}>Delete</Button>}
             <Button position={"absolute"}  top={2}  left={2} color={"white"}  bg={"green.400"}  size="sm">{calculateTimeRemaining(item.expiresAt)}</Button>
           </Box>
         </SwiperSlide>
      ))}
      </Swiper>}
-     {!status && <Text color="green.400" fontSize={"lg"} textAlign={"center"} mt={4}>No status found</Text>}
     
     </Box>
     </Box>
