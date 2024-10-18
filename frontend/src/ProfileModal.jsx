@@ -175,6 +175,7 @@ const ProfileModal = ({ children, profileUser }) => {
 
   const handleCloseModal = () => {
     setIsViewStatusModal(false); // Reset state when closing modal
+    setStatus([])
     onClose();
   };
 
