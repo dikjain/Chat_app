@@ -42,7 +42,7 @@ function ViewStatusModal({ fetchStatus,user, status, currUser}) {
   return (
     <>
     <Box flex="1" alignItems={"center"} justifyContent={"center"}  mr={{ base: 0, md: 2 }} mb={{ base: 2, md: 0 }}>
-    <ModalHeader color="green.400">Your Status</ModalHeader>
+    <ModalHeader color="green.400">{user._id === currUser._id ? "Your Status" : `${user.name}'s Status`}</ModalHeader>
     <Box  display={"flex"} alignItems={"center"} justifyContent={"center"} rounded={"md"} height={{base:"30vh",md:"70vh"}} >
     {currentStatus && < Swiper
         effect={'cards'}
@@ -56,7 +56,7 @@ function ViewStatusModal({ fetchStatus,user, status, currUser}) {
             <Image objectFit={"contain"} maxHeight={"100%"} src={item.mediaUrl} />
             <Text position={"absolute"} bottom={0} h={"fit-content"} maxW={"100%"} px={3} bg={"black"} opacity={0.6} color={"white"} >{item.content}</Text>
             {user._id === currUser._id && <Button  position={"absolute"}  top={2}  right={2}  colorScheme="red"  size="sm" onClick={() => deleteStatus(item._id)}>Delete</Button>}
-            {user._id === item.user && <Button position={"absolute"}  top={2}  left={2} color={"white"}  bg={"green.400"}  size="sm">{calculateTimeRemaining(item.expiresAt)}</Button>}
+            <Button position={"absolute"}  top={2}  left={2} color={"white"}  bg={"green.400"}  size="sm">{calculateTimeRemaining(item.expiresAt)}</Button>
           </Box>
         </SwiperSlide>
      ))}
