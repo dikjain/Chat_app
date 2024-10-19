@@ -64,28 +64,45 @@ const ScrollableChat = ({ messages }) => {
     setvismsg(messages.slice(messages.length-qq,messages.length))
   },[messages,qq])
 
+  const [a,seta] = useState(false)
+
+  useEffect(() => {
+    if (vismsg && vismsg.length > 0) {
+      if(a){
+        seta(false)
+        gsap.fromTo(
+          "#messageeL", 
+          { x: "-200%" ,duration:0.0001, opacity:0 }, 
+          { x: "0", opacity:1, stagger:0.05, ease: "power3.out", onComplete: () => gsap.set("#messageeL", { clearProps: "transform" }) }
+        );
+        gsap.fromTo(
+          "#messageeR", 
+          { x: "200%" ,duration:0.0001, opacity:0 }, 
+          { x: "0", opacity:1, stagger:0.05, ease: "power3.out", onComplete: () => gsap.set("#messageeR", { clearProps: "transform" }) }
+        );
+      }
+    }
+  }, [vismsg]);
+
   useEffect(()=>{
-    gsap.to("#messagee", {x:0,stagger:0.05,ease: "power3.out", onComplete: () => {
-      document.querySelectorAll("#messagee").forEach(el => {
-        el.style.transform = "none";
-      });
-    }})
-  },[vismsg])
+    seta(true)
+  },[selectedChat])
 
   
+     
 
 
   return (
     <ScrollableFeed>
-    { messages.length -qq > 0 ? <button style={{width:"50%",padding:"3px 0px",transform:"translateX(50%)", borderRadius:"999px" , backgroundColor:"#48bb78",alignSelf:"center",justifySelf:"center" , color:"white" }} onClick={()=> messages.length -qq > 10 ?setqq((l)=>l+10) : setqq(messages.length)}>load more</button> : null}
+    { messages.length -qq > 0 ? <button style={{width:"50%",padding:"3px 0px",transform:"translateX(50%)", borderRadius:"999px" , backgroundColor:"#48bb78",alignSelf:"center",justifySelf:"center" , color:"white" }} onClick={()=> {messages.length -qq > 10 ?setqq((l)=>l+10) : setqq(messages.length);seta(true)}}>load more</button> : null}
       {vismsg &&
         vismsg.map((m, i) => (
           <div style={{ display: "flex", position: "relative"}} key={m._id}>
             {isSameSender(vismsg, m, i, user._id)&& (
               <Tooltip label={m.sender.name} placement="bottom-start" hasArrow>
                 <Avatar
-                id="messagee"
-                style={{transform:`translateX(${m.sender._id === user._id ? "200%" : "-200%"})`}}            
+                transition="none"
+                id={`messagee${m.sender._id === user._id ? "R" : "L"}`}       
                   mt="7px"
                   mr={1}
                   size="sm"
@@ -97,12 +114,12 @@ const ScrollableChat = ({ messages }) => {
             )}
             <span
               onClick={() => handleTextClick(i)} // Click event to show/hide "Speak" button
-              id="messagee"
+              id={`messagee${m.sender._id === user._id ? "R" : "L"}`}
               style={{
+                transition:"none",
                 backgroundColor: `${m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0"}`,
                 marginLeft: `${m.sender._id === user._id ? "auto" : "0px"}`,
                 // marginLeft: isSameSenderMargin(messages, m, i, user._id),
-                transform:`translateX(${m.sender._id === user._id ? "200%" : "-200%"})`,
                 marginTop: 10,
                 marginBottom:10,
                 borderRadius: "20px",
