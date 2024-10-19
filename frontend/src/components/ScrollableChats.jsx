@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from "../configs/ChatLogics";
 import { ChatState } from "../Context/Chatprovider";
 import "./UserAvatar/Scroll.css";
+import gsap from "gsap";
 
 
 const ScrollableChat = ({ messages }) => {
@@ -63,6 +64,10 @@ const ScrollableChat = ({ messages }) => {
     setvismsg(messages.slice(messages.length-qq,messages.length))
   },[messages,qq])
 
+  useEffect(()=>{
+    gsap.to("#messagee", {x:0,stagger:0.05,ease: "power3.out"})
+  },[vismsg])
+
   
 
 
@@ -75,6 +80,8 @@ const ScrollableChat = ({ messages }) => {
             {isSameSender(vismsg, m, i, user._id)&& (
               <Tooltip label={m.sender.name} placement="bottom-start" hasArrow>
                 <Avatar
+                id="messagee"
+                style={{transform:`translateX(${m.sender._id === user._id ? "200%" : "-200%"})`}}            
                   mt="7px"
                   mr={1}
                   size="sm"
@@ -86,10 +93,12 @@ const ScrollableChat = ({ messages }) => {
             )}
             <span
               onClick={() => handleTextClick(i)} // Click event to show/hide "Speak" button
+              id="messagee"
               style={{
                 backgroundColor: `${m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0"}`,
                 marginLeft: `${m.sender._id === user._id ? "auto" : "0px"}`,
                 // marginLeft: isSameSenderMargin(messages, m, i, user._id),
+                transform:`translateX(${m.sender._id === user._id ? "200%" : "-200%"})`,
                 marginTop: 10,
                 marginBottom:10,
                 borderRadius: "20px",
@@ -98,6 +107,7 @@ const ScrollableChat = ({ messages }) => {
                 position: "relative",
                 zIndex:"50",
                 color:"black",
+                
               }}
               >
               {selectedChat.isGroupChat && <span style={{fontWeight:"bold", color:"#48bb78"}}>{m.sender._id === user._id ? "" : m.sender.name + " : "}</span>} 
