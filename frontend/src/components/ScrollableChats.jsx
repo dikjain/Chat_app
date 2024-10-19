@@ -71,7 +71,7 @@ const ScrollableChat = ({ messages }) => {
     { messages.length -qq > 0 ? <button style={{width:"50%",padding:"3px 0px",transform:"translateX(50%)", borderRadius:"999px" , backgroundColor:"#48bb78",alignSelf:"center",justifySelf:"center" , color:"white" }} onClick={()=> messages.length -qq > 10 ?setqq((l)=>l+10) : setqq(messages.length)}>load more</button> : null}
       {vismsg &&
         vismsg.map((m, i) => (
-          <div style={{ display: "flex", position: "relative" }} key={m._id}>
+          <div style={{ display: "flex", position: "relative"}} key={m._id}>
             {isSameSender(vismsg, m, i, user._id)&& (
               <Tooltip label={m.sender.name} placement="bottom-start" hasArrow>
                 <Avatar

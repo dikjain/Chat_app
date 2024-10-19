@@ -25,6 +25,8 @@ const MyChats = ({ fetchAgain }) => {
 
   const toast = useToast();
 
+  
+
   const fetchChats = async () => {
     // console.log(user._id);
     try {
@@ -86,6 +88,7 @@ const MyChats = ({ fetchAgain }) => {
 },[chats])
 
 
+
   return (
     <Box
     display={{ base: selectedChat ? "none" : "flex", md: "flex" }}
@@ -140,9 +143,8 @@ const MyChats = ({ fetchAgain }) => {
               className="chat"
               onClick={() => setSelectedChat(chat)}
               cursor="pointer"
-              bg={selectedChat === chat ? "#48bb78" : "#E8E8E8"}
-                color={selectedChat === chat ? "red" : "black"}
-                boxShadow={selectedChat === chat ? "green 0px 0px 12px 5px" : "green 0px 0px 7px 2px"}
+              bg={selectedChat ? (selectedChat._id === chat._id ? "#48bb78" : "#E8E8E8") : "#E8E8E8"}
+                boxShadow={selectedChat ? (selectedChat._id === chat._id ? "green 0px 0px 12px 5px" : "green 0px 0px 7px 2px") : "green 0px 0px 7px 2px"}
                 border={"green solid 2px"}
                 transition={"all 0.2s ease-in-out"}
                 px={3}
@@ -159,14 +161,14 @@ const MyChats = ({ fetchAgain }) => {
                 zIndex={"30"}
               >
                 {!chat.isGroupChat &&  (chat.users[0]._id == user._id ? onlinepeople.includes(chat.users[1]._id) :onlinepeople.includes(chat.users[0]._id)) && <div id="online" style={{right:"5%",width:"10px",top:"40%",translate:"0px 0px", height:"10px",borderRadius:"999px", position:"absolute",backgroundColor:"green"}}></div>}
-                <Text className="yo" transform={"translateY(200px)"} opacity={0} fontWeight={"500"} color={selectedChat === chat ? "white" : "black"}>
+                <Text className="yo" transform={"translateY(200px)"} opacity={0} fontWeight={"500"} color={ selectedChat ? (selectedChat._id === chat._id ? "white" : "black") : "black"}>
                   {!chat.isGroupChat
                     ? getSender(loggedUser, chat.users)
                     : chat.chatName}
                 </Text>
 
                 {chat.latestMessage && (
-                  <Text className="yo" transform={"translateY(200px)"} opacity={0} fontSize="xs" color={selectedChat === chat ? "white" : "black"}>
+                  <Text className="yo" transform={"translateY(200px)"} opacity={0} fontSize="xs" color={ selectedChat ? (selectedChat._id === chat._id ? "white" : "black") : "black"}>
                     <b>{chat.latestMessage.sender.name} : </b>
                     {chat.latestMessage.content.length > 50
                       ? chat.latestMessage.content.substring(0, 51) + "..."

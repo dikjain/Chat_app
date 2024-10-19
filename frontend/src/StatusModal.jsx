@@ -14,6 +14,7 @@ import {
   Text,
   Image,
   useToast,
+  Spinner,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { ChatState } from "./Context/Chatprovider";
@@ -30,6 +31,7 @@ function StatusModal({children}) {
   const { user } = ChatState();
   const toast = useToast();   
   const [status, setStatus] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [statusContent, setStatusContent] = useState({ text: "", imageUrl: "" });
@@ -95,6 +97,7 @@ function StatusModal({children}) {
       });
       return;
     }
+    setIsLoading(true);
     try {
       const config = {
         headers: {
@@ -110,13 +113,14 @@ function StatusModal({children}) {
       setStatusContent({ text: "", imageUrl: "" });
       // Fetch the updated status
       fetchStatus({id: user._id});
-
+      setIsLoading(false);
     } catch (err) {
       console.log(err);
       toast({
         title: "Error Occured!",
         status: "error",
       });
+      setIsLoading(false);
     }
   }
 
@@ -140,7 +144,7 @@ function StatusModal({children}) {
 
       <Modal isOpen={isOpen} onClose={onClose} size="full">
         <ModalOverlay />
-        <ModalContent bg="black" color="green.400">
+        <ModalContent bg="black" color="green.400" overflow="hidden">
           <ModalHeader>Update Your Status</ModalHeader>
           <ModalCloseButton bg="green.400" color="black" />
           <ModalBody display="flex"  flexDirection={{ base: "column", md: "row" }}>
@@ -166,7 +170,7 @@ function StatusModal({children}) {
                 borderColor="green.400"
                 _placeholder={{ color: "gray.500" }}
               />
-              <Button colorScheme="green" mt={3} onClick={CreateStatus}>
+              <Button colorScheme="green" mt={3} onClick={CreateStatus} isLoading={isLoading}>
                 Add
               </Button>
             </Box>
