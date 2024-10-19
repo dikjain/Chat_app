@@ -139,7 +139,7 @@ const ScrollableChat = ({ messages, setMessages }) => {
       };
 
       const deleteMessagePromise = axios.post(`/api/Message/delete`, { messageId }, config);
-      const changeLatestMessagePromise = axios.post(`/api/Message/ChangeLatestMessage`, { chatId: selectedChat._id, latestMessage: messageId === messages[messages.length-1]._id ? messages[messages.length-2]._id : messages[messages.length-1]._id }, config);
+      const changeLatestMessagePromise = axios.post(`/api/message/ChangeLatestMessage`, { chatId: selectedChat._id, latestMessage: messageId === messages[messages.length-1]._id ? (messages[messages.length-2] ? messages[messages.length-2]._id : null) : messages[messages.length-1]._id }, config);
       await Promise.all([deleteMessagePromise, changeLatestMessagePromise]);
       setMessages(prevMessages => prevMessages.filter(message => message._id !== messageId));
       fetchChats();
