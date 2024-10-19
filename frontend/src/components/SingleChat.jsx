@@ -355,7 +355,7 @@ const generateContents = async (prompt) => {
                 }}
               />
             ) : (
-              <div className="messages">
+              <div style={{position:"relative" ,backgroundColor:"red" , overflowX:"hidden" ,maxWidth:"100%"}} className="messages" >
                 <ScrollableChat messages={messages} />
               </div>
             )}
