@@ -61,12 +61,12 @@ const fetchChats = expressAsyncHandler(async (req, res) => {
       .populate("users", "-password")
       .populate("groupAdmin", "-password")
       .populate("latestMessage")
-      .sort({ "latestMessage.updatedAt": -1 })
       .then(async (results) => {
         results = await User.populate(results, {
           path: "latestMessage.sender",
           select: "name pic email",
         });
+        results.sort((a, b) => new Date(b.latestMessage.createdAt) - new Date(a.latestMessage.createdAt));
         res.status(200).send(results);
       });
   } catch (error) {
