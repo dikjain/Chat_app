@@ -66,7 +66,13 @@ const fetchChats = expressAsyncHandler(async (req, res) => {
           path: "latestMessage.sender",
           select: "name pic email",
         });
-        results.sort((a, b) => new Date(b.latestMessage.createdAt) - new Date(a.latestMessage.createdAt));
+        
+        results.sort((a, b) => {
+          if (!a.latestMessage) return 1;
+          if (!b.latestMessage) return -1;
+          return new Date(b.latestMessage.createdAt) - new Date(a.latestMessage.createdAt);
+        });
+        
         res.status(200).send(results);
       });
   } catch (error) {
