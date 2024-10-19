@@ -13,10 +13,14 @@ const ScrollableChat = ({ messages }) => {
   const [boling, setboling] = useState(false); // State to control which message has the "Speak" button
 
   const messageRef = useRef(null);
+  const messageRef2 = useRef(null);
 
-
-  const speakText = (text) => {   
+  const speakText = (text,i) => {   
     setboling(true);
+    document.querySelectorAll(".allmsg").forEach(el => {
+      el.style.opacity = "0.5";
+    });
+    document.querySelectorAll(".allmsg")[i].style.opacity = "1";
     if ("speechSynthesis" in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "hi-IN";
@@ -25,12 +29,15 @@ const ScrollableChat = ({ messages }) => {
       utterance.pitch = 1.2; // Slightly higher pitch for better engagement
       utterance.onend = () => {
         setboling(false);
+        document.querySelectorAll(".allmsg").forEach(el => {
+          el.style.opacity = "1";
+        });
       };
       setTimeout(() => {
         if(setboling) setboling(false)
       }, 7500);
       
-      speechSynthesis.cancel(); // Cancel any ongoing speech
+      speechSynthesis.cancel();
       speechSynthesis.speak(utterance);
     } else {
       toast({
@@ -48,6 +55,10 @@ const ScrollableChat = ({ messages }) => {
   
 
   const handleTextClick = (index) => {
+    setTimeout(()=>{
+      setSpeakVisible(null)
+    },3000)
+
     setSpeakVisible(index === speakVisible ? null : index); // Toggle "Speak" button visibility
   };
 
@@ -72,13 +83,13 @@ const ScrollableChat = ({ messages }) => {
         seta(false)
         gsap.fromTo(
           "#messageeL", 
-          { x: "-200%" ,duration:0.0001, opacity:0 }, 
-          { x: "0", opacity:1, stagger:0.05, ease: "power3.out", onComplete: () => gsap.set("#messageeL", { clearProps: "transform" }) }
+          { x: "-200%" ,duration:0.0001}, 
+          { x: "0",  stagger:0.05, ease: "power3.out", onComplete: () => gsap.set("#messageeL", { clearProps: "transform" }) }
         );
         gsap.fromTo(
           "#messageeR", 
-          { x: "200%" ,duration:0.0001, opacity:0 }, 
-          { x: "0", opacity:1, stagger:0.05, ease: "power3.out", onComplete: () => gsap.set("#messageeR", { clearProps: "transform" }) }
+          { x: "200%" ,duration:0.0001}, 
+          { x: "0",  stagger:0.05, ease: "power3.out", onComplete: () => gsap.set("#messageeR", { clearProps: "transform" }) }
         );
       }
     }
@@ -88,6 +99,31 @@ const ScrollableChat = ({ messages }) => {
     seta(true)
   },[selectedChat])
 
+  const deleteMessage = async (messageId) => {
+    try{
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      await axios.delete(`/api/Message/${messageId}`,config);
+      toast({
+        title: "Message deleted successfully",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    }catch(error){
+      toast({
+        title: "Failed to delete message",
+        description: error.response.data.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
   
      
 
@@ -97,7 +133,7 @@ const ScrollableChat = ({ messages }) => {
     { messages.length -qq > 0 ? <button style={{width:"50%",padding:"3px 0px",transform:"translateX(50%)", borderRadius:"999px" , backgroundColor:"#48bb78",alignSelf:"center",justifySelf:"center" , color:"white" }} onClick={()=> {messages.length -qq > 10 ?setqq((l)=>l+10) : setqq(messages.length);seta(true)}}>load more</button> : null}
       {vismsg &&
         vismsg.map((m, i) => (
-          <div style={{ display: "flex", position: "relative"}} key={m._id}>
+          <div className="allmsg" style={{ display: "flex", position: "relative"}} key={m._id}>
             {isSameSender(vismsg, m, i, user._id)&& (
               <Tooltip label={m.sender.name} placement="bottom-start" hasArrow>
                 <Avatar
@@ -150,7 +186,7 @@ const ScrollableChat = ({ messages }) => {
               {speakVisible === i && !boling && (
                 <span
                 ref={messageRef}
-                  onClick={() => speakText(m.content)}
+                  onClick={() => speakText(m.content,i)}
                   onMouseEnter={() => {messageRef.current.style.backgroundColor = "green";}}
                   onMouseLeave={() => {messageRef.current.style.backgroundColor = "grey";}}
 
@@ -158,16 +194,39 @@ const ScrollableChat = ({ messages }) => {
                     position: "absolute",
                     left: `${m.sender._id === user._id ? "-50px" : ""}`,
                     right: `${m.sender._id === user._id ? "" : "-50px"}`,
-                    top: "0",
+                    top: "30px",
                     backgroundColor: "grey",
                     color: "white",
                     borderRadius: "5px",
                     padding: "2px 5px",
                     cursor: "pointer",
                     fontSize: "12px",
+                    zIndex:"100",
                   }}
                 >
                   Speak
+                </span>
+              )}
+              {speakVisible === i && m.sender._id === user._id && !boling && (
+                <span
+                ref={messageRef2}
+                  onClick={() => deleteMessage(m._id)}
+                  onMouseEnter={() => {messageRef2.current.style.backgroundColor = "red";}}
+                  onMouseLeave={() => {messageRef2.current.style.backgroundColor = "grey";}}
+                  style={{
+                    position: "absolute",
+                    left: `${m.sender._id === user._id ? "-92px" : ""}`,
+                    right: `${m.sender._id === user._id ? "" : "-92px"}`,
+                    top: "0px",
+                    backgroundColor: "grey",
+                    color: "white",
+                    borderRadius: "5px",
+                    padding: "2px 5px",
+                    cursor: "pointer",
+                    fontSize: "12px"
+                  }}
+                >
+                  Delete For All
                 </span>
               )}
             </span>

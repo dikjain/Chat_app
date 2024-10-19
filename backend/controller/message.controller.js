@@ -56,4 +56,17 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
   }
 });
 
-export { allMessages, sendMessage };
+
+const deleteMessage = expressAsyncHandler(async (req, res) => {
+  try{
+    const { messageId } = req.params;
+    await Message.findByIdAndDelete(messageId);
+    res.status(200).json({ message: "Message deleted successfully" });
+  }catch(error){
+    res.status(400);
+    throw new Error(error.message);
+  }
+});
+
+
+export { allMessages, sendMessage, deleteMessage };
