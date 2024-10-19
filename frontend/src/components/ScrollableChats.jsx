@@ -65,7 +65,11 @@ const ScrollableChat = ({ messages }) => {
   },[messages,qq])
 
   useEffect(()=>{
-    gsap.to("#messagee", {x:0,stagger:0.05,ease: "power3.out"})
+    gsap.to("#messagee", {x:0,stagger:0.05,ease: "power3.out", onComplete: () => {
+      document.querySelectorAll("#messagee").forEach(el => {
+        el.style.transform = "none";
+      });
+    }})
   },[vismsg])
 
   
