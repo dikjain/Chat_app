@@ -14,9 +14,37 @@ const ScrollableChat = ({ messages, setMessages }) => {
   const [speakVisible, setSpeakVisible] = useState(null); // State to control which message has the "Speak" button
   const [boling, setboling] = useState(false); // State to control which message has the "Speak" button
 
+  const { user , setChats , selectedChat } = ChatState();
   const messageRef = useRef(null);
   const messageRef2 = useRef(null);
   const toast = useToast();
+
+  const fetchChats = async () => {
+    // console.log(user._id);
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+
+      const { data } = await axios.get("/api/chat", config);
+      setChats(data);
+    } catch (error) {
+      toast({
+        title: "Error Occured!",
+        description: "Failed to Fetch the chats",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-left",
+      });
+    }
+  };
+
+
+
 
   const speakText = (text,i) => {   
     setboling(true);
@@ -65,7 +93,6 @@ const ScrollableChat = ({ messages, setMessages }) => {
     setSpeakVisible(index === speakVisible ? null : index); // Toggle "Speak" button visibility
   };
 
-  const { user , selectedChat } = ChatState();
   const formatTime = (t) => {
     const date = new Date(t).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }).split('/').map(num => num.padStart(2, '0')).join('/');
     const time = new Date(t).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' }).split(':').map(num => num.padStart(2, '0')).join(':');
@@ -112,9 +139,10 @@ const ScrollableChat = ({ messages, setMessages }) => {
       };
 
       const deleteMessagePromise = axios.post(`/api/Message/delete`, { messageId }, config);
-      const changeLatestMessagePromise = axios.post(`/api/Message/ChangeLatestMessage`, { chatId: selectedChat._id, latestMessage: messages[messages.length-1]._id }, config);
+      const changeLatestMessagePromise = axios.post(`/api/Message/ChangeLatestMessage`, { chatId: selectedChat._id, latestMessage: messageId === messages[messages.length-1]._id ? messages[messages.length-2]._id : messages[messages.length-1]._id }, config);
       await Promise.all([deleteMessagePromise, changeLatestMessagePromise]);
       setMessages(prevMessages => prevMessages.filter(message => message._id !== messageId));
+      fetchChats();
       toast({
         title: "Message deleted successfully",
         status: "success",
