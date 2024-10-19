@@ -90,9 +90,9 @@ function StatusModal({children}) {
       return;
     }
 
-    if(statusContent.text.length > 100){
+    if(statusContent.text.length > 200){
       toast({
-        title: "Maximum 100 characters allowed!",
+        title: "Maximum 200 characters allowed!",
         status: "warning",
       });
       return;
