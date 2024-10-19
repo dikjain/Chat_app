@@ -10,7 +10,7 @@
       },
       expiresAt: { 
         type: Date, 
-        default: () => Date.now() + 60 * 1000, // Set expiration 1 minute in the future
+        default: () => Date.now() + 24 * 60 * 60 * 1000, // Set expiration 1 minute in the future
         expires: 0 // TTL index will work based on the `expiresAt` field value
       },
     },
