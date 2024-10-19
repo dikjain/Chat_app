@@ -59,7 +59,7 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
 
 const deleteMessage = expressAsyncHandler(async (req, res) => {
   try{
-    const { messageId } = req.params;
+    const { messageId } = req.body;
     await Message.findByIdAndDelete(messageId);
     res.status(200).json({ message: "Message deleted successfully" });
   }catch(error){

@@ -6,6 +6,7 @@ import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from "../
 import { ChatState } from "../Context/Chatprovider";
 import "./UserAvatar/Scroll.css";
 import gsap from "gsap";
+import { useToast } from "@chakra-ui/react";
 
 
 const ScrollableChat = ({ messages }) => {
@@ -14,6 +15,7 @@ const ScrollableChat = ({ messages }) => {
 
   const messageRef = useRef(null);
   const messageRef2 = useRef(null);
+  const toast = useToast();
 
   const speakText = (text,i) => {   
     setboling(true);
@@ -107,7 +109,7 @@ const ScrollableChat = ({ messages }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      await axios.delete(`/api/Message/${messageId}`,config);
+      await axios.post(`/api/Message/delete`,{messageId},config);
       toast({
         title: "Message deleted successfully",
         status: "success",
@@ -117,7 +119,7 @@ const ScrollableChat = ({ messages }) => {
     }catch(error){
       toast({
         title: "Failed to delete message",
-        description: error.response.data.message,
+        description: error.response.data,
         status: "error",
         duration: 5000,
         isClosable: true,
