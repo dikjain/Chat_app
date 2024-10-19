@@ -68,5 +68,11 @@ const deleteMessage = expressAsyncHandler(async (req, res) => {
   }
 });
 
+const ChangeLatestMessage = expressAsyncHandler(async (req, res) => {
+  const { chatId , latestMessage } = req.body;
+  await Chat.findByIdAndUpdate(chatId, { latestMessage: latestMessage });
+  res.status(200).json({ message: "Latest message updated successfully" });
+});
 
-export { allMessages, sendMessage, deleteMessage };
+
+export { allMessages, sendMessage, deleteMessage , ChangeLatestMessage };

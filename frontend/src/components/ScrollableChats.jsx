@@ -7,9 +7,10 @@ import { ChatState } from "../Context/Chatprovider";
 import "./UserAvatar/Scroll.css";
 import gsap from "gsap";
 import { useToast } from "@chakra-ui/react";
+import axios from "axios"; // Import axios
 
 
-const ScrollableChat = ({ messages }) => {
+const ScrollableChat = ({ messages, setMessages }) => {
   const [speakVisible, setSpeakVisible] = useState(null); // State to control which message has the "Speak" button
   const [boling, setboling] = useState(false); // State to control which message has the "Speak" button
 
@@ -102,14 +103,18 @@ const ScrollableChat = ({ messages }) => {
   },[selectedChat])
 
   const deleteMessage = async (messageId) => {
-    try{
+    try{      
       const config = {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user.token}`,
         },
       };
-      await axios.post(`/api/Message/delete`,{messageId},config);
+
+      const deleteMessagePromise = axios.post(`/api/Message/delete`, { messageId }, config);
+      const changeLatestMessagePromise = axios.post(`/api/Message/ChangeLatestMessage`, { chatId: selectedChat._id, latestMessage: messages[messages.length-1]._id }, config);
+      await Promise.all([deleteMessagePromise, changeLatestMessagePromise]);
+      setMessages(prevMessages => prevMessages.filter(message => message._id !== messageId));
       toast({
         title: "Message deleted successfully",
         status: "success",
@@ -119,7 +124,7 @@ const ScrollableChat = ({ messages }) => {
     }catch(error){
       toast({
         title: "Failed to delete message",
-        description: error.response.data,
+        description: error?.response?.data?.message || error.message,
         status: "error",
         duration: 5000,
         isClosable: true,
