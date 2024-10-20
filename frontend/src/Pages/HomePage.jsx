@@ -16,14 +16,6 @@ import Signup from "../components/Authentication/Signup";
 function Homepage() {
   const [minH, setMinH] = useState("50vh"); // Initially set to 40vh for Login
 
-  const handleTabChange = (index) => {
-    // Change the minHeight based on the selected tab
-    if (index === 0) {
-      setMinH("50vh"); // Login tab
-    } else if (index === 1) {
-      setMinH("70vh"); // Sign Up tab
-    }
-  };
 
   const navigate = useNavigate();
 
@@ -53,7 +45,7 @@ function Homepage() {
       <Box 
       id="liooo"
         bg="black" // Black background for the container
-        h={minH}
+        h={"fit-content"}
         overflow={"hidden"}
         w="100%"
         p={4}
@@ -61,7 +53,7 @@ function Homepage() {
         borderWidth="1px"
         boxShadow="0 0 20px 1px rgba(0, 255, 0, 0.7)" // Green box shadow
       >
-        <Tabs isFitted variant="soft-rounded" onChange={handleTabChange}>
+        <Tabs isFitted variant="soft-rounded">
           <TabList mb="1em">
             <Tab color="green.400" _selected={{ boxShadow:"0 0 8px 2px rgba(0, 255, 0, 0.7)",border:"1px #00ff00 solid", color: "white", bg: "green.400" }}>
               Login

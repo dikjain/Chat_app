@@ -63,9 +63,18 @@ const ScrollableChat = ({ messages, setMessages }) => {
         document.querySelectorAll(".allmsg").forEach(el => {
           el.style.opacity = "1";
         });
+      utterance.addEventListener('end', () => {
+        setboling(false);
+        document.querySelectorAll(".allmsg").forEach(el => {
+          el.style.opacity = "1";
+        });
+      });
       };
       setTimeout(() => {
-        if(setboling) setboling(false)
+        setboling(false);
+        document.querySelectorAll(".allmsg").forEach(el => {
+          el.style.opacity = "1";
+        });
       }, 7500);
       
       speechSynthesis.cancel();
@@ -89,7 +98,6 @@ const ScrollableChat = ({ messages, setMessages }) => {
     setTimeout(()=>{
       setSpeakVisible(null)
     },3000)
-
     setSpeakVisible(index === speakVisible ? null : index); // Toggle "Speak" button visibility
   };
 
@@ -102,8 +110,12 @@ const ScrollableChat = ({ messages, setMessages }) => {
   const [vismsg, setvismsg] = useState(null)
   const [qq, setqq] = useState(15)
   useEffect(()=>{
-    setvismsg(messages.slice(messages.length-qq,messages.length))
-  },[messages,qq])
+    if (messages.length < 16) {
+      setvismsg(messages);
+    } else {
+      setvismsg(messages.slice(messages.length-qq,messages.length));
+    }
+  },[messages,qq , selectedChat])
 
   const [a,seta] = useState(false)
 
