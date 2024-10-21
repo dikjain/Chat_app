@@ -171,7 +171,6 @@ const generateContents = async (prompt) => {
           setFetchAgain((prevFetchAgain) => !prevFetchAgain);
           getmessages();
           sound.play();
-          setMsgaaya(true);
 
         }
       } else {
