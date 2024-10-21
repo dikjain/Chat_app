@@ -170,9 +170,11 @@ const MyChats = ({ fetchAgain }) => {
                 {chat.latestMessage && (
                   <Text className="yo" transform={"translateY(200px)"} opacity={0} fontSize="xs" color={ selectedChat ? (selectedChat._id === chat._id ? "white" : "black") : "black"}>
                     <b>{chat.latestMessage.sender.name} : </b>
-                    {chat.latestMessage.content.length > 50
-                      ? chat.latestMessage.content.substring(0, 51) + "..."
-                      : chat.latestMessage.content}
+                    {chat.latestMessage.content 
+                      ? (chat.latestMessage.content.length > 50
+                        ? chat.latestMessage.content.substring(0, 51) + "..."
+                        : chat.latestMessage.content)
+                      : "File"}
                   </Text>
                 )}
               </Box>

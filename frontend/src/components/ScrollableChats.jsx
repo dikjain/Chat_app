@@ -224,11 +224,33 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
                 position: "relative",
                 zIndex:"50",
                 color:"black",
+                display:"flex",
+                alignItems:"center",
+                justifyContent:"center",
+                flexDirection:"column"
                 
               }}
               >
               {selectedChat.isGroupChat && <span style={{fontWeight:"bold", color:"#48bb78"}}>{m.sender._id === user._id ? "" : m.sender.name + " : "}</span>} 
-              {m.content}
+              {m.content ? m.content : (
+                <div 
+                onClick={() => window.open(m.file, "_blank")}
+                style={{
+                  height: "100px",
+                  width: "100px",
+                  backgroundColor: "#f0f0f0",
+                  display: "flex",
+                  alignItems: "end",
+                  justifyContent: "center",
+                  borderRadius: "10px",
+                  backgroundImage: `url(${m.file}) `,
+                  opacity: 0.8,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center"
+                }}>
+                </div>
+              )}
+              <text style={{ fontSize:"10px",fontWeight:"semibold",color:"black"}}>{m.file && m.file.split("/").pop()}</text>
               
               <span
               style={{
@@ -243,7 +265,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
               className={`yotem ${m.sender._id === user._id ? "raayit" : "lefat" }`}
               >{formatTime(m.createdAt).slice(0, 9) === todayIST?`${Number(formatTime(m.createdAt).slice(13,15)) >9 ?  formatTime(m.createdAt).slice(13,17) + formatTime(m.createdAt).slice(20,24) : formatTime(m.createdAt).slice(13,17) + formatTime(m.createdAt).slice(20,24)}`: `${Number(formatTime(m.createdAt).slice(11,14)) >9 ? formatTime(m.createdAt).slice(0,9) +" -"+   formatTime(m.createdAt).slice(11,17) + formatTime(m.createdAt).slice(20,23) :formatTime(m.createdAt).slice(0,11) +  formatTime(m.createdAt).slice(11,16) + formatTime(m.createdAt).slice(19,24)}`}
                </span>
-              {speakVisible === i && !boling && (
+              {m.content && speakVisible === i && !boling && (
                 <span
                 ref={messageRef}
                   onClick={() => speakText(m.content,i)}

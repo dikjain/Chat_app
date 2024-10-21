@@ -18,7 +18,7 @@ export const isSameSenderMargin = (messages, m, i, userId) => {
   };
   
   export const isSameSender = (messages, m, i, userId) => {
-    if(i === 0) return true;
+    if(i === 0 && messages[0].sender._id !== userId) return true;
     return (
       i > 0 &&
       i <= messages.length - 1 &&

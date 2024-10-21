@@ -292,43 +292,43 @@ const generateContents = async (prompt) => {
       window.recognition.stop();
     }
   }; 
-  
-  // const postDetails = (file) => {
-  //   if (file === undefined) {
-  //     toast({
-  //       title: "Please Select a File!",
-  //       status: "warning",
-  //       duration: 5000,
-  //       isClosable: true,
-  //       position: "bottom",
-  //     });
-  //     return;
-  //   }
-  
-  //   // No longer restrict to image/jpeg or image/png, allow all file types
-  //   const data = new FormData();
-  //   data.append("file", file);
-  //   data.append("upload_preset", "chat-app"); // Your upload preset for file upload
-  //   data.append("cloud_name", "ddtkuyiwb"); // Your Cloudinary cloud name
-  
-  //   fetch("https://api.cloudinary.com/v1_1/ddtkuyiwb/raw/upload", {
-  //     method: "post",
-  //     body: data,
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       console.log(data.url.toString());
-        
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
 
-  const handleFileUpload = async () => {
-    console.log("File upload clicked");
-  };
+  const handleFileUpload = async (e) => {
+    return new Promise((resolve, reject) => {
+      const inputElement = document.createElement('input');
+      inputElement.type = 'file';
+      inputElement.accept = 'image/*,audio/*,application/pdf';
+      inputElement.onchange = async (e) => {
+        let file = e.target.files[0];
+        if (file) {
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('chatId', selectedChat._id);
+          formData.append('sender', user._id);
   
+          try {
+            const response = await axios.post('/api/message/upload', formData , {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${user.token}`
+              }
+            });
+            resolve(response.data);
+            socket.emit("new file message", response.data);
+            setMessages((prevMessages) => [...prevMessages, response.data]);
+            setMsgaaya(true);
+            const iop = await axios.get("/api/chat", config);        
+            setChats(iop.data);
+            setsent(false);
+          } catch (error) {
+            reject(error.message);
+          }
+        }
+      };
+  
+      inputElement.click();
+    });
+  };
 
   useEffect(()=>{
     gsap.fromTo("#msgdabba", {boxShadow: "0px 0px 10px 15px green"}, {boxShadow: "0px 0px 10px 5px green", duration: 1.5, ease: "power1.out"});

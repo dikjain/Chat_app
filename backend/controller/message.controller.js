@@ -24,8 +24,8 @@ const allMessages = expressAsyncHandler(async (req, res) => {
 //@access          Protected
 const sendMessage = expressAsyncHandler(async (req, res) => {
   
-  const { content, chatId , file } = req.body;
-
+  const { content, chatId  } = req.body;
+  const file = req.fileMessage;
   if (!content || !chatId) {
     return res.sendStatus(400);
   }
@@ -34,11 +34,11 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
     sender: req.user._id,
     content: content,
     chat: chatId,
-    file: file !== undefined ? file : null
+    file: null
   };
 
   try {
-
+    
     var message = await Message.create(newMessage);
 
     message = await message.populate("sender", "name pic")
@@ -49,6 +49,38 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
     });
 
     await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
+
+    res.json(message);
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+});
+
+const sendFileMessage = expressAsyncHandler(async (req, res) => {
+  
+  const { chatId, sender, filename, filepath, size, type, timestamp } = req.fileMessage;
+
+  if (!filepath || !chatId) {
+    return res.sendStatus(400);
+  }
+  var newMessage = {
+    sender: sender,
+    content: null,
+    chat: chatId,
+    file: filepath // This should be a string, not an object
+  };
+  try {
+    var message = await Message.create(newMessage);
+    
+    message = await message.populate("sender", "name pic")
+    message = await message.populate("chat")
+    message = await User.populate(message, {
+      path: "chat.users",
+      select: "name pic email",
+    });
+
+    await Chat.findByIdAndUpdate(chatId, { latestMessage: message });
 
     res.json(message);
   } catch (error) {
@@ -76,4 +108,4 @@ const ChangeLatestMessage = expressAsyncHandler(async (req, res) => {
 });
 
 
-export { allMessages, sendMessage, deleteMessage , ChangeLatestMessage };
+export { allMessages, sendMessage, deleteMessage , ChangeLatestMessage , sendFileMessage };
