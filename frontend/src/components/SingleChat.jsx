@@ -170,8 +170,6 @@ const generateContents = async (prompt) => {
           setNotification([newMessageRecieved, ...notification]);
           setFetchAgain((prevFetchAgain) => !prevFetchAgain);
           getmessages();
-          sound.play();
-
         }
       } else {
          getmessages();
@@ -179,7 +177,20 @@ const generateContents = async (prompt) => {
         setMsgaaya(true);
       }
     });
-  }, [setFetchAgain]);
+  }, [setFetchAgain,notification]);
+
+  useEffect(()=>{
+    socket.on("message recieved", (newMessageRecieved) => {
+    if (
+      !selectedChatCompare || // if chat is not selected or doesn't match current chat
+      selectedChatCompare._id !== newMessageRecieved.chat._id
+    ) {
+      if (!notification.includes(newMessageRecieved)) {
+        sound.play();
+      }
+      }
+    });
+  },[notification]);
 
 
   const typingHandler =((e) => {
