@@ -24,7 +24,7 @@ const allMessages = expressAsyncHandler(async (req, res) => {
 //@access          Protected
 const sendMessage = expressAsyncHandler(async (req, res) => {
   
-  const { content, chatId } = req.body;
+  const { content, chatId , file } = req.body;
 
   if (!content || !chatId) {
     return res.sendStatus(400);
@@ -34,6 +34,7 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
     sender: req.user._id,
     content: content,
     chat: chatId,
+    file: file !== undefined ? file : null
   };
 
   try {
