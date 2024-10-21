@@ -148,7 +148,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
         { x: "0", scale: 1 , duration:0.8, ease: "elastic.out(1, 0.7)", onComplete: () => gsap.set(`.messagee${newestMessage._id}`, { clearProps: "transform" }) }
       );
       setMsgaaya(false);
-      },20)
+      },1)
     }
   }, [messages, msgaaya, user._id]);
 
