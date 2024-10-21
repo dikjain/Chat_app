@@ -17,6 +17,7 @@ import {gsap} from "gsap"
 import io from "socket.io-client";
 import UpdateGroupChatModal from "../UpdateGroupChatmodal";
 import { ChatState } from "../Context/Chatprovider";
+import { FiFile } from "react-icons/fi"; // Importing file icon from react-icons
 const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
 var socket, selectedChatCompare;
 
@@ -33,6 +34,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const inputRef = useRef(null);
   const [aiMessage, setAIMessage] = useState("");
   const [aiTyping, setAITyping] = useState(false);
+  const [msgaaya , setMsgaaya] = useState(false);
 
 
 //api
@@ -113,6 +115,7 @@ const generateContents = async (prompt) => {
         );
         socket.emit("new message", data);
         setMessages((prevMessages) => [...prevMessages, data]);
+        setMsgaaya(true);
         const iop = await axios.get("/api/chat", config);        
         setChats(iop.data);
         setsent(false);
@@ -168,14 +171,16 @@ const generateContents = async (prompt) => {
           setFetchAgain((prevFetchAgain) => !prevFetchAgain);
           getmessages();
           sound.play();
+          setMsgaaya(true);
 
         }
       } else {
          getmessages();
         setMessages((prevMessages) => [...prevMessages, newMessageRecieved]);
+        setMsgaaya(true);
       }
     });
-  }, [notification, setFetchAgain]);
+  }, [setFetchAgain]);
 
 
   const typingHandler =((e) => {
@@ -240,6 +245,8 @@ const generateContents = async (prompt) => {
       }
     };
 
+
+
     recognition.onerror = (event) => {
       console.error("Error occurred in recognition:", event.error);
       if (event.error === "aborted") {
@@ -275,6 +282,11 @@ const generateContents = async (prompt) => {
       window.recognition.stop();
     }
   };    
+
+  const handleFileUpload = () => {
+    console.log("File upload clicked");
+    
+  };
 
   useEffect(()=>{
     gsap.fromTo("#msgdabba", {boxShadow: "0px 0px 10px 15px green"}, {boxShadow: "0px 0px 10px 5px green", duration: 1.5, ease: "power1.out"});
@@ -356,7 +368,7 @@ const generateContents = async (prompt) => {
               />
             ) : (
               <div style={{position:"relative", overflowX:"hidden" , maxWidth:"100%"}} className="messages" >
-                <ScrollableChat messages={messages} setMessages={setMessages} />
+                <ScrollableChat msgaaya={msgaaya} setMsgaaya={setMsgaaya} messages={messages} setMessages={setMessages} />
               </div>
             )}
 
@@ -383,7 +395,21 @@ const generateContents = async (prompt) => {
                   height={"fit-content"}
                   
                 />
-                <Input
+                <IconButton
+                  icon={<FiFile />} // Using file icon from react-icons
+                  size="sm"
+                  variant="outline"
+                  colorScheme="teal"
+                  aria-label="Upload File"
+                  height={"40px"}
+                  padding={"0px"}
+                  margin={"0px"}
+                  bg={"#48bb78"}
+                  ml={2}
+                  _hover={{}}
+                  onClick={handleFileUpload}
+                />
+                <Input                
                   variant="filled"
                   bg="#E0E0E0"
                   color={"#48bb78"}

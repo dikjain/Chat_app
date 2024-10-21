@@ -10,7 +10,7 @@ import { useToast } from "@chakra-ui/react";
 import axios from "axios"; // Import axios
 
 
-const ScrollableChat = ({ messages, setMessages }) => {
+const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
   const [speakVisible, setSpeakVisible] = useState(null); // State to control which message has the "Speak" button
   const [boling, setboling] = useState(false); // State to control which message has the "Speak" button
 
@@ -42,9 +42,6 @@ const ScrollableChat = ({ messages, setMessages }) => {
       });
     }
   };
-
-
-
 
   const speakText = (text,i) => {   
     setboling(true);
@@ -125,13 +122,13 @@ const ScrollableChat = ({ messages, setMessages }) => {
         seta(false)
         gsap.fromTo(
           "#messageeL", 
-          { x: "-200%" ,duration:0.0001}, 
-          { x: "0",  stagger:0.05, ease: "power3.out", onComplete: () => gsap.set("#messageeL", { clearProps: "transform" }) }
+          { x: "-200%" , scale:0.1,duration:0.01}, 
+          { x: "0",scale:1,   stagger:0.1, ease: "elastic.out(1,0.7)", onComplete: () => gsap.set("#messageeL", { clearProps: "transform" }) }
         );
         gsap.fromTo(
           "#messageeR", 
-          { x: "200%" ,duration:0.0001}, 
-          { x: "0",  stagger:0.05, ease: "power3.out", onComplete: () => gsap.set("#messageeR", { clearProps: "transform" }) }
+          { x: "200%" , scale:0.1,duration:0.0001}, 
+          { x: "0", scale:1,  stagger:0.1, ease: "elastic.out(1,0.7)", onComplete: () => gsap.set("#messageeR", { clearProps: "transform" }) }
         );
       }
     }
@@ -140,6 +137,20 @@ const ScrollableChat = ({ messages, setMessages }) => {
   useEffect(()=>{
     seta(true)
   },[selectedChat])
+
+  useEffect(() => {
+    if (messages.length > 0 && msgaaya) {
+      const newestMessage = messages[messages.length - 1];
+      setTimeout(()=>{
+      gsap.fromTo(
+        `.messagee${newestMessage._id}`,
+        { x: newestMessage.sender._id === user._id ? "200%" : "-200%", scale: 0.1, duration: 0.01 },
+        { x: "0", scale: 1 , duration:0.8, ease: "elastic.out(1, 0.7)", onComplete: () => gsap.set(`.messagee${newestMessage._id}`, { clearProps: "transform" }) }
+      );
+      setMsgaaya(false);
+      },20)
+    }
+  }, [messages, msgaaya, user._id]);
 
   const deleteMessage = async (messageId) => {
     try{      
@@ -185,7 +196,8 @@ const ScrollableChat = ({ messages, setMessages }) => {
               <Tooltip label={m.sender.name} placement="bottom-start" hasArrow>
                 <Avatar
                 transition="none"
-                id={`messagee${m.sender._id === user._id ? "R" : "L"}`}       
+                className={`messagee${m._id}`}
+                id={`messagee${m.sender._id === user._id ? "R" : "L"}`}   
                   mt="7px"
                   mr={1}
                   size="sm"
@@ -198,6 +210,7 @@ const ScrollableChat = ({ messages, setMessages }) => {
             <span
               onClick={() => handleTextClick(i)} // Click event to show/hide "Speak" button
               id={`messagee${m.sender._id === user._id ? "R" : "L"}`}
+              className={`messagee${m._id}`}
               style={{
                 transition:"none",
                 backgroundColor: `${m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0"}`,
