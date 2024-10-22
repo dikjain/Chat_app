@@ -314,7 +314,7 @@ const generateContents = async (prompt) => {
               }
             });
             resolve(response.data);
-            socket.emit("new file message", response.data);
+            socket.emit("new message", response.data);
             setMessages((prevMessages) => [...prevMessages, response.data]);
             setMsgaaya(true);
             const iop = await axios.get("/api/chat", config);        
