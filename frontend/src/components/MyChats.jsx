@@ -13,6 +13,7 @@ import io from "socket.io-client";
 const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
+import { FaVideo } from "react-icons/fa";
 
 
 
@@ -21,7 +22,7 @@ const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
   const [onlinepeople ,setonlinepeople] = useState([]) 
 
-  const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
+  const { selectedChat, setSelectedChat, user, chats, setChats , a , chatsVideo } = ChatState();
 
   const toast = useToast();
 
@@ -58,10 +59,6 @@ const MyChats = ({ fetchAgain }) => {
     Socket.on("onlineUsers",(dat)=>{
       setonlinepeople(dat)
     },[])
-
-
-
-
 
     Socket.on("detailde",()=>{
       Socket.emit("dedi",user)
@@ -141,7 +138,7 @@ const MyChats = ({ fetchAgain }) => {
             chats.map((chat) => (
               <Box
               className="chat"
-              onClick={() => setSelectedChat(chat)}
+              onClick={selectedChat ? () => !a && setSelectedChat(chat) : () => setSelectedChat(chat)}
               cursor="pointer"
               bg={selectedChat ? (selectedChat._id === chat._id ? "#48bb78" : "#E8E8E8") : "#E8E8E8"}
                 boxShadow={selectedChat ? (selectedChat._id === chat._id ? "green 0px 0px 12px 5px" : "green 0px 0px 7px 2px") : "green 0px 0px 7px 2px"}
@@ -176,6 +173,10 @@ const MyChats = ({ fetchAgain }) => {
                         : chat.latestMessage.content)
                       : "File"}
                   </Text>
+                )}
+
+                {chatsVideo.some(videouser => videouser.selectedChat._id === chat._id) && (
+                  <FaVideo style={{ position: "absolute", right: "40px", top: "50%", transform: "translateY(-50%)", color: "green" }} />
                 )}
               </Box>
             ))

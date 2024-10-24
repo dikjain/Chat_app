@@ -2,7 +2,7 @@ import { FormControl } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Box, Text } from "@chakra-ui/layout";
 import "./style.css";
-import { IconButton, Spinner, useToast, Button } from "@chakra-ui/react";
+import { IconButton, Spinner, useToast, Button, Avatar } from "@chakra-ui/react";
 import { getSender, getSenderFull } from "../configs/ChatLogics";
 import { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
@@ -12,16 +12,18 @@ import ScrollableChat from "./ScrollableChats";
 // import Lottie from "react-lottie";
 // import animationData from "../animations/typing.json";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import {gsap} from "gsap"
+import { gsap } from "gsap";
+import { FiFile } from "react-icons/fi"; // Importing file icon from react-icons
+import { FaVideo } from "react-icons/fa"; // Importing video icon from react-icons
+import { useNavigate } from "react-router-dom"; // Importing useNavigate from react-router-dom
 
 import io from "socket.io-client";
 import UpdateGroupChatModal from "../UpdateGroupChatmodal";
 import { ChatState } from "../Context/Chatprovider";
-import { FiFile } from "react-icons/fi"; // Importing file icon from react-icons
 const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
 var socket, selectedChatCompare;
 
-import Notification from "../assets/notification.mp3"
+import Notification from "../assets/notification.mp3";
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
@@ -34,31 +36,32 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const inputRef = useRef(null);
   const [aiMessage, setAIMessage] = useState("");
   const [aiTyping, setAITyping] = useState(false);
-  const [msgaaya , setMsgaaya] = useState(false);
+  const [msgaaya, setMsgaaya] = useState(false);
+  const navigate = useNavigate(); // Initializing useNavigate
 
+  //api
+  const generateContents = async (prompt) => {
+    try {
+      setAITyping(true);
+      const genAI = new GoogleGenerativeAI("AIzaSyBp2UduAnIpMswiu8JYu3uMX5F3fcFtVL0");
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const result = await model.generateContent(
+        "hey complete this message and give me message only without any other text, message and make sure to complete it in a way that it seems like a message from the user and reply in the same language as the user's message ,here is the message : " +
+          prompt
+      );
+      setAIMessage(result.response.text());
+      setAITyping(false);
+    } catch (error) {
+      setAITyping(false);
+    }
+  };
 
-//api
-const generateContents = async (prompt) => {
-  try{
-  setAITyping(true);
-  const genAI = new GoogleGenerativeAI("AIzaSyBp2UduAnIpMswiu8JYu3uMX5F3fcFtVL0");
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const result = await model.generateContent("hey complete this message and give me message only without any other text, message and make sure to complete it in a way that it seems like a message from the user and reply in the same language as the user's message ,here is the message : " + prompt);
-  setAIMessage(result.response.text());
-  setAITyping(false);
-  }catch(error){
-    setAITyping(false);
-  }
-}
-
-//api
-  const sound = new Audio(Notification)
-  const { selectedChat, setSelectedChat, setChats, user, notification, setNotification } =
-    ChatState();
+  //api
+  const sound = new Audio(Notification);
+  const { selectedChat, setSelectedChat, setChats, user, notification, setNotification , setVideocall  ,setIsOneOnOneCall , videoCallUser, setVideoCallUser , setChatsVideo } = ChatState();
 
   const fetchMessages = useCallback(async () => {
     if (!selectedChat) return;
-
     try {
       const config = {
         headers: {
@@ -68,15 +71,11 @@ const generateContents = async (prompt) => {
 
       setLoading(true);
 
-      const { data } = await axios.get(
-        `/api/message/${selectedChat._id}`,
-        config
-      );
+      const { data } = await axios.get(`/api/message/${selectedChat._id}`, config);
       setMessages(data);
       setLoading(false);
-      // const iol = await axios.get("/api/chat", config);        
+      // const iol = await axios.get("/api/chat", config);
       // setChats(iol.data);
-      
 
       socket.emit("join chat", selectedChat._id);
     } catch (error) {
@@ -91,7 +90,6 @@ const generateContents = async (prompt) => {
     }
   }, [selectedChat, setChats, toast, user.token]);
 
-  
   const config = {
     headers: {
       "Content-type": "application/json",
@@ -116,7 +114,7 @@ const generateContents = async (prompt) => {
         socket.emit("new message", data);
         setMessages((prevMessages) => [...prevMessages, data]);
         setMsgaaya(true);
-        const iop = await axios.get("/api/chat", config);        
+        const iop = await axios.get("/api/chat", config);
         setChats(iop.data);
         setsent(false);
       } catch (error) {
@@ -141,11 +139,12 @@ const generateContents = async (prompt) => {
     }
   };
 
-  const getmessages = async()=>{
-    const iol = await axios.get("/api/chat", config);        
+  const getmessages = async () => {
+    const iol = await axios.get("/api/chat", config);
     setChats(iol.data);
-  }
+  };
 
+  
   useEffect(() => {
     socket = io(ENDPOINT);
     socket.emit("setup", user);
@@ -154,11 +153,48 @@ const generateContents = async (prompt) => {
       socket.disconnect();
     };
   }, [user]);
-
+  
   useEffect(() => {
     fetchMessages();
     selectedChatCompare = selectedChat;
   }, [selectedChat, fetchMessages]);
+  
+  useEffect(() => {
+    socket.emit('koihai');
+  
+    const handleVideoCallUsers = (newMessageReceived) => {
+      
+      if (newMessageReceived.length > 0) {
+        const updatedVideoCallUsers = newMessageReceived.filter(
+          users => users.user._id !== user._id
+        );
+        if (updatedVideoCallUsers.length > 0) {
+          setVideoCallUser(updatedVideoCallUsers);
+        }else{
+          setVideoCallUser([]);
+        }
+      }
+    };
+  
+    const handleJoin = (newMessageReceived) => {
+      setVideoCallUser(newMessageReceived);
+    };
+  
+    const handleLeave = (newMessageReceived) => {
+      setVideoCallUser(newMessageReceived);
+    };
+  
+    socket.on('videoCallUsers', handleVideoCallUsers);
+    socket.on('join_hua', handleJoin);
+    socket.on('leave_hua', handleLeave);
+  
+    // Cleanup function to remove socket listeners
+    return () => {
+      socket.off('videoCallUsers', handleVideoCallUsers);
+      socket.off('join_hua', handleJoin);
+      socket.off('leave_hua', handleLeave);
+    };
+  }, []);
 
   useEffect(() => {
     socket.on("message recieved", (newMessageRecieved) => {
@@ -172,40 +208,38 @@ const generateContents = async (prompt) => {
           getmessages();
         }
       } else {
-         getmessages();
+        getmessages();
         setMessages((prevMessages) => [...prevMessages, newMessageRecieved]);
         setMsgaaya(true);
       }
     });
-  }, [setFetchAgain,notification]);
+  }, [setFetchAgain, notification]);
 
-  useEffect(()=>{
+  useEffect(() => {
     socket.on("message recieved", (newMessageRecieved) => {
-    if (
-      !selectedChatCompare || // if chat is not selected or doesn't match current chat
-      selectedChatCompare._id !== newMessageRecieved.chat._id
-    ) {
-      if (!notification.includes(newMessageRecieved)) {
-        sound.play();
-      }
+      if (
+        !selectedChatCompare || // if chat is not selected or doesn't match current chat
+        selectedChatCompare._id !== newMessageRecieved.chat._id
+      ) {
+        if (!notification.includes(newMessageRecieved)) {
+          sound.play();
+        }
       }
     });
-  },[notification]);
+  }, [notification]);
 
-
-  const typingHandler =((e) => {
-    
-    if(e.target.value.length == 0){
+  const typingHandler = (e) => {
+    if (e.target.value.length == 0) {
       setAIMessage("");
     }
-    if(!aiTyping){
+    if (!aiTyping) {
       generateContents(e.target.value);
-    } 
+    }
     setNewMessage(e.target.value);
-  });
+  };
 
   const toggleSpeechRecognition = () => {
-    if (!('webkitSpeechRecognition' in window)) {
+    if (!("webkitSpeechRecognition" in window)) {
       toast({
         title: "Speech Recognition Not Supported",
         description: "Your browser does not support speech recognition.",
@@ -244,9 +278,9 @@ const generateContents = async (prompt) => {
       }
 
       const currentTranscript = finalTranscript + interimTranscript;
-      
+
       // Fix: append only the new transcript to newMessage
-      const updatedMessage = newMessage + currentTranscript; 
+      const updatedMessage = newMessage + currentTranscript;
       setNewMessage(updatedMessage.trim());
 
       // Ensure caret moves with the text
@@ -254,8 +288,6 @@ const generateContents = async (prompt) => {
         inputRef.current.scrollLeft = inputRef.current.scrollWidth;
       }
     };
-
-
 
     recognition.onerror = (event) => {
       console.error("Error occurred in recognition:", event.error);
@@ -291,33 +323,33 @@ const generateContents = async (prompt) => {
     if (window.recognition) {
       window.recognition.stop();
     }
-  }; 
+  };
 
   const handleFileUpload = async (e) => {
     return new Promise((resolve, reject) => {
-      const inputElement = document.createElement('input');
-      inputElement.type = 'file';
-      inputElement.accept = 'image/*,audio/*,application/pdf';
+      const inputElement = document.createElement("input");
+      inputElement.type = "file";
+      inputElement.accept = "image/*,audio/*,application/pdf";
       inputElement.onchange = async (e) => {
         let file = e.target.files[0];
         if (file) {
           const formData = new FormData();
-          formData.append('file', file);
-          formData.append('chatId', selectedChat._id);
-          formData.append('sender', user._id);
-  
+          formData.append("file", file);
+          formData.append("chatId", selectedChat._id);
+          formData.append("sender", user._id);
+
           try {
-            const response = await axios.post('/api/message/upload', formData , {
+            const response = await axios.post("/api/message/upload", formData, {
               headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${user.token}`
-              }
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${user.token}`,
+              },
             });
             resolve(response.data);
             socket.emit("new message", response.data);
             setMessages((prevMessages) => [...prevMessages, response.data]);
             setMsgaaya(true);
-            const iop = await axios.get("/api/chat", config);        
+            const iop = await axios.get("/api/chat", config);
             setChats(iop.data);
             setsent(false);
           } catch (error) {
@@ -325,20 +357,32 @@ const generateContents = async (prompt) => {
           }
         }
       };
-  
+
       inputElement.click();
     });
   };
 
-  useEffect(()=>{
-    gsap.fromTo("#msgdabba", {boxShadow: "0px 0px 10px 15px green"}, {boxShadow: "0px 0px 10px 5px green", duration: 1.5, ease: "power1.out"});
-  },[selectedChat]);
+  const handleVideoCall = () => {
+    navigate(`/videocall/${selectedChat._id}`);
+  };
+
+  useEffect(() => {
+      setChatsVideo(videoCallUser);
+  }, [videoCallUser]);
+
+  useEffect(() => {
+    gsap.fromTo(
+      "#msgdabba",
+      { boxShadow: "0px 0px 10px 15px green" },
+      { boxShadow: "0px 0px 10px 5px green", duration: 1.5, ease: "power1.out" }
+    );
+  }, [selectedChat]);
 
   return (
     <>
       {selectedChat ? (
         <>
-          <Text
+          <Box
             fontSize={{ base: "28px", md: "30px" }}
             pb={3}
             px={2}
@@ -357,22 +401,37 @@ const generateContents = async (prompt) => {
             {messages &&
               (!selectedChat.isGroupChat ? (
                 <>
-                  {getSender(user, selectedChat.users)}
-                  <ProfileModal
-                     profileUser={getSenderFull(user, selectedChat.users)}
-                  />
+                  <Box display="flex" color={"#48bb78"} gap={4} alignItems="center">
+                    {getSender(user, selectedChat.users).length > 7 && window.innerWidth < 550 ? (
+                      <Avatar size="sm" border={"1px solid #48bb78"} name={getSender(user, selectedChat.users)} src={getSenderFull(user, selectedChat.users).pic} />
+                    ) : (
+                      getSender(user, selectedChat.users)
+                    )}
+                    <ProfileModal profileUser={getSenderFull(user, selectedChat.users)} />
+                  </Box>
                 </>
               ) : (
                 <>
-                  {selectedChat.chatName.toUpperCase()}
-                  <UpdateGroupChatModal
-                    fetchMessages={fetchMessages}
-                    fetchAgain={fetchAgain}
-                    setFetchAgain={setFetchAgain}
-                  />
+                  <Box display="flex" color={"#48bb78"} gap={4} alignItems="center">
+                    {selectedChat.chatName.toUpperCase()}
+                    <UpdateGroupChatModal
+                      fetchMessages={fetchMessages}
+                      fetchAgain={fetchAgain}
+                      setFetchAgain={setFetchAgain}
+                    />
+                  </Box>
                 </>
               ))}
-          </Text>
+              <IconButton
+                icon={<FaVideo />}
+                size="sm"
+                aria-label="Start Video Call"
+                onClick={() => {setVideocall(true); selectedChat.isGroupChat ? setIsOneOnOneCall(false) : setIsOneOnOneCall(true); handleVideoCall()}}
+              /> 
+              {videoCallUser && videoCallUser.map((u,i) => (selectedChat._id == u.selectedChat._id &&
+              <img key={i} src={u.user.pic}  alt="User" style={{ position: "absolute",backgroundColor:"black", borderRadius: "50%", width: "20px",border: "0.5px solid #48bb78", height: "20px", transform: `translateX(${-70*i}%)`, right: "60px" }} />
+              ))}
+          </Box>
           <Box
             id="msgdabba"
             display="flex"
@@ -380,7 +439,7 @@ const generateContents = async (prompt) => {
             justifyContent="flex-end"
             p={3}
             border={"2px solid #48bb78"}
-            boxShadow={"0px 0px 10px 5px green"}  
+            boxShadow={"0px 0px 10px 5px green"}
             bg="#020202"
             w="100%"
             h="100%"
@@ -389,7 +448,7 @@ const generateContents = async (prompt) => {
           >
             {loading ? (
               <Spinner
-              borderRadius={"999px"}
+                borderRadius={"999px"}
                 size="xl"
                 w={10}
                 h={10}
@@ -398,31 +457,29 @@ const generateContents = async (prompt) => {
                 backgroundColor={"#48bb78"}
                 _before={{
                   content: '""',
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  borderRadius: '50%',
-                  width: '90%',
-                  height: '90%',
-                  backgroundColor: 'black',
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  borderRadius: "50%",
+                  width: "90%",
+                  height: "90%",
+                  backgroundColor: "black",
                 }}
               />
             ) : (
-              <div style={{position:"relative", overflowX:"hidden" , maxWidth:"100%"}} className="messages" >
+              <div style={{ position: "relative", overflowX: "hidden", maxWidth: "100%" }} className="messages">
                 <ScrollableChat msgaaya={msgaaya} setMsgaaya={setMsgaaya} messages={messages} setMessages={setMessages} />
               </div>
             )}
 
-            <FormControl
-              onKeyDown={sendMessage}
-              id="first-name"
-              isRequired
-              mt={3}
-            >
-               <Box display="flex" alignItems="center" mt={"20px"} pos="relative">
+            <FormControl onKeyDown={sendMessage} id="first-name" isRequired mt={3}>
+              <Box display="flex" alignItems="center" mt={"20px"} pos="relative">
                 <Input
-                  onClick={()=>{setNewMessage(aiMessage); setAIMessage("");}}
+                  onClick={() => {
+                    setNewMessage(aiMessage);
+                    setAIMessage("");
+                  }}
                   zIndex={"50"}
                   // h="70%"
                   variant="filled"
@@ -435,7 +492,6 @@ const generateContents = async (prompt) => {
                   readOnly
                   cursor={"pointer"}
                   height={"fit-content"}
-                  
                 />
                 <IconButton
                   icon={<FiFile />} // Using file icon from react-icons
@@ -451,7 +507,7 @@ const generateContents = async (prompt) => {
                   _hover={{}}
                   onClick={handleFileUpload}
                 />
-                <Input                
+                <Input
                   variant="filled"
                   bg="#E0E0E0"
                   color={"#48bb78"}
@@ -460,11 +516,7 @@ const generateContents = async (prompt) => {
                   onChange={typingHandler}
                   ref={inputRef}
                 />
-                <Button
-                  onClick={toggleSpeechRecognition}
-                  colorScheme={isListening ? "red" : "green"}
-                  ml={2}
-                >
+                <Button onClick={toggleSpeechRecognition} colorScheme={isListening ? "red" : "green"} ml={2}>
                   {isListening ? "Stop" : "Speak"}
                 </Button>
               </Box>
@@ -474,7 +526,7 @@ const generateContents = async (prompt) => {
       ) : (
         // to get socket.io on same page
         <Box display="flex" alignItems="center" justifyContent="center" h="100%">
-          <Text fontSize="3xl" pb={3} color={"#48bb78"}  fontFamily="Atomic Age">
+          <Text fontSize="3xl" pb={3} color={"#48bb78"} fontFamily="Atomic Age">
             Click on a user to start chatting
           </Text>
         </Box>

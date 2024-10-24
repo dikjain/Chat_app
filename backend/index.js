@@ -11,6 +11,7 @@ import statusRoute from './routes/statusRoute.js';
 import { Server } from "socket.io";  // Import Socket.IO Server
 import http from 'http';  // Import http module
 import path from 'path';
+import { log } from 'console';
 
 
 dotenv.config();
@@ -48,9 +49,7 @@ app.use(notFound);
 app.use(errorHandler);
 
 let OnlineUsers = []
-// Socket.IO connectionlet OnlineUsers = [];
-
-
+let VideoCallUsers = []
 
 // Create http server for Socket.IO
 const server = http.createServer(app);
@@ -67,9 +66,6 @@ const io = new Server(server, {
 
 let currUser
 
-
-
-
 io.on("connection", (socket) => {
 
   socket.emit("detailde")
@@ -81,8 +77,56 @@ io.on("connection", (socket) => {
   setTimeout(()=>{
     io.emit("onlineUsers", OnlineUsers);
   },750)
+
+  socket.on("koihai", () => {
+    setTimeout(() => {
+      socket.emit("videoCallUsers", VideoCallUsers);
+    }, 750);
+  });
   
+  socket.on("Video_join", (data) => {
+    const { selectedChat, user } = data;
   
+    // Check if the user is already in the VideoCallUsers
+    if (!VideoCallUsers.some(callUser => callUser.user._id === user._id)) {
+      VideoCallUsers.push(data);
+    }
+  
+    // Ensure selectedChat and its users are defined
+    if (!selectedChat || !selectedChat.users) {
+      return console.log("selectedChat or selectedChat.users not defined");
+    }
+  
+    // Notify other users in the chat about the new user joining
+    selectedChat.users.forEach((chatUser) => {
+      if (chatUser._id !== user._id) {
+        setTimeout(() => {
+          io.to(chatUser._id).emit("join_hua", VideoCallUsers);
+        }, 750);
+      }
+    });
+  });
+  
+  socket.on("Video_leave", (data) => {
+    const { selectedChat, user } = data;
+  
+    // Remove the user from VideoCallUsers
+    VideoCallUsers = VideoCallUsers.filter(callUser => callUser.user._id !== user._id);
+  
+    // Ensure selectedChat and its users are defined before notifying
+    if (!selectedChat || !selectedChat.users) {
+      return console.log("selectedChat or selectedChat.users not defined");
+    }
+  
+    // Notify other users in the chat about the user leaving
+    selectedChat.users.forEach((chatUser) => {
+      if (chatUser._id !== user._id) {
+        setTimeout(() => {
+          socket.to(chatUser._id).emit("leave_hua", VideoCallUsers);
+        }, 750);
+      }
+    });
+  });
   
   // Handle setup when a user connects
   socket.on("setup", (userData) => {
@@ -95,9 +139,6 @@ io.on("connection", (socket) => {
     socket.join(room);
   });
 
-  // Handle typing events
-
-
   // Handle new message
   socket.on("new message", (newMessageRecieved) => {
     var chat = newMessageRecieved.chat;
@@ -108,88 +149,29 @@ io.on("connection", (socket) => {
       socket.in(user._id).emit("message recieved", newMessageRecieved);
     });
   });
-
+  
   socket.on("userDisconnected", (usera) => {
     OnlineUsers = OnlineUsers.filter(user => user !== usera._id);
     setTimeout(()=>{
       io.emit("onlineUsers", OnlineUsers);
     },750)
-    
-    
   });
-
+  
   // Handle disconnection
   socket.on("disconnect", () => {
-    if (currUser) {
-      OnlineUsers = OnlineUsers.filter(user => user !== currUser._id);
+    const user = OnlineUsers.find(user => user.socketId === socket.id);
+    if (user) {
+      OnlineUsers = OnlineUsers.filter(u => u.socketId !== socket.id);
       setTimeout(() => {
         io.emit("onlineUsers", OnlineUsers);
       }, 750);
     }
   });
-
   socket.off("setup", () => {
     socket.leave(userData._id);
   });
 });
 
-
-
-
 server.listen(process.env.PORT || 5000, () => {
   connectDB();
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import express from 'express';
-// import dotenv from "dotenv"
-// import cors from "cors"
-// import chats from "./data/data.js"
-// import connectDB from './db/db.js';
-// import userRoutes from "./routes/userRoutes.js"
-// import { errorHandler, notFound } from './Middleware/errorMiddleWare.js';
-// import chatRoute from './routes/chatRoutes.js';
-// import messageRoute from './routes/messageRoute.js';
-
-// dotenv.config();
-
-// const app = express();
-
-
-// app.use(cors({
-//     origin: "*", // Replace with your frontend URL
-//     credentials: true,
-//     allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Authorization"],
-//     methods: ["GET", "POST", "PUT", "DELETE"]  // Add more methods if needed
-//  }));
-
-// app.use(express.json());
-
-// app.get('/', (req, res) => {
-//   res.send('Hello, World!');
-// });
-
-// app.use("/api/user",userRoutes)
-// app.use("/api/chat",chatRoute)
-// app.use("/api/message",messageRoute)
-
-// app.use(notFound)
-// app.use(errorHandler)
-
-// const servers =  app.listen(process.env.PORT || 5000,()=>{
-//     connectDB()
-//     console.log(`Server is running on port ${process.env.PORT}`);  // Use environment variable for port if available
-// })
-
-// const socket = io(servers)

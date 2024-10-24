@@ -3,6 +3,7 @@ import { Box, ModalHeader, Text, Image, useToast, Button } from "@chakra-ui/reac
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCards } from 'swiper/modules';
 import axios from 'axios';
+import './Swiper.css';
 
 function ViewStatusModal({ fetchStatus,user, status, currUser}) {
   const[currentStatus , setCurrentStatus] = useState([])
@@ -41,9 +42,9 @@ function ViewStatusModal({ fetchStatus,user, status, currUser}) {
   
   return (
     <>
-    <Box flex="1" alignItems={"center"}  justifyContent={"center"}  mr={{ base: 0, md: 2 }} mb={{ base: 2, md: 0 }}>
+    <Box flex="1" id='swipercont' alignItems={"center"}  justifyContent={"center"}  mr={{ base: 0, md: 2 }} mb={{ base: 2, md: 0 }}>
     <ModalHeader color="green.400" display={"flex"}><Image src={user.pic} border={"1px #48bb78 solid"} w={9} h={9} borderRadius={"full"} mr={2}/>{user._id === currUser._id ? "Your Status" : `${user.name}'s Status`}</ModalHeader>
-    <Box  display={"flex"} alignItems={"center"} justifyContent={"center"}  rounded={"md"} height={{base:"30vh",md:"70vh"}} >
+    <Box  display={"flex"} alignItems={"center"} justifyContent={"center"}  rounded={"md"} height={{base:"50vh",md:"70vh"}}  >
     {currentStatus && currentStatus.length === 0 && <Text color="green.400" position={"absolute"}   fontSize={"lg"}  mt={4}>No status found</Text>}
     {currentStatus && < Swiper
         effect={'cards'}

@@ -9,6 +9,13 @@ const ChatProvider = ({ children }) => {
   const [notification, setNotification] = useState([]);
   const [chats, setChats] = useState();
   const navigate = useNavigate()
+  const [a, seta] = useState(true)
+  const [videocall, setVideocall] = useState(false)
+  const [enableAnimation, setEnableAnimation] = useState(true)
+  const [isOneOnOneCall, setIsOneOnOneCall] = useState(true)
+  const [videoCallUser, setVideoCallUser] = useState([])
+  const [chatsVideo, setChatsVideo] = useState([])
+
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -28,6 +35,18 @@ const ChatProvider = ({ children }) => {
         setNotification,
         chats,
         setChats,
+        a,
+        seta,
+        enableAnimation,
+        setEnableAnimation,
+        videocall,
+        setVideocall,
+        isOneOnOneCall,
+        setIsOneOnOneCall,
+        videoCallUser,
+        setVideoCallUser,
+        chatsVideo,
+        setChatsVideo
       }}
     >
       {children}

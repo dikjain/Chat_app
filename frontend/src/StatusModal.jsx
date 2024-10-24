@@ -147,7 +147,7 @@ function StatusModal({children}) {
         <ModalContent bg="black" color="green.400" overflow="hidden">
           <ModalHeader>Update Your Status</ModalHeader>
           <ModalCloseButton bg="green.400" color="black" />
-          <ModalBody display="flex"  flexDirection={{ base: "column", md: "row" }}>
+          <ModalBody display="flex"  flexDirection={{ base: "column", md: "row" }} w={{base:"100%",md:"100%"}}>
             {/* Left side: Display current status */}
             <ViewStatusModal setStatus={setStatus} currUser={user} fetchStatus={fetchStatus} status={status.status} user={user}/>
 

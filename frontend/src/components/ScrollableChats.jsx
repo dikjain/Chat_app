@@ -6,7 +6,7 @@ import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from "../
 import { ChatState } from "../Context/Chatprovider";
 import "./UserAvatar/Scroll.css";
 import gsap from "gsap";
-import { useToast } from "@chakra-ui/react";
+import { Text, useToast } from "@chakra-ui/react";
 import axios from "axios"; // Import axios
 
 
@@ -14,7 +14,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
   const [speakVisible, setSpeakVisible] = useState(null); // State to control which message has the "Speak" button
   const [boling, setboling] = useState(false); // State to control which message has the "Speak" button
 
-  const { user , setChats , selectedChat } = ChatState();
+  const { user , setChats , selectedChat , a , seta } = ChatState();
   const messageRef = useRef(null);
   const messageRef2 = useRef(null);
   const toast = useToast();
@@ -114,7 +114,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
     }
   },[messages,qq , selectedChat])
 
-  const [a,seta] = useState(false)
+
 
   useEffect(() => {
     if (vismsg && vismsg.length > 0) {
@@ -122,13 +122,13 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
         seta(false)
         gsap.fromTo(
           "#messageeL", 
-          { x: "-200%" , scale:0.1,duration:0.01}, 
-          { x: "0",scale:1,   stagger:0.1, ease: "elastic.out(1,0.7)", onComplete: () => gsap.set("#messageeL", { clearProps: "transform" }) }
+          { x: "-200%" , scale:0.1,duration:0.01, opacity:0}, 
+          { x: "0",scale:1, opacity:1,stagger:0.1, ease: "elastic.out(1,0.7)", onComplete: () => gsap.set("#messageeL", { clearProps: "transform" }) }
         );
         gsap.fromTo(
           "#messageeR", 
-          { x: "200%" , scale:0.1,duration:0.0001}, 
-          { x: "0", scale:1,  stagger:0.1, ease: "elastic.out(1,0.7)", onComplete: () => gsap.set("#messageeR", { clearProps: "transform" }) }
+          { x: "200%" , scale:0.1,duration:0.0001, opacity:0}, 
+          { x: "0", scale:1, opacity:1,  stagger:0.1, ease: "elastic.out(1,0.7)", onComplete: () => gsap.set("#messageeR", { clearProps: "transform" }) }
         );
       }
     }
@@ -144,13 +144,16 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
       setTimeout(()=>{
       gsap.fromTo(
         `.messagee${newestMessage._id}`,
-        { x: newestMessage.sender._id === user._id ? "200%" : "-200%", scale: 0.1, duration: 0.01 },
-        { x: "0", scale: 1 , duration:0.8, ease: "elastic.out(1, 0.7)", onComplete: () => gsap.set(`.messagee${newestMessage._id}`, { clearProps: "transform" }) }
+        { x: newestMessage.sender._id === user._id ? "200%" : "-200%", scale: 0.1, duration: 0.01, opacity:0 },
+        { x: "0", scale: 1 , opacity:1 , duration:0.8, ease: "elastic.out(1, 0.7)", onComplete: () => gsap.set(`.messagee${newestMessage._id}`, { clearProps: "transform" }) }
       );
       setMsgaaya(false);
       },1)
+
     }
   }, [messages, msgaaya, user._id]);
+
+  
 
   const deleteMessage = async (messageId) => {
     try{      
@@ -212,6 +215,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
               id={`messagee${m.sender._id === user._id ? "R" : "L"}`}
               className={`messagee${m._id}`}
               style={{
+                opacity:0,
                 transition:"none",
                 backgroundColor: `${m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0"}`,
                 marginLeft: `${m.sender._id === user._id ? "auto" : "0px"}`,
@@ -246,11 +250,12 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
                   backgroundImage: `url(${m.file}) `,
                   opacity: 0.8,
                   backgroundSize: "cover",
-                  backgroundPosition: "center"
+                  backgroundPosition: "center",
+                  cursor:"pointer"
                 }}>
                 </div>
               )}
-              <text style={{ fontSize:"10px",fontWeight:"semibold",color:"black"}}>{m.file && m.file.split("/").pop()}</text>
+              <Text style={{ fontSize:"10px",fontWeight:"semibold",color:"black"}}>{m.file && m.file.split("/").pop()}</Text>
               
               <span
               style={{

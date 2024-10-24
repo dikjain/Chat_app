@@ -29,13 +29,13 @@
   }
 }
 @media (max-width: 768px) {
+
     .mySwiper {
         min-width: 250px;
-        min-height: 250px;
+        min-height: 300px;
     }
   .mySwiper {
-    width: 250px;
-    height: 30vh;
+    height: 90%;
   }
 
   .mySwiper .swiper-slide {
