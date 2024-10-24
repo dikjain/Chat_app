@@ -121,7 +121,7 @@ io.on("connection", (socket) => {
     // Notify other users in the chat about the user leaving
     selectedChat.users.forEach((chatUser) => {
         setTimeout(() => {
-          socket.to(chatUser._id).emit("leave_hua", VideoCallUsers);
+          io.to(chatUser._id).emit("leave_hua", VideoCallUsers);
         }, 750);
     });
   });

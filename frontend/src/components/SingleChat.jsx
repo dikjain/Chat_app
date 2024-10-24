@@ -183,7 +183,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     
     const handleLeave = (newMessageReceived) => {
       const Revisedmsg = newMessageReceived.filter(users => users.user._id !== user._id);
-      setVideoCallUser(Revisedmsg);
+      if(Revisedmsg.length > 0){
+        setVideoCallUser(Revisedmsg);
+      }else{
+        setVideoCallUser([]);
+      }
     };
   
     socket.on('videoCallUsers', handleVideoCallUsers);
