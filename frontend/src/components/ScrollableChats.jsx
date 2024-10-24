@@ -18,6 +18,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
   const messageRef = useRef(null);
   const messageRef2 = useRef(null);
   const toast = useToast();
+  const [msggya , setMsggya] = useState(false)
 
   const fetchChats = async () => {
     // console.log(user._id);
@@ -138,8 +139,24 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
     seta(true)
   },[selectedChat])
 
+
+
   useEffect(() => {
-    if (messages.length > 0 && msgaaya) {
+    if (messages.length > 0 && msggya) {
+      const prevmsg = messages[messages.length - vismsg.length];
+      setTimeout(()=>{
+      gsap.fromTo(
+        `.messagee${prevmsg._id}`,
+        { x: prevmsg.sender._id === user._id ? "200%" : "-200%", scale: 0.1, duration: 0.01, opacity:0 },
+        { x: "0", scale: 1 , opacity:1 , duration:0.8, ease: "elastic.out(1, 0.7)", onComplete: () => gsap.set(`.messagee${prevmsg._id}`, { clearProps: "transform" }) }
+      );
+      setMsggya(false);
+      },20)
+
+    }
+  }, [messages, msggya, user._id]);
+  useEffect(() => {
+    if (messages.length > 0 && msggya) {
       const newestMessage = messages[messages.length - 1];
       setTimeout(()=>{
       gsap.fromTo(
@@ -168,6 +185,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
       const changeLatestMessagePromise = axios.post(`/api/message/ChangeLatestMessage`, { chatId: selectedChat._id, latestMessage: messageId === messages[messages.length-1]._id ? (messages[messages.length-2] ? messages[messages.length-2]._id : null) : messages[messages.length-1]._id }, config);
       await Promise.all([deleteMessagePromise, changeLatestMessagePromise]);
       setMessages(prevMessages => prevMessages.filter(message => message._id !== messageId));
+      setMsggya(true)
       fetchChats();
       toast({
         title: "Message deleted successfully",

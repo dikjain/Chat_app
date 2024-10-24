@@ -177,11 +177,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     };
   
     const handleJoin = (newMessageReceived) => {
-      setVideoCallUser(newMessageReceived);
+      const Revisedmsg = newMessageReceived.filter(users => users.user._id !== user._id);
+      setVideoCallUser(Revisedmsg);
     };
-  
+    
     const handleLeave = (newMessageReceived) => {
-      setVideoCallUser(newMessageReceived);
+      const Revisedmsg = newMessageReceived.filter(users => users.user._id !== user._id);
+      setVideoCallUser(Revisedmsg);
     };
   
     socket.on('videoCallUsers', handleVideoCallUsers);
