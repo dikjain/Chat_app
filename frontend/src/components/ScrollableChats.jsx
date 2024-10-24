@@ -156,7 +156,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
     }
   }, [messages, msggya, user._id]);
   useEffect(() => {
-    if (messages.length > 0 && msggya) {
+    if (messages.length > 0 && msgaaya) {
       const newestMessage = messages[messages.length - 1];
       setTimeout(()=>{
       gsap.fromTo(
