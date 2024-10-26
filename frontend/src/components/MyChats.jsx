@@ -56,6 +56,8 @@ const MyChats = ({ fetchAgain }) => {
   },[])
 
   useEffect(() => {
+    if (!Socket) return;
+
     // Listen for online users
     Socket.on("onlineUsers", (dat) => {
       setonlinepeople(dat);
@@ -82,9 +84,33 @@ const MyChats = ({ fetchAgain }) => {
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
-  
+    let inactivityTimeout;
+
+    const resetInactivityTimer = () => {
+      clearTimeout(inactivityTimeout);
+      inactivityTimeout = setTimeout(() => {
+        handleDisconnect();
+      }, 120000); // Trigger disconnection after 2 minutes of inactivity
+    };
+
+    // Track user activity on the document
+    const handleActivity = () => {
+      resetInactivityTimer();
+    };
+
+    document.addEventListener("mousemove", handleActivity);
+    document.addEventListener("keydown", handleActivity);
+    document.addEventListener("touchstart", handleActivity); // For mobile
+
+    // Clean up event listeners when the component unmounts
+    
     // Cleanup the event listeners when the component unmounts
     return () => {
+      clearTimeout(inactivityTimeout);
+      Socket.off("disconnect");
+      document.removeEventListener("mousemove", handleActivity);
+      document.removeEventListener("keydown", handleActivity);
+      document.removeEventListener("touchstart", handleActivity); // For mobile
       window.removeEventListener("beforeunload", handleDisconnect);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
