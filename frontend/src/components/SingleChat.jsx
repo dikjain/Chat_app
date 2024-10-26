@@ -203,7 +203,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, []);
 
   useEffect(() => {
-    socket.on("message recieved", (newMessageRecieved) => {
+    const handleMessageReceived = (newMessageRecieved) => {
       if (
         !selectedChatCompare || // if chat is not selected or doesn't match current chat
         selectedChatCompare._id !== newMessageRecieved.chat._id
@@ -212,27 +212,21 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           setNotification([newMessageRecieved, ...notification]);
           setFetchAgain((prevFetchAgain) => !prevFetchAgain);
           getmessages();
+          sound.play();
         }
       } else {
         getmessages();
         setMessages((prevMessages) => [...prevMessages, newMessageRecieved]);
         setMsgaaya(true);
       }
-    });
-  }, [setFetchAgain]);
+    };
 
-  useEffect(() => {
-    socket.on("message recieved", (newMessageRecieved) => {
-      if (
-        !selectedChatCompare || // if chat is not selected or doesn't match current chat
-        selectedChatCompare._id !== newMessageRecieved.chat._id
-      ) {
-        if (!notification.includes(newMessageRecieved)) {
-          sound.play();
-        }
-      }
-    });
-  }, [notification]);
+    socket.on("message recieved", handleMessageReceived);
+
+    return () => {
+      socket.off("message recieved", handleMessageReceived);
+    };
+  }, [setFetchAgain, notification]);
 
   const typingHandler = (e) => {
     if (e.target.value.length == 0) {
