@@ -72,27 +72,21 @@ const MyChats = ({ fetchAgain }) => {
     // Add event listeners
     window.addEventListener("beforeunload", handleDisconnect);
   
-    document.addEventListener("visibilitychange", () => {
+    const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
         handleDisconnect();
       } else if (document.visibilityState === "visible") {
-        if (!Socket.connected) {
-          Socket.connect();  // Attempt to reconnect the socket if disconnected
-        }
+        Socket.connect();  // Attempt to reconnect the socket if disconnected
         Socket.emit("userReconnected", user); // Notify the server that the user is back online
       }
-    });
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
   
     // Cleanup the event listeners when the component unmounts
     return () => {
       window.removeEventListener("beforeunload", handleDisconnect);
-      document.removeEventListener("visibilitychange", handleDisconnect);
-      document.removeEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible" && !Socket.connected) {
-          Socket.connect();
-          Socket.emit("userReconnected", user);
-        }
-      });
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [Socket, user]);
   
