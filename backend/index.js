@@ -154,6 +154,16 @@ io.on("connection", (socket) => {
       io.emit("onlineUsers", OnlineUsers);
     },750)
   });
+
+  // Handle user reconnection
+  socket.on("userReconnected", (usera) => {
+    if (!OnlineUsers.includes(usera._id)) {
+      OnlineUsers.push(usera._id);
+    }
+    setTimeout(() => {
+      io.emit("onlineUsers", OnlineUsers);
+    }, 750);
+  });
   
   // Handle disconnection
   socket.on("disconnect", () => {
