@@ -20,7 +20,7 @@ import { Tooltip } from "@chakra-ui/tooltip";
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Avatar } from "@chakra-ui/avatar";
 import { useNavigate } from "react-router-dom"; // Changed to useNavigate
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useToast } from "@chakra-ui/toast";
 import ChatLoading from "./Chatloading";
@@ -34,6 +34,7 @@ import { ChatState } from "./Context/Chatprovider";
 import { FaSearch } from "react-icons/fa";
 import ScrollableFeed from "react-scrollable-feed";
 import StatusModal from "./StatusModal";
+import io from "socket.io-client";
 
 
 function SideDrawer() {
@@ -41,7 +42,7 @@ function SideDrawer() {
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
-
+  
   const {
     setSelectedChat,
     user,
@@ -51,15 +52,23 @@ function SideDrawer() {
     chats,
     setChats,
   } = ChatState();
-
+  
+  const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
+  let Socket;
+  
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate(); // Replacing useHistory with useNavigate
 
   const logoutHandler = () => {
+    Socket.emit("userDisconnected", user);
     localStorage.removeItem("userInfo");
     navigate("/"); // Replaced history.push with navigate
   };
+
+  useEffect(() => {
+    Socket = io(ENDPOINT);
+  }, []);
 
   const handleSearch = async () => {
     if (!search) {

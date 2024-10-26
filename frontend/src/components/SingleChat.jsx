@@ -219,7 +219,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setMsgaaya(true);
       }
     });
-  }, [setFetchAgain, notification]);
+  }, [setFetchAgain]);
 
   useEffect(() => {
     socket.on("message recieved", (newMessageRecieved) => {
