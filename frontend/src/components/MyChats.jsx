@@ -55,22 +55,34 @@ const MyChats = ({ fetchAgain }) => {
     Socket = io(ENDPOINT);
   },[])
 
-  useEffect(()=>{
-    Socket.on("onlineUsers",(dat)=>{
-      setonlinepeople(dat)
-    },[])
+useEffect(() => {
+  // Listen for online users
+  Socket.on("onlineUsers", (dat) => {
+    setonlinepeople(dat);
+  });
 
-    Socket.on("detailde",()=>{
-      Socket.emit("dedi",user)
-    })   
-    window.addEventListener("beforeunload", ()=> Socket.emit("userDisconnected", user))
+  // Emit "dedi" event
+  Socket.on("detailde", () => {
+    Socket.emit("dedi", user);
+  });
 
-    // Cleanup the event listener and disconnect socket when component unmounts
-    return () => {
-      window.removeEventListener("beforeunload", ()=> Socket.emit("userDisconnected", user))
-    };
+  // Handle user disconnection using beforeunload and visibilitychange events
+  const handleDisconnect = () => Socket.emit("userDisconnected", user);
 
-  },[Socket,io])
+  window.addEventListener("beforeunload", handleDisconnect);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+      handleDisconnect();
+    }
+  });
+
+  // Cleanup the event listeners when the component unmounts
+  return () => {
+    window.removeEventListener("beforeunload", handleDisconnect);
+    document.removeEventListener("visibilitychange", handleDisconnect);
+  };
+}, [Socket, user]);
+
 
   
   useEffect(() => {
