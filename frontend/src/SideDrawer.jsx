@@ -59,6 +59,10 @@ function SideDrawer() {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate(); // Replacing useHistory with useNavigate
+  
+  useEffect(() => {
+    Socket = io(ENDPOINT);
+  }, []);
 
   const logoutHandler = () => {
     Socket.emit("userDisconnected", user);
@@ -66,9 +70,6 @@ function SideDrawer() {
     navigate("/"); // Replaced history.push with navigate
   };
 
-  useEffect(() => {
-    Socket = io(ENDPOINT);
-  }, []);
 
   const handleSearch = async () => {
     if (!search) {
