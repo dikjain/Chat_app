@@ -55,34 +55,45 @@ const MyChats = ({ fetchAgain }) => {
     Socket = io(ENDPOINT);
   },[])
 
-useEffect(() => {
-  // Listen for online users
-  Socket.on("onlineUsers", (dat) => {
-    setonlinepeople(dat);
-  });
-
-  // Emit "dedi" event
-  Socket.on("detailde", () => {
-    Socket.emit("dedi", user);
-  });
-
-  // Handle user disconnection using beforeunload and visibilitychange events
-  const handleDisconnect = () => Socket.emit("userDisconnected", user);
-
-  window.addEventListener("beforeunload", handleDisconnect);
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") {
-      handleDisconnect();
-    }
-  });
-
-  // Cleanup the event listeners when the component unmounts
-  return () => {
-    window.removeEventListener("beforeunload", handleDisconnect);
-    document.removeEventListener("visibilitychange", handleDisconnect);
-  };
-}, [Socket, user]);
-
+  useEffect(() => {
+    // Listen for online users
+    Socket.on("onlineUsers", (dat) => {
+      setonlinepeople(dat);
+    });
+  
+    // Emit "dedi" event
+    Socket.on("detailde", () => {
+      Socket.emit("dedi", user);
+    });
+  
+    // Handle user disconnection using beforeunload and visibilitychange events
+    const handleDisconnect = () => Socket.emit("userDisconnected", user);
+  
+    window.addEventListener("beforeunload", handleDisconnect);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        handleDisconnect();
+      }
+    });
+  
+    // Reconnect logic
+    Socket.on("connect", () => {
+      Socket.emit("userReconnected", user);
+    });
+  
+    Socket.on("disconnect", () => {
+      console.log("Socket disconnected. Attempting to reconnect...");
+    });
+  
+    // Cleanup the event listeners when the component unmounts
+    return () => {
+      window.removeEventListener("beforeunload", handleDisconnect);
+      document.removeEventListener("visibilitychange", handleDisconnect);
+      Socket.off("connect");
+      Socket.off("disconnect");
+    };
+  }, [Socket, user]);
+  
 
   
   useEffect(() => {
