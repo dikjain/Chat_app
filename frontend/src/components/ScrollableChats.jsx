@@ -258,8 +258,8 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
                 <div 
                 onClick={() => window.open(m.file, "_blank")}
                 style={{
-                  height: "100px",
-                  width: "100px",
+                  height: "150px",
+                  width: "150px",
                   backgroundColor: "#f0f0f0",
                   display: "flex",
                   alignItems: "end",
@@ -273,8 +273,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
                 }}>
                 </div>
               )}
-              <Text style={{ fontSize:"10px",fontWeight:"semibold",color:"black"}}>{m.file && m.file.split("/").pop()}</Text>
-              
+              {m.file && <Text style={{ fontSize:"10px",maxWidth:"150px" ,textAlign:"center",fontWeight:"semibold",color:"black"}}>{m.file.split("/").pop()}</Text>}
               <span
               style={{
                 fontFamily:" 'Atomic Age', sans-serif,Roboto, Arial",

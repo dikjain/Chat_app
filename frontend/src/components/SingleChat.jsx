@@ -46,7 +46,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       const genAI = new GoogleGenerativeAI("AIzaSyBp2UduAnIpMswiu8JYu3uMX5F3fcFtVL0");
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       const result = await model.generateContent(
-        "hey complete this message and give me message only without any other text, message and make sure to complete it in a way that it seems like a message from the user and reply in the same language as the user's message ,here is the message : " +
+        "Please complete the following message along with the user's input naturally as if it were sent by the user. Ensure the response feels like a continuation of the user's input and match the language used. Only provide the completed message without any additional text. Here's the message: " +
           prompt
       );
       setAIMessage(result.response.text());

@@ -180,6 +180,10 @@ io.on("connection", (socket) => {
   });
 });
 
+app.use((req, res, next) => {
+  res.redirect('/');
+});
+
 server.listen(process.env.PORT || 5000, () => {
   connectDB();
 });
