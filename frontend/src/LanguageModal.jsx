@@ -12,10 +12,7 @@ function LanguageModal({children}) {
   const [isLoading, setIsLoading] = useState(false); // Added state for loading
 
   useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    if(userInfo.TranslateLanguage){
-      setSelectedLanguage(userInfo.TranslateLanguage);
-    } else if(user.TranslateLanguage && !selectedLanguage){
+ if(user.TranslateLanguage){
       setSelectedLanguage(user.TranslateLanguage);
     } else {
       setSelectedLanguage("English");

@@ -20,7 +20,7 @@ import { Tooltip } from "@chakra-ui/tooltip";
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Avatar } from "@chakra-ui/avatar";
 import { useNavigate } from "react-router-dom"; // Changed to useNavigate
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useToast } from "@chakra-ui/toast";
 import ChatLoading from "./Chatloading";
@@ -55,18 +55,18 @@ function SideDrawer() {
   } = ChatState();
   
   const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
-  let Socket;
+  const Socket = useRef(null); // Using useRef to fix socket error
   
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate(); // Replacing useHistory with useNavigate
   
   useEffect(() => {
-    Socket = io(ENDPOINT);
+    Socket.current = io(ENDPOINT);
   }, []);
 
   const logoutHandler = () => {
-    Socket.emit("userDisconnected", user);
+    Socket.current.emit("userDisconnected", user);
     localStorage.removeItem("userInfo");
     navigate("/"); // Replaced history.push with navigate
   };
