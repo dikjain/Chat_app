@@ -20,7 +20,7 @@ import { Tooltip } from "@chakra-ui/tooltip";
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Avatar } from "@chakra-ui/avatar";
 import { useNavigate } from "react-router-dom"; // Changed to useNavigate
-import { useEffect, useMemo, useState } from "react";
+import {  useMemo, useState } from "react";
 import axios from "axios";
 import { useToast } from "@chakra-ui/toast";
 import ChatLoading from "./Chatloading";
@@ -32,7 +32,6 @@ import { getSender } from "./configs/ChatLogics";
 import UserListItem from "./UserListItem";
 import { ChatState } from "./Context/Chatprovider";
 import { FaSearch } from "react-icons/fa";
-import ScrollableFeed from "react-scrollable-feed";
 import StatusModal from "./StatusModal";
 import io from "socket.io-client";
 import LanguageModal from "./LanguageModal";

@@ -88,7 +88,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         position: "bottom",
       });
     }
-  }, [selectedChat, setChats, toast, user.token]);
+  }, [selectedChat, toast, user.token]);
 
   const config = {
     headers: {
@@ -97,7 +97,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     },
   };
 
-  const sendMessage = async (event) => {
+  const sendMessage = useCallback(async (event) => {
     if (event.key === "Enter" && newMessage && !sent) {
       setAIMessage("");
       setsent(true);
@@ -137,7 +137,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         position: "top",
       });
     }
-  };
+  }, [sent, selectedChat, config]);
 
   const getmessages = async () => {
     const iol = await axios.get("/api/chat", config);
@@ -228,7 +228,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     };
   }, [setFetchAgain, notification]);
 
-  const typingHandler = (e) => {
+  const typingHandler =  useCallback((e) => {
     if (e.target.value.length == 0) {
       setAIMessage("");
     }
@@ -236,7 +236,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       generateContents(e.target.value);
     }
     setNewMessage(e.target.value);
-  };
+  },[aiTyping])
 
   const toggleSpeechRecognition = () => {
     if (!("webkitSpeechRecognition" in window)) {
@@ -370,13 +370,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       setChatsVideo(videoCallUser);
   }, [videoCallUser]);
 
-  useEffect(() => {
-    gsap.fromTo(
-      "#msgdabba",
-      { boxShadow: "0px 0px 10px 15px green" },
-      { boxShadow: "0px 0px 10px 5px green", duration: 1.5, ease: "power1.out" }
-    );
-  }, [selectedChat]);
 
   return (
     <>
