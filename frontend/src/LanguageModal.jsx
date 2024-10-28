@@ -32,7 +32,7 @@ function LanguageModal({children}) {
             Authorization: `Bearer ${user.token}`,
           },
         };
-        await axios.post("/api/user/language", {
+        await axios.post("/api/user/updatelanguage", {
           userId: user._id,
           language: selectedLanguage,
         }, config);
