@@ -8,6 +8,7 @@ import "./UserAvatar/Scroll.css";
 import gsap from "gsap";
 import { Text, useToast } from "@chakra-ui/react";
 import axios from "axios"; // Import axios
+import { motion } from "framer-motion"; // Import framer-motion
 
 
 const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
@@ -92,12 +93,51 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
   let todayIST = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }).slice(0, 9);
   
 
-  const handleTextClick = (index) => {
-    setTimeout(()=>{
-      setSpeakVisible(null)
-    },3000)
-    setSpeakVisible(index === speakVisible ? null : index); // Toggle "Speak" button visibility
+  const handleDragEnd = (event, info, index) => {
+    if(vismsg[index].sender._id === user._id){
+      if (info.offset.x < -30) {
+        setSpeakVisible(index);
+        document.querySelectorAll(".allmsg").forEach(el => {
+          el.style.opacity = "0.5";
+        });
+        document.querySelectorAll(".allmsg")[index].style.opacity = "1";
+    } 
+    }else {
+      if(info.offset.x > 30) {
+        setSpeakVisible(index);
+        document.querySelectorAll(".allmsg").forEach(el => {
+          el.style.opacity = "0.5";
+        });
+        document.querySelectorAll(".allmsg")[index].style.opacity = "1";
+      }
+    }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (speakVisible !== null) {
+        const allMessages = document.querySelectorAll(".allmsg");
+        const clickedInside = Array.from(allMessages).some((el, index) => {
+          return el.contains(event.target) && index === speakVisible;
+        });
+
+        if (!clickedInside) {
+          setSpeakVisible(null);
+          allMessages.forEach(el => {
+            el.style.opacity = "1";
+          });
+        }
+      }
+    };
+
+    if (speakVisible !== null) {
+      document.addEventListener("click", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [speakVisible]);
 
   const formatTime = (t) => {
     const date = new Date(t).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }).split('/').map(num => num.padStart(2, '0')).join('/');
@@ -228,14 +268,16 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
                 />
               </Tooltip>
             )}
-            <span
-              onClick={() => handleTextClick(i)} // Click event to show/hide "Speak" button
+            <motion.span
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              onDragEnd={(event, info) => handleDragEnd(event, info, i)}
               id={`messagee${m.sender._id === user._id ? "R" : "L"}`}
               className={`messagee${m._id}`}
               style={{
                 opacity:0,
                 transition:"none",
-                backgroundColor: `${m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0"}`,
+                backgroundColor: `${m.sender._id === user._id ? "#000" : "#000"}`,
                 marginLeft: `${m.sender._id === user._id ? "auto" : "0px"}`,
                 // marginLeft: isSameSenderMargin(messages, m, i, user._id),
                 marginTop: 10,
@@ -245,8 +287,10 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
                 maxWidth: "75%",
                 position: "relative",
                 zIndex:"50",
-                color:"black",
+                color:`${m.sender._id === user._id ? "#48bb78" : "#fff"}`,
+                border:`${m.sender._id === user._id ? "1px solid #fff" : "1px solid #48bb78"}`,
                 display:"flex",
+                fontFamily:"'DynaPuff', sans-serif",
                 alignItems:"center",
                 justifyContent:"center",
                 flexDirection:"column"
@@ -333,7 +377,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
                   Delete For All
                 </span>
               )}
-            </span>
+            </motion.span>
           </div>
         ))}
     </ScrollableFeed>
