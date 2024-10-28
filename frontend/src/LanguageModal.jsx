@@ -33,7 +33,7 @@ function LanguageModal({children}) {
           },
         };
         await axios.post("/api/user/updatelanguage", {
-          userId: user._id,
+          UserId: user._id,
           language: selectedLanguage,
         }, config);
         setUser({ ...user, TranslateLanguage: selectedLanguage });
