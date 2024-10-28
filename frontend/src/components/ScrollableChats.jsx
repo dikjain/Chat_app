@@ -95,6 +95,12 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
 
   const handleDragEnd = (event, info, index) => {
     if(vismsg[index].sender._id === user._id){
+      if(info.offset.x > 30 && speakVisible){
+        setSpeakVisible(null);
+        document.querySelectorAll(".allmsg").forEach(el => {
+          el.style.opacity = "1";
+        });
+      }
       if (info.offset.x < -30) {
         setSpeakVisible(index);
         document.querySelectorAll(".allmsg").forEach(el => {
@@ -103,6 +109,12 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
         document.querySelectorAll(".allmsg")[index].style.opacity = "1";
     } 
     }else {
+      if(info.offset.x < -30 && speakVisible){
+        setSpeakVisible(null);
+        document.querySelectorAll(".allmsg").forEach(el => {
+          el.style.opacity = "1";
+        });
+      }
       if(info.offset.x > 30) {
         setSpeakVisible(index);
         document.querySelectorAll(".allmsg").forEach(el => {
@@ -317,7 +329,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
                 }}>
                 </div>
               )}
-              {m.file && <Text style={{ fontSize:"10px",maxWidth:"150px" ,textAlign:"center",fontWeight:"semibold",color:"black"}}>{m.file.split("/").pop()}</Text>}
+              {m.file && <Text style={{ fontSize:"10px",maxWidth:"150px" ,textAlign:"center",fontWeight:"semibold",color:`${m.sender._id === user._id ? "#48bb78" : "#fff"}`}}>{m.file.split("/").pop()}</Text>}
               <span
               style={{
                 fontFamily:" 'Atomic Age', sans-serif,Roboto, Arial",

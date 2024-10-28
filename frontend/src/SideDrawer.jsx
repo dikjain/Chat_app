@@ -35,6 +35,7 @@ import { FaSearch } from "react-icons/fa";
 import ScrollableFeed from "react-scrollable-feed";
 import StatusModal from "./StatusModal";
 import io from "socket.io-client";
+import LanguageModal from "./LanguageModal";
 
 
 function SideDrawer() {
@@ -236,6 +237,12 @@ function SideDrawer() {
                   My Status
                 </MenuItem>
               </StatusModal>
+              <MenuDivider />
+              <LanguageModal>
+                <MenuItem bg="black" color="green.400">
+                  Language
+                </MenuItem>
+              </LanguageModal>
               <MenuDivider />
               <MenuItem onClick={logoutHandler} bg="black" color="green.400">
                 Logout

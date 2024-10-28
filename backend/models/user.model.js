@@ -21,6 +21,10 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    TranslateLanguage: {
+      type: String,
+      default: "English",
+    },
   },
   { timestamps: true } // Fixed typo here
 );

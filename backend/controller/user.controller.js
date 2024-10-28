@@ -20,6 +20,13 @@ const updateUser = expressAsyncHandler(async (req, res) => {
     }
 });
 
+
+const updatelanguage = expressAsyncHandler(async (req, res) => {
+    const { language , UserId } = req.body;
+    const updatedUser = await User.findByIdAndUpdate(UserId, { TranslateLanguage: language }, { new: true });
+    res.json(updatedUser.TranslateLanguage);
+});
+
 const registeruser = expressAsyncHandler (async (req,res) => {
     const {name,email,password,pic} = req.body
 
@@ -116,4 +123,4 @@ const allUsers = expressAsyncHandler (async (req,res) => {
 });
 
 
-export { authUser, registeruser,allUsers,getuserdetails,updateUser }; 
+export { authUser, registeruser,allUsers,getuserdetails,updateUser,updatelanguage }; 
