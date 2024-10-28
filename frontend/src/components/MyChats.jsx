@@ -1,4 +1,3 @@
-
 import { AddIcon } from "@chakra-ui/icons";
 import { Box, Stack, Text } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
@@ -15,18 +14,14 @@ import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { FaVideo } from "react-icons/fa";
 
-
-
 const MyChats = ({ fetchAgain }) => {
-  let Socket;
+  let Socket = useRef(null);
   const [loggedUser, setLoggedUser] = useState();
   const [onlinepeople ,setonlinepeople] = useState([]) 
 
   const { selectedChat, setSelectedChat, user, chats, setChats , a , chatsVideo } = ChatState();
 
   const toast = useToast();
-
-  
 
   const fetchChats = async () => {
     // console.log(user._id);
@@ -52,22 +47,22 @@ const MyChats = ({ fetchAgain }) => {
   };
 
   useEffect(()=>{
-    Socket = io(ENDPOINT);
+    Socket.current = io(ENDPOINT);
   },[])
 
   useEffect(() => {
     // Listen for online users
-    Socket.on("onlineUsers", (dat) => {
+    Socket.current.on("onlineUsers", (dat) => {
       setonlinepeople(dat);
     });
   
     // Emit "dedi" event
-    Socket.on("detailde", () => {
-      Socket.emit("dedi", user);
+    Socket.current.on("detailde", () => {
+      Socket.current.emit("dedi", user);
     });
   
     // Handle user disconnection
-    const handleDisconnect = () => Socket.emit("userDisconnected", user);
+    const handleDisconnect = () => Socket.current.emit("userDisconnected", user);
   
     // Add event listeners
     window.addEventListener("beforeunload", handleDisconnect);
@@ -76,8 +71,8 @@ const MyChats = ({ fetchAgain }) => {
       if (document.visibilityState === "hidden") {
         handleDisconnect();
       } else if (document.visibilityState === "visible") {
-        Socket.connect();  // Attempt to reconnect the socket if disconnected
-        Socket.emit("userReconnected", user); // Notify the server that the user is back online
+        Socket.current.connect();  // Attempt to reconnect the socket if disconnected
+        Socket.current.emit("userReconnected", user); // Notify the server that the user is back online
       }
     });
   
@@ -86,15 +81,13 @@ const MyChats = ({ fetchAgain }) => {
       window.removeEventListener("beforeunload", handleDisconnect);
       document.removeEventListener("visibilitychange", handleDisconnect);
       document.removeEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible" && !Socket.connected) {
-          Socket.connect();
-          Socket.emit("userReconnected", user);
+        if (document.visibilityState === "visible" && !Socket.current.connected) {
+          Socket.current.connect();
+          Socket.current.emit("userReconnected", user);
         }
       });
     };
-  }, [Socket, user]);
-  
-
+  }, [Socket.current, user]);
   
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
@@ -106,8 +99,6 @@ const MyChats = ({ fetchAgain }) => {
     gsap.to(".chat", {y:0,zIndex:500,opacity:1,stagger:0.15,ease: "power3.in"})
     gsap.to(".yo", {y:0,zIndex:500,opacity:1,stagger:0.075,ease: "power2.in"})
 },[chats])
-
-
 
   return (
     <Box
