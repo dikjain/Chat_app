@@ -1,7 +1,7 @@
 import { Avatar } from "@chakra-ui/avatar";
 import { Tooltip } from "@chakra-ui/tooltip";
 import ScrollableFeed from "react-scrollable-feed";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from "../configs/ChatLogics";
 import { ChatState } from "../Context/Chatprovider";
 import "./UserAvatar/Scroll.css";
@@ -9,6 +9,7 @@ import gsap from "gsap";
 import { Text, useToast } from "@chakra-ui/react";
 import axios from "axios"; // Import axios
 import { motion } from "framer-motion"; // Import framer-motion
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 
 const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
@@ -255,6 +256,46 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
       });
     }
   };
+  const [c,setc] = useState(null)
+  const [translating,setTranslating] = useState(false)
+
+
+  const HandleTranslate =async(i,msg)=>{
+    if(c == null){
+      setc(i)
+      setTimeout(()=>{setc(null)},700)
+      return
+    }
+
+    if(c == i && !translating){
+      vismsg[i].content = "translating..."
+      setTranslating(true)
+      const genAI = new GoogleGenerativeAI("AIzaSyBp2UduAnIpMswiu8JYu3uMX5F3fcFtVL0");
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      try {
+        const result = await model.generateContent(
+          `You are given a message , Translate it into ${user.TranslateLanguage ? user.TranslateLanguage : "English"} , without any additional text . return only the translated message and if you are unable to translate it return the same message. Here's the message: ` +
+            msg
+        );
+       vismsg[i].content = result.response.text()
+        setc(null)
+        setTranslating(false)
+      } catch (error) {
+        vismsg[i].content = msg
+        setc(null)
+        setTranslating(false)
+        toast({
+          title: "Error Translating",
+          description: error?.response?.data?.message || error.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    }
+    
+    
+  }
   
      
 
@@ -286,6 +327,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
               onDragEnd={(event, info) => handleDragEnd(event, info, i)}
               id={`messagee${m.sender._id === user._id ? "R" : "L"}`}
               className={`messagee${m._id}`}
+              onClick={()=>HandleTranslate(i,m.content)}
               style={{
                 opacity:0,
                 transition:"none",
