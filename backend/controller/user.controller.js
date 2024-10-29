@@ -50,7 +50,8 @@ const registeruser = expressAsyncHandler (async (req,res) => {
             name: user.name,
             email: user.email,
             pic: user.pic,
-            token: generateToken(user._id)
+            token: generateToken(user._id),
+            TranslateLanguage: user.TranslateLanguage
         });
     }else{
         res.status(400);
@@ -80,7 +81,8 @@ const authUser = expressAsyncHandler (async (req,res) => {
             name: userExists.name,
             email: userExists.email,
             pic: userExists.pic,
-            token: generateToken(userExists._id)
+            token: generateToken(userExists._id),
+            TranslateLanguage: userExists.TranslateLanguage
         })
         
     } else {
