@@ -13,6 +13,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 
 const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
+  const [renderCount, setRenderCount] = useState(0);
   const [speakVisible, setSpeakVisible] = useState(null); // State to control which message has the "Speak" button
   const [boling, setboling] = useState(false); // State to control which message has the "Speak" button
 
@@ -21,6 +22,8 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
   const messageRef2 = useRef(null);
   const toast = useToast();
   const [msggya , setMsggya] = useState(false)
+  const [d , setd] = useState(false)  
+  const [curmsglen , setcurmsglen] = useState(0)
 
   const fetchChats = async () => {
     // console.log(user._id);
@@ -46,7 +49,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
     }
   };
 
-  const speakText = (text,i) => {   
+  const speakText = useCallback((text, i) => {   
     setboling(true);
     document.querySelectorAll(".allmsg").forEach(el => {
       el.style.opacity = "0.5";
@@ -89,7 +92,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
         position: "bottom",
       });
     }
-  };
+  }, [toast]);
 
   let todayIST = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }).slice(0, 9);
   
@@ -152,11 +155,11 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
     };
   }, [speakVisible]);
 
-  const formatTime = (t) => {
+  const formatTime = useCallback((t) => {
     const date = new Date(t).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }).split('/').map(num => num.padStart(2, '0')).join('/');
     const time = new Date(t).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' }).split(':').map(num => num.padStart(2, '0')).join(':');
     return `${date} - ${time}`;
-  };
+  }, []);
 
   const [vismsg, setvismsg] = useState(null)
   const [qq, setqq] = useState(15)
@@ -168,7 +171,11 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
     }
   },[messages,qq , selectedChat])
 
-
+useEffect(()=>{
+  if(messages && messages.length > 0 && vismsg && vismsg.length > 0){
+    setcurmsglen(vismsg.length)
+  }
+},[vismsg])
 
   useEffect(() => {
     if (vismsg && vismsg.length > 0) {
@@ -184,6 +191,25 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
           { x: "200%" , scale:0.1,duration:0.0001, opacity:0}, 
           { x: "0", scale:1, opacity:1,  stagger:0.1, ease: "elastic.out(1,0.7)", onComplete: () => gsap.set("#messageeR", { clearProps: "transform" }) }
         );
+      }
+      else if(d){
+        const newMsg = vismsg.slice(0,qq - curmsglen )
+        newMsg.forEach(el=>{
+          if(el.sender._id === user._id){
+          gsap.fromTo(
+            `.messagee${el._id}`,
+            { x: "200%", scale: 0.1, duration: 0.01, opacity: 0 },
+            { x: "0", scale: 1, opacity: 1, stagger:0.1,  duration: 1.4, ease: "elastic.out(1, 0.7)", onComplete: () => gsap.set(`.messagee${el._id}`, { clearProps: "transform" }) }
+          );
+          }else{
+            gsap.fromTo(
+              `.messagee${el._id}`,
+              { x: "-200%", scale: 0.1, duration: 0.01, opacity: 0 },
+              { x: "0", scale: 1, opacity: 1, stagger:0.1,duration: 1.4, ease: "elastic.out(1, 0.7)", onComplete: () => gsap.set(`.messagee${el._id}`, { clearProps: "transform" }) }
+            );
+          }
+        })
+        setd(false)
       }
     }
   }, [vismsg]);
@@ -225,7 +251,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
 
   
 
-  const deleteMessage = async (messageId) => {
+  const deleteMessage = useCallback(async (messageId) => {
     try{      
       const config = {
         headers: {
@@ -255,7 +281,8 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
         isClosable: true,
       });
     }
-  };
+  }, [user.token, selectedChat._id, messages, toast, fetchChats]);
+
   const [c,setc] = useState(null)
   const [translating,setTranslating] = useState(false)
 
@@ -302,7 +329,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
 
   return (
     <ScrollableFeed>
-    { messages.length -qq > 0 ? <button style={{width:"50%",padding:"3px 0px",transform:"translateX(50%)", borderRadius:"999px" , backgroundColor:"#48bb78",alignSelf:"center",justifySelf:"center" , color:"white" }} onClick={()=> {messages.length -qq > 10 ?setqq((l)=>l+10) : setqq(messages.length);seta(true)}}>load more</button> : null}
+    { messages.length -qq > 0 ? <button style={{width:"50%",padding:"3px 0px",transform:"translateX(50%)", borderRadius:"999px" , backgroundColor:"#48bb78",alignSelf:"center",justifySelf:"center" , color:"white" }} onClick={()=> {messages.length -qq > 10 ?setqq((l)=>l+10) : setqq(messages.length);setd(true)}}>load more</button> : null}
       {vismsg &&
         vismsg.map((m, i) => (
           <div className="allmsg" style={{ display: "flex", position: "relative"}} key={m._id}>
@@ -347,8 +374,12 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
                 fontFamily:"'DynaPuff', sans-serif",
                 alignItems:"center",
                 justifyContent:"center",
-                flexDirection:"column"
-                
+                flexDirection:"column",
+                wordWrap: "break-word",
+                whiteSpace: "pre-wrap",
+                textWrap: "wrap",
+                wordBreak: "break-word",  
+                overflowWrap: "break-word",
               }}
               >
               {selectedChat.isGroupChat && <span style={{fontWeight:"bold", color:"#48bb78"}}>{m.sender._id === user._id ? "" : m.sender.name + " : "}</span>} 
