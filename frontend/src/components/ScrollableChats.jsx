@@ -272,6 +272,9 @@ useEffect(()=>{
         duration: 5000,
         isClosable: true,
       });
+      document.querySelectorAll(".allmsg").forEach(el=>{
+        el.style.opacity = "1";
+      });
     }catch(error){
       toast({
         title: "Failed to delete message",
