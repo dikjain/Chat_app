@@ -297,7 +297,7 @@ useEffect(()=>{
       return
     }
 
-    if(c == i && !translating){
+    if(c == i && !translating && vismsg[i].type !== "location"){
       vismsg[i].content = "translating..."
       setTranslating(true)
       const genAI = new GoogleGenerativeAI("AIzaSyBp2UduAnIpMswiu8JYu3uMX5F3fcFtVL0");
