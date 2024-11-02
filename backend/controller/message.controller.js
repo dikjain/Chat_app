@@ -24,7 +24,7 @@ const allMessages = expressAsyncHandler(async (req, res) => {
 //@access          Protected
 const sendMessage = expressAsyncHandler(async (req, res) => {
   
-  const { content, chatId  } = req.body;
+  const { content, chatId , type} = req.body;
   const file = req.fileMessage;
   if (!content || !chatId) {
     return res.sendStatus(400);
@@ -34,7 +34,8 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
     sender: req.user._id,
     content: content,
     chat: chatId,
-    file: null
+    file: null,
+    type : `${type ? type : null}`
   };
 
   try {
@@ -68,7 +69,8 @@ const sendFileMessage = expressAsyncHandler(async (req, res) => {
     sender: sender,
     content: null,
     chat: chatId,
-    file: filepath // This should be a string, not an object
+    file: filepath,
+    type : `${type ? type : null}`
   };
   try {
     var message = await Message.create(newMessage);

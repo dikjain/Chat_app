@@ -386,7 +386,13 @@ useEffect(()=>{
               }}
               >
               {selectedChat.isGroupChat && <span style={{fontWeight:"bold", color:"#48bb78"}}>{m.sender._id === user._id ? "" : m.sender.name + " : "}</span>} 
-              {m.content ? m.content : (
+              {m.content ? (
+                m.type === "location" ? (
+                  <a href={m.content} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline" }}>{m.content}</a>
+                ) : (
+                  m.content
+                )
+              ) : (
                 <div 
                 onClick={() => window.open(m.file, "_blank")}
                 style={{

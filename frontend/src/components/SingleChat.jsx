@@ -144,7 +144,49 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     setChats(iol.data);
   };
 
-  
+  const sendLocation = async () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const { latitude, longitude } = position.coords;
+        const locationMessage = `Location: https://www.google.com/maps?q=${latitude},${longitude}`;
+        try {
+          const { data } = await axios.post(
+            "/api/message",
+            {
+              content: locationMessage,
+              chatId: selectedChat,
+              type : "location"
+            },
+            config
+          );
+          socket.emit("new message", data);
+          setMessages((prevMessages) => [...prevMessages, data]);
+          setMsgaaya(true);
+          const iop = await axios.get("/api/chat", config);
+          setChats(iop.data);
+        } catch (error) {
+          toast({
+            title: "Error Occured!",
+            description: "Failed to send the location",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+          });
+        }
+      });
+    } else {
+      toast({
+        title: "Geolocation Not Supported",
+        description: "Your browser does not support geolocation.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+    }
+  };
+
   useEffect(() => {
     socket = io(ENDPOINT);
     socket.emit("setup", user);
@@ -511,6 +553,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 />
                 <Button onClick={toggleSpeechRecognition} colorScheme={isListening ? "red" : "green"} ml={2}>
                   {isListening ? "Stop" : "Speak"}
+                </Button>
+                <Button onClick={sendLocation} colorScheme="blue" ml={2}>
+                  Send Location
                 </Button>
               </Box>
             </FormControl>
