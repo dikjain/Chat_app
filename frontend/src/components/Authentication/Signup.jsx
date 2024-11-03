@@ -35,6 +35,28 @@ const Signup = () => {
       setPicLoading(false);
       return;
     }
+    if (password.length < 8) {
+      toast({
+        title: "Password must be at least 8 characters long",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setPicLoading(false);
+      return;
+    }
+    if(!email.endsWith("@gmail.com") && !email.endsWith("@yahoo.com") && !email.endsWith("@outlook.com")){
+      toast({
+        title: "Invalid Email",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setPicLoading(false);
+      return;
+    }
     if (password !== confirmpassword) {
       toast({
         title: "Passwords Do Not Match",
