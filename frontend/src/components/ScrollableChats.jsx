@@ -275,6 +275,7 @@ useEffect(()=>{
       document.querySelectorAll(".allmsg").forEach(el=>{
         el.style.opacity = "1";
       });
+      setSpeakVisible(null)
     }catch(error){
       toast({
         title: "Failed to delete message",
@@ -388,7 +389,7 @@ useEffect(()=>{
               {selectedChat.isGroupChat && <span style={{fontWeight:"bold", color:"#48bb78"}}>{m.sender._id === user._id ? "" : m.sender.name + " : "}</span>} 
               {m.content ? (
                 m.type === "location" ? (
-                  <a href={m.content} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline", color: "blue" }}>{m.content}</a>
+                  <a href={m.content} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline", color: "blue", fontFamily:"sans-serif,Roboto, Arial" }}>{m.content}</a>
                 ) : (
                   m.content
                 )

@@ -16,7 +16,7 @@ import { gsap } from "gsap";
 import { FiFile } from "react-icons/fi"; // Importing file icon from react-icons
 import { FaVideo } from "react-icons/fa"; // Importing video icon from react-icons
 import { useNavigate } from "react-router-dom"; // Importing useNavigate from react-router-dom
-import { MdLocationOn } from "react-icons/md"; // Importing location icon from react-icons
+import { MdLocationOn, MdMic } from "react-icons/md"; // Importing location and mic icons from react-icons
 
 import io from "socket.io-client";
 import UpdateGroupChatModal from "../UpdateGroupChatmodal";
@@ -552,9 +552,20 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   onChange={typingHandler}
                   ref={inputRef}
                 />
-                <Button onClick={toggleSpeechRecognition} colorScheme={isListening ? "red" : "green"} ml={2}>
-                  {isListening ? "Stop" : "Speak"}
-                </Button>
+                <IconButton
+                  icon={<MdMic />}
+                  size="sm"
+                  variant="outline"
+                  colorScheme={isListening ? "red" : "#48bb78"}
+                  aria-label="Toggle Speech Recognition"
+                  height={"40px"}
+                  padding={"0px"}
+                  margin={"0px"}
+                  bg={isListening ? "red" : "#48bb78"}
+                  ml={2}
+                  _hover={{}}
+                  onClick={toggleSpeechRecognition}
+                />
                 <IconButton
                   icon={<MdLocationOn />} // Using location icon from react-icons
                   size="sm"
