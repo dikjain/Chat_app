@@ -39,12 +39,18 @@ function VideoCall() {
               },
               onJoinRoom: () => {
                 socket.emit('Video_join', { selectedChat, user});
+                setTimeout(()=>{
+                  socket.emit('Video_join', { selectedChat, user});
+                },500)
               },
               onLeaveRoom: () => {
                 zpRef.current.destroy();
                 zpRef.current = null;
                 setVideocall(false);
                 socket.emit('Video_leave', { selectedChat, user});
+                setTimeout(()=>{
+                  socket.emit('Video_leave', { selectedChat, user});
+                },500)
                 setEnableAnimation(false);
                 navigate('/chats', { state: { selectedChat } });
               },

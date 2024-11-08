@@ -151,7 +151,7 @@ import {
               </FormControl>
               <FormControl>
                 <Input
-                  placeholder="Add Users eg: John, Piyush, Jane"
+                  placeholder="Add Users eg: abc123, ad"
                   mb={1}
                   onChange={(e) => handleSearch(e.target.value)}
                 />

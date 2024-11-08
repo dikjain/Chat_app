@@ -64,7 +64,6 @@ const io = new Server(server, {
   },
 });
 
-let currUser
 
 io.on("connection", (socket) => {
 
@@ -76,12 +75,12 @@ io.on("connection", (socket) => {
   })
   setTimeout(()=>{
     io.emit("onlineUsers", OnlineUsers);
-  },750)
+  },1250)
 
   socket.on("koihai", () => {
     setTimeout(() => {
       socket.emit("videoCallUsers", VideoCallUsers);
-    }, 750);
+    }, 1250);
   });
   
   socket.on("Video_join", (data) => {
@@ -102,7 +101,10 @@ io.on("connection", (socket) => {
       if (chatUser._id !== user._id) {
         setTimeout(() => {
           io.to(chatUser._id).emit("join_hua", VideoCallUsers);
-        }, 750);
+        }, 1250);
+        setTimeout(() => {
+          io.to(chatUser._id).emit("join_hua", VideoCallUsers);
+        }, 1750);
       }
     });
   });
@@ -122,7 +124,10 @@ io.on("connection", (socket) => {
     selectedChat.users.forEach((chatUser) => {
         setTimeout(() => {
           io.to(chatUser._id).emit("leave_hua", VideoCallUsers);
-        }, 750);
+        }, 1250);
+        setTimeout(() => {
+          io.to(chatUser._id).emit("leave_hua", VideoCallUsers);
+        }, 1750);
     });
   });
   
@@ -152,7 +157,7 @@ io.on("connection", (socket) => {
     OnlineUsers = OnlineUsers.filter(user => user !== usera._id);
     setTimeout(()=>{
       io.emit("onlineUsers", OnlineUsers);
-    },750)
+    },1250)
   });
 
   // Handle user reconnection
@@ -162,7 +167,7 @@ io.on("connection", (socket) => {
     }
     setTimeout(() => {
       io.emit("onlineUsers", OnlineUsers);
-    }, 750);
+    }, 1250);
   });
   
   // Handle disconnection

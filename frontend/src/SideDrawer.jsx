@@ -165,7 +165,7 @@ function SideDrawer() {
           <span className="oii oil">Chat</span> App
         </Text>
         <div>
-          <Menu>
+          <Menu zIndex={1000}>
             <MenuButton p={1}>
               <NotificationBadge
                 count={notification.length}
@@ -178,7 +178,7 @@ function SideDrawer() {
                 backgroundColor={"#48bb78"}
               />
             </MenuButton>
-            <MenuList pl={2} bg="black" color="green.400">
+            <MenuList pl={2} bg="black" color="green.400" zIndex={1000}>
               {!notification.length && (
                 <Text color="green.400">No New Messages</Text>
               )}
@@ -193,6 +193,7 @@ function SideDrawer() {
                   }}
                   bg="black" // Black background
                   color="#48bb78" // Neon green text
+                  zIndex={1000}
                 >
                   {notif.chat.isGroupChat
                     ? `New Message in ${notif.chat.chatName}`
@@ -223,7 +224,7 @@ function SideDrawer() {
             </MenuButton>
             <MenuList bg="black" color="green.400" zIndex="overlay">
               <ProfileModal user={user} setUser={setUser}>
-                <MenuItem bg="black" color="green.400">
+                <MenuItem bg="black" color="green.400" zIndex={1000}>
                   My Profile
                 </MenuItem>{" "}
               </ProfileModal>
@@ -240,7 +241,7 @@ function SideDrawer() {
                 </MenuItem>
               </LanguageModal>
               <MenuDivider />
-              <MenuItem onClick={logoutHandler} bg="black" color="green.400">
+              <MenuItem onClick={logoutHandler} bg="black" color="green.400" zIndex={1000}>
                 Logout
               </MenuItem>
             </MenuList>
