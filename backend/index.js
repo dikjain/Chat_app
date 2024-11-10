@@ -11,8 +11,6 @@ import statusRoute from './routes/statusRoute.js';
 import { Server } from "socket.io";  // Import Socket.IO Server
 import http from 'http';  // Import http module
 import path from 'path';
-import { log } from 'console';
-import { setInterval } from 'timers/promises';
 
 
 dotenv.config();
@@ -67,7 +65,7 @@ const io = new Server(server, {
 
 
 io.on("connection", (socket) => {
-
+  
   socket.emit("detailde")
   socket.on("dedi",(dat)=>{
     if (!OnlineUsers.includes(dat._id)) {
@@ -77,6 +75,21 @@ io.on("connection", (socket) => {
   setTimeout(()=>{
     io.emit("onlineUsers", OnlineUsers);
   },1250)
+
+
+  setInterval(()=>{
+    let areyouonline = []
+    socket.emit("areyouonline")
+    socket.on("iamonline",(data)=>{
+      if (!areyouonline.includes(data)) {
+        areyouonline.push(data);
+      }
+    })
+    setTimeout(()=>{
+      io.emit("onlineUsers", areyouonline);
+    },1000)
+
+  },10000)
 
   socket.on("koihai", () => {
     setTimeout(() => {
@@ -171,9 +184,6 @@ io.on("connection", (socket) => {
     }, 1250);
   });
   
-
-
-
   // Handle disconnection
   socket.on("disconnect", () => {
     const user = OnlineUsers.find(user => user.socketId === socket.id);
@@ -188,22 +198,6 @@ io.on("connection", (socket) => {
     socket.leave(userData._id);
   });
 });
-
-
-setInterval(() => {
-    let areyouonline = []
-    io.emit("areyouonline");
-    io.on("iamonline", (data) => {
-      if (!areyouonline.includes(data)) {
-        areyouonline.push(data);
-      }
-    });
-    setTimeout(() => {
-      io.emit("onlineUsers", areyouonline);
-      areyouonline = [];
-    }, 1000);
-  }, 15000);
-  
 
 app.use((req, res, next) => {
   res.redirect('/');
