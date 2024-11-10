@@ -171,7 +171,7 @@ io.on("connection", (socket) => {
     }, 1250);
   });
   
-  let areyouonline = []
+
 
 
   // Handle disconnection
@@ -189,10 +189,11 @@ io.on("connection", (socket) => {
   });
 });
 
+let areyouonline = []
 
   setInterval(() => {
     io.emit("areyouonline");
-    io.once("iamonline", (data) => {
+    io.on("iamonline", (data) => {
       if (!areyouonline.includes(data)) {
         areyouonline.push(data);
       }
