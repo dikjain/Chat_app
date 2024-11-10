@@ -202,8 +202,8 @@ let areyouonline = []
       OnlineUsers = [...areyouonline];
       io.emit("onlineUsers", OnlineUsers);
       areyouonline = [];
-    }, 500);
-  }, 6000);
+    }, 1000);
+  }, 15000);
   
 
 app.use((req, res, next) => {
