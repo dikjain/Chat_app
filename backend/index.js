@@ -199,8 +199,7 @@ setInterval(() => {
       }
     });
     setTimeout(() => {
-      OnlineUsers = [...areyouonline];
-      io.emit("onlineUsers", OnlineUsers);
+      io.emit("onlineUsers", areyouonline);
       areyouonline = [];
     }, 1000);
   }, 15000);
