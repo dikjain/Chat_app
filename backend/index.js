@@ -76,21 +76,6 @@ io.on("connection", (socket) => {
     io.emit("onlineUsers", OnlineUsers);
   },1250)
 
-
-  setInterval(()=>{
-    let areyouonline = []
-    socket.emit("areyouonline")
-    socket.on("iamonline",(data)=>{
-      if (!areyouonline.includes(data)) {
-        areyouonline.push(data);
-      }
-    })
-    setTimeout(()=>{
-      io.emit("onlineUsers", areyouonline);
-    },1000)
-
-  },10000)
-
   socket.on("koihai", () => {
     setTimeout(() => {
       socket.emit("videoCallUsers", VideoCallUsers);

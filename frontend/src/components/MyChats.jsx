@@ -60,11 +60,6 @@ const MyChats = ({ fetchAgain }) => {
     Socket.on("detailde", () => {
       Socket.emit("dedi", user);
     });
-
-    Socket.on("areyouonline",()=>{
-      Socket.emit("iamonline",user._id)
-    })
-  
     // Handle user disconnection
     const handleDisconnect = () => Socket.emit("userDisconnected", user);
   
