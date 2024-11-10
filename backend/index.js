@@ -173,19 +173,7 @@ io.on("connection", (socket) => {
   
   let areyouonline = []
 
-  setInterval(()=>{
-    io.emit("areyouonline");
-    io.on("iamonline",(data)=>{
-      if(!areyouonline.includes(data)){
-        areyouonline.push(data)
-      }
-    })
-    setTimeout(()=>{
-      OnlineUsers = areyouonline
-      io.emit("onlineUsers", OnlineUsers);
-    },500)
-  },6000)
-  
+
   // Handle disconnection
   socket.on("disconnect", () => {
     const user = OnlineUsers.find(user => user.socketId === socket.id);
@@ -200,6 +188,22 @@ io.on("connection", (socket) => {
     socket.leave(userData._id);
   });
 });
+
+
+  setInterval(() => {
+    io.emit("areyouonline");
+    io.once("iamonline", (data) => {
+      if (!areyouonline.includes(data)) {
+        areyouonline.push(data);
+      }
+    });
+    setTimeout(() => {
+      OnlineUsers = [...areyouonline];
+      io.emit("onlineUsers", OnlineUsers);
+      areyouonline = [];
+    }, 500);
+  }, 6000);
+  
 
 app.use((req, res, next) => {
   res.redirect('/');
