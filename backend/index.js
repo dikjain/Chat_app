@@ -189,9 +189,9 @@ io.on("connection", (socket) => {
   });
 });
 
-let areyouonline = []
 
-  setInterval(() => {
+setInterval(() => {
+    let areyouonline = []
     io.emit("areyouonline");
     io.on("iamonline", (data) => {
       if (!areyouonline.includes(data)) {
