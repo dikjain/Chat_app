@@ -12,6 +12,7 @@ import { Server } from "socket.io";  // Import Socket.IO Server
 import http from 'http';  // Import http module
 import path from 'path';
 import { log } from 'console';
+import { setInterval } from 'timers/promises';
 
 
 dotenv.config();
@@ -169,6 +170,21 @@ io.on("connection", (socket) => {
       io.emit("onlineUsers", OnlineUsers);
     }, 1250);
   });
+  
+  let areyouonline = []
+
+  setInterval(()=>{
+    io.emit("areyouonline");
+    io.on("iamonline",(data)=>{
+      if(!areyouonline.includes(data)){
+        areyouonline.push(data)
+      }
+    })
+    setTimeout(()=>{
+      OnlineUsers = areyouonline
+      io.emit("onlineUsers", OnlineUsers);
+    },500)
+  },6000)
   
   // Handle disconnection
   socket.on("disconnect", () => {
