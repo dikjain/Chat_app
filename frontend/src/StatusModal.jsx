@@ -28,7 +28,7 @@ import { EffectCards } from 'swiper/modules';
 import ViewStatusModal from './ViewStatusModal';
 
 function StatusModal({children}) {
-  const { user } = ChatState();
+  const { user, primaryColor, secondaryColor } = ChatState();
   const toast = useToast();   
   const [status, setStatus] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -144,19 +144,19 @@ function StatusModal({children}) {
 
       <Modal isOpen={isOpen} onClose={onClose} size="full">
         <ModalOverlay />
-        <ModalContent bg="black" color="green.400" overflow="hidden">
+        <ModalContent bg="black" color={secondaryColor} overflow="hidden">
           <ModalHeader>Update Your Status</ModalHeader>
-          <ModalCloseButton bg="green.400" color="black" />
+          <ModalCloseButton bg={secondaryColor} color="black" />
           <ModalBody display="flex"  flexDirection={{ base: "column", md: "row" }} w={{base:"100%",md:"100%"}}>
             {/* Left side: Display current status */}
             <ViewStatusModal setStatus={setStatus} currUser={user} fetchStatus={fetchStatus} status={status.status} user={user}/>
 
             {/* Right side: Add new status */}
             <Box flex="1" ml={{ base: 0, md: 2 }}>
-              <ModalHeader color="green.400">Add New Status</ModalHeader>
+              <ModalHeader color={secondaryColor}>Add New Status</ModalHeader>
               <Box>
-                <Text color="green.400">Upload an image</Text>
-                <Box onClick={takeImage} bg="green.400" height={{ base: "30vh", md: "50vh" }} display={"flex"} justifyContent={"center"} alignItems={"center"}  color="black" p={2} borderRadius="md" cursor="pointer">
+                <Text color={secondaryColor}>Upload an image</Text>
+                <Box onClick={takeImage} bg={secondaryColor} height={{ base: "30vh", md: "50vh" }} display={"flex"} justifyContent={"center"} alignItems={"center"}  color="black" p={2} borderRadius="md" cursor="pointer">
                     {statusContent.imageUrl ? <Image src={statusContent.imageUrl} objectFit={"cover"} height={"100%"} alt="Status Image" /> : <Text>No image uploaded</Text>}
                 </Box>
               </Box>
@@ -166,8 +166,8 @@ function StatusModal({children}) {
                 value={statusContent.text}
                 onChange={(e) => setStatusContent((prev) => ({ ...prev, text: e.target.value }))}
                 bg="black"
-                color="green.400"
-                borderColor="green.400"
+                color={secondaryColor}
+                borderColor={secondaryColor}
                 _placeholder={{ color: "gray.500" }}
               />
               <Button colorScheme="green" mt={3} onClick={CreateStatus} isLoading={isLoading}>

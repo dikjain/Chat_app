@@ -21,7 +21,7 @@ const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
   const [onlinepeople ,setonlinepeople] = useState([]) 
 
-  const { selectedChat, setSelectedChat, user, chats, setChats , a , chatsVideo } = ChatState();
+  const { selectedChat, setSelectedChat, user, chats, setChats , a , chatsVideo, primaryColor, secondaryColor } = ChatState();
 
   const toast = useToast();
 
@@ -123,7 +123,7 @@ const MyChats = ({ fetchAgain }) => {
         width="100%"
         justifyContent="space-around"
         alignItems="center"
-        color={"#48bb78"}
+        color={primaryColor}
         fontFamily={"Atomic Age"}
         
         >
@@ -148,8 +148,8 @@ const MyChats = ({ fetchAgain }) => {
         h="100%"
         borderRadius="lg"
         overflowY="scroll"
-        border={"2px solid #48bb78"}
-        boxShadow={"0px 0px 10px 5px green"}
+        border={`2px solid ${primaryColor}`}
+        boxShadow={`0px 0px 10px 5px ${secondaryColor}`}
         >
         {chats ? (
             chats.map((chat) => (
@@ -157,9 +157,9 @@ const MyChats = ({ fetchAgain }) => {
               className="chat"
               onClick={selectedChat ? () => !a && setSelectedChat(chat) : () => setSelectedChat(chat)}
               cursor="pointer"
-              bg={selectedChat ? (selectedChat._id === chat._id ? "#48bb78" : "#E8E8E8") : "#E8E8E8"}
-                boxShadow={selectedChat ? (selectedChat._id === chat._id ? "green 0px 0px 12px 5px" : "green 0px 0px 7px 2px") : "green 0px 0px 7px 2px"}
-                border={"green solid 2px"}
+              bg={selectedChat ? (selectedChat._id === chat._id ? primaryColor : "#E8E8E8") : "#E8E8E8"}
+                boxShadow={selectedChat ? (selectedChat._id === chat._id ? `${secondaryColor} 0px 0px 12px 5px` : `${secondaryColor} 0px 0px 7px 2px`) : `${secondaryColor} 0px 0px 7px 2px`}
+                border={`${secondaryColor} solid 2px`}
                 transition={"all 0.2s ease-in-out"}
                 px={3}
                 transform={"translateY(-100px)"}
@@ -174,7 +174,7 @@ const MyChats = ({ fetchAgain }) => {
                 fontWeight={"300"}
                 zIndex={"30"}
               >
-                {!chat.isGroupChat &&  (chat.users[0]._id == user._id ? onlinepeople.includes(chat.users[1]._id) :onlinepeople.includes(chat.users[0]._id)) && <div id="online" style={{right:"5%",width:"10px",top:"40%",translate:"0px 0px", height:"10px",borderRadius:"999px", position:"absolute",backgroundColor:"green"}}></div>}
+                {!chat.isGroupChat &&  (chat.users[0]._id == user._id ? onlinepeople.includes(chat.users[1]._id) :onlinepeople.includes(chat.users[0]._id)) && <div id="online" style={{right:"5%",width:"10px",top:"40%",translate:"0px 0px", height:"10px",borderRadius:"999px", position:"absolute",backgroundColor:secondaryColor}}></div>}
                 <Text className="yo" transform={"translateY(200px)"} opacity={0} fontWeight={"500"} color={ selectedChat ? (selectedChat._id === chat._id ? "white" : "black") : "black"}>
                   {!chat.isGroupChat
                     ? getSender(loggedUser, chat.users)
@@ -193,7 +193,7 @@ const MyChats = ({ fetchAgain }) => {
                 )}
 
                 {chatsVideo.some(videouser => videouser.selectedChat._id === chat._id) && (
-                  <FaVideo style={{ position: "absolute", right: "40px", top: "50%", transform: "translateY(-50%)", color: "green" }} />
+                  <FaVideo style={{ position: "absolute", right: "40px", top: "50%", transform: "translateY(-50%)", color: secondaryColor }} />
                 )}
               </Box>
             ))

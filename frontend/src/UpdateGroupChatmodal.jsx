@@ -31,7 +31,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   const [renameloading, setRenameLoading] = useState(false);
   const toast = useToast();
 
-  const { selectedChat, setSelectedChat, user } = ChatState();
+  const { selectedChat, setSelectedChat, user, primaryColor, secondaryColor } = ChatState();
 
   const handleSearch = async (query) => {
     setSearch(query);
@@ -209,17 +209,18 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
 
       <Modal onClose={onClose} isOpen={isOpen} isCentered>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent bg="black" color={secondaryColor}>
           <ModalHeader
             fontSize="35px"
             fontFamily="Work sans"
             display="flex"
             justifyContent="center"
+            color={secondaryColor}
           >
             {selectedChat.chatName}
           </ModalHeader>
 
-          <ModalCloseButton />
+          <ModalCloseButton bg={secondaryColor} color="black" />
           <ModalBody display="flex" flexDir="column" alignItems="center">
             <Box w="100%" display="flex" flexWrap="wrap" pb={3}>
               {selectedChat.users.map((u) => (
@@ -237,10 +238,14 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                 mb={3}
                 value={groupChatName}
                 onChange={(e) => setGroupChatName(e.target.value)}
+                bg="black"
+                color={secondaryColor}
+                borderColor={secondaryColor}
+                _placeholder={{ color: "gray.500" }}
               />
               <Button
                 variant="solid"
-                colorScheme="teal"
+                colorScheme="green"
                 ml={1}
                 isLoading={renameloading}
                 onClick={handleRename}
@@ -253,11 +258,15 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                 placeholder="Add User to group"
                 mb={1}
                 onChange={(e) => handleSearch(e.target.value)}
+                bg="black"
+                color={secondaryColor}
+                borderColor={secondaryColor}
+                _placeholder={{ color: "gray.500" }}
               />
             </FormControl>
 
             {loading ? (
-              <Spinner size="lg" />
+              <Spinner size="lg" color={secondaryColor} />
             ) : (
               searchResult?.map((user) => (
                 <UserListItem

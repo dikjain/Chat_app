@@ -59,7 +59,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   //api
   const sound = new Audio(Notification);
-  const { selectedChat, setSelectedChat, setChats, user, notification, setNotification , setVideocall  ,setIsOneOnOneCall , videoCallUser, setVideoCallUser , setChatsVideo } = ChatState();
+  const { selectedChat, setSelectedChat, setChats, user, notification, setNotification , setVideocall  ,setIsOneOnOneCall , videoCallUser, setVideoCallUser , setChatsVideo, primaryColor, secondaryColor } = ChatState();
 
   const fetchMessages = useCallback(async () => {
     if (!selectedChat) return;
@@ -427,7 +427,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             justifyContent={{ base: "space-between" }}
             alignItems="center"
             fontFamily={"Atomic Age"}
-            color={"#48bb78"}
+            color={primaryColor}
           >
             <IconButton
               display={{ base: "flex", md: "none" }}
@@ -437,9 +437,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             {messages &&
               (!selectedChat.isGroupChat ? (
                 <>
-                  <Box display="flex" color={"#48bb78"} gap={4} alignItems="center">
+                  <Box display="flex" color={primaryColor} gap={4} alignItems="center">
                     {getSender(user, selectedChat.users).length > 7 && window.innerWidth < 550 ? (
-                      <Avatar size="sm" border={"1px solid #48bb78"} name={getSender(user, selectedChat.users)} src={getSenderFull(user, selectedChat.users).pic} />
+                      <Avatar size="sm" border={`1px solid ${primaryColor}`} name={getSender(user, selectedChat.users)} src={getSenderFull(user, selectedChat.users).pic} />
                     ) : (
                       getSender(user, selectedChat.users)
                     )}
@@ -448,7 +448,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 </>
               ) : (
                 <>
-                  <Box display="flex" color={"#48bb78"} gap={4} alignItems="center">
+                  <Box display="flex" color={primaryColor} gap={4} alignItems="center">
                     {selectedChat.chatName.toUpperCase()}
                     <UpdateGroupChatModal
                       fetchMessages={fetchMessages}
@@ -465,7 +465,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 onClick={() => {setVideocall(true); selectedChat.isGroupChat ? setIsOneOnOneCall(false) : setIsOneOnOneCall(true); handleVideoCall()}}
               /> 
               {videoCallUser && videoCallUser.map((u,i) => (selectedChat._id == u.selectedChat._id &&
-              <img key={i} src={u.user.pic}  alt="User" style={{ position: "absolute",backgroundColor:"black", borderRadius: "50%", width: "20px",border: "0.5px solid #48bb78", height: "20px", transform: `translateX(${-70*i}%)`, right: "60px" }} />
+              <img key={i} src={u.user.pic}  alt="User" style={{ position: "absolute",backgroundColor:"black", borderRadius: "50%", width: "20px",border: `0.5px solid ${primaryColor}`, height: "20px", transform: `translateX(${-70*i}%)`, right: "60px" }} />
               ))}
           </Box>
           <Box
@@ -474,8 +474,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             flexDir="column"
             justifyContent="flex-end"
             p={3}
-            border={"2px solid #48bb78"}
-            boxShadow={"0px 0px 10px 5px green"}
+            border={`2px solid ${primaryColor}`}
+            boxShadow={`0px 0px 10px 5px ${secondaryColor}`}
             bg="#020202"
             w="100%"
             h="100%"
@@ -490,7 +490,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 h={10}
                 alignSelf="center"
                 margin="auto"
-                backgroundColor={"#48bb78"}
+                backgroundColor={primaryColor}
                 _before={{
                   content: '""',
                   position: "absolute",
@@ -520,7 +520,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   // h="70%"
                   variant="filled"
                   bg="black"
-                  color={"#48bb78"}
+                  color={primaryColor}
                   pos="absolute"
                   placeholder="Ai Assistant..."
                   top={"-70%"}
@@ -538,7 +538,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   height={"40px"}
                   padding={"0px"}
                   margin={"0px"}
-                  bg={"#48bb78"}
+                  bg={primaryColor}
                   ml={2}
                   _hover={{}}
                   onClick={handleFileUpload}
@@ -546,7 +546,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 <Input
                   variant="filled"
                   bg="#E0E0E0"
-                  color={"#48bb78"}
+                  color={primaryColor}
                   placeholder="Enter a message.."
                   value={newMessage}
                   onChange={typingHandler}
@@ -556,12 +556,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   icon={<MdMic />}
                   size="sm"
                   variant="outline"
-                  colorScheme={isListening ? "red" : "#48bb78"}
+                  colorScheme={isListening ? "red" : primaryColor}
                   aria-label="Toggle Speech Recognition"
                   height={"40px"}
                   padding={"0px"}
                   margin={"0px"}
-                  bg={isListening ? "red" : "#48bb78"}
+                  bg={isListening ? "red" : primaryColor}
                   ml={2}
                   _hover={{}}
                   onClick={toggleSpeechRecognition}
@@ -575,7 +575,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   height={"40px"}
                   padding={"0px"}
                   margin={"0px"}
-                  bg={"#48bb78"}
+                  bg={primaryColor}
                   ml={2}
                   _hover={{}}
                   onClick={sendLocation}
@@ -587,7 +587,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       ) : (
         // to get socket.io on same page
         <Box display="flex" alignItems="center" justifyContent="center" h="100%">
-          <Text fontSize="3xl" pb={3} color={"#48bb78"} fontFamily="Atomic Age">
+          <Text fontSize="3xl" pb={3} color={primaryColor} fontFamily="Atomic Age">
             Click on a user to start chatting
           </Text>
         </Box>

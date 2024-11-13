@@ -29,7 +29,7 @@ const ProfileModal = ({ children, profileUser }) => {
   const [naam, setNaam] = useState("");
   const [isViewStatusModal, setIsViewStatusModal] = useState(false); // State to track modal type
 
-  const { user, setUser } = ChatState();
+  const { user, setUser, primaryColor, secondaryColor } = ChatState();
   if (!profileUser) profileUser = user;
 
   const toast = useToast();
@@ -195,7 +195,7 @@ const ProfileModal = ({ children, profileUser }) => {
             fontFamily="Roboto"
             display="flex"
             justifyContent="center"
-            color={"#48bb78"}
+            color={primaryColor}
           >
             {!isNaam && profileUser && profileUser.name.toUpperCase()}
             {isNaam && (
@@ -203,7 +203,7 @@ const ProfileModal = ({ children, profileUser }) => {
                 type="text"
                 placeholder="name"
                 bg={"black"}
-                color={"#48bb78"}
+                color={primaryColor}
                 fontSize={"20px"}
                 fontWeight={"bold"}
                 mx={"10px"}
@@ -216,7 +216,7 @@ const ProfileModal = ({ children, profileUser }) => {
             )}
             {isNaam && <Button onClick={handleNameChange}>Done</Button>}
           </ModalHeader>
-          <ModalCloseButton bg={"#48bb78"} fontWeight={"bold"} />
+          <ModalCloseButton bg={primaryColor} fontWeight={"bold"} />
           <ModalBody
             display="flex"
             flexDir="column"
@@ -224,18 +224,18 @@ const ProfileModal = ({ children, profileUser }) => {
             justifyContent="space-between"
           >
             {picupdate ? (
-              <Spinner size="xl" color="#48bb78" thickness="4px" speed="0.65s" />
+              <Spinner size="xl" color={primaryColor} thickness="4px" speed="0.65s" />
             ) : (
               <Image
                 transition={"all 0.3s ease"}
-                border={"4px solid #48bb78"}
+                border={`4px solid ${primaryColor}`}
                 borderRadius="full"
                 boxSize="150px"
                 src={profileUser && profileUser.pic}
                 alt={profileUser && profileUser.name}
               />
             )}
-            <Text fontSize={{ base: "28px", md: "30px" }} color={"#48bb78"}>
+            <Text fontSize={{ base: "28px", md: "30px" }} color={primaryColor}>
               {profileUser && `Email: ${profileUser.email}`}
             </Text>
           </ModalBody>
@@ -243,7 +243,7 @@ const ProfileModal = ({ children, profileUser }) => {
             {profileUser && user._id === profileUser._id && (
               <>
                 <Button
-                  bg={"#48bb78"}
+                  bg={primaryColor}
                   onClick={changePic}
                   color={"white"}
                   fontWeight={"bold"}
@@ -254,7 +254,7 @@ const ProfileModal = ({ children, profileUser }) => {
                   Change Picture
                 </Button>
                 <Button
-                  bg={"#48bb78"}
+                  bg={primaryColor}
                   onClick={handleUpdate}
                   color={"white"}
                   fontWeight={"bold"}
@@ -268,7 +268,7 @@ const ProfileModal = ({ children, profileUser }) => {
             )}
             {profileUser && user._id !== profileUser._id && (
               <Button
-                bg={"#48bb78"}
+                bg={primaryColor}
                 onClick={handleViewStatus}
                 color={"white"}
                 fontWeight={"bold"}
@@ -287,7 +287,7 @@ const ProfileModal = ({ children, profileUser }) => {
       {isViewStatusModal && (
         <Modal size="xl" onClose={handleCloseModal}  isOpen={isViewStatusModal} isCentered>
           <ModalOverlay />
-          <ModalContent bg="black" color="#48bb78" borderColor="#48bb78" borderWidth={2}  rounded={"10px"}>
+          <ModalContent bg="black" color={primaryColor} borderColor={primaryColor} borderWidth={2}  rounded={"10px"}>
             <ViewStatusModal
               currUser={user}
               isOpen={isViewStatusModal}

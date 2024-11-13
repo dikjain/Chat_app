@@ -5,14 +5,14 @@ import { ChatState } from './Context/Chatprovider';
 import axios from 'axios';
 
 function LanguageModal({children}) {
-  const { user, setUser } = ChatState();
+  const { user, setUser, primaryColor, secondaryColor } = ChatState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const languages = ['Hindi', 'English', 'Spanish', 'French', 'German', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Bengali'];
   const [selectedLanguage, setSelectedLanguage] = useState(null);
   const [isLoading, setIsLoading] = useState(false); // Added state for loading
 
   useEffect(() => {
- if(user.TranslateLanguage){
+    if(user.TranslateLanguage){
       setSelectedLanguage(user.TranslateLanguage);
     } else {
       setSelectedLanguage("English");
@@ -58,11 +58,11 @@ function LanguageModal({children}) {
 
     <Modal isOpen={isOpen}  onClose={onClose} size="md" isCentered>
       <ModalOverlay />
-      <ModalContent bg="black" color="green.400" overflow="hidden">
+      <ModalContent bg="black" color={secondaryColor} overflow="hidden">
         <ModalHeader>Choose Your Language</ModalHeader>
-        <ModalCloseButton bg="green.400" color="black" />
+        <ModalCloseButton bg={secondaryColor} color="black" />
         <ModalBody display="flex" flexDirection="column" alignItems="center" justifyContent="center">
-          <Select placeholder="Select language" bg="#48bb78" fontFamily={"Orbitron"} color="black" width="full" mt={2} mb={2} value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.target.value)}>
+          <Select placeholder="Select language" bg={primaryColor} fontFamily={"Orbitron"} color="black" width="full" mt={2} mb={2} value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.target.value)}>
             {languages.map((language) => (
               <option key={language} value={language}>{language}</option>
             ))}
@@ -70,10 +70,10 @@ function LanguageModal({children}) {
           {isLoading && <Spinner />} {/* Added Spinner */}
         </ModalBody>
         <ModalFooter display="flex" justifyContent="space-between">
-          <Button colorScheme="green" mr={3} onClick={handleLanguageChange} isLoading={isLoading}>
+          <Button bg={primaryColor} color="white" mr={3} onClick={handleLanguageChange} isLoading={isLoading}>
             {isLoading ? <Spinner /> : "Submit"}
           </Button>
-          <Button colorScheme="red" mr={3} onClick={onClose}>
+          <Button bg="red" color={"white"} mr={3} onClick={onClose}>
             Close
           </Button>
         </ModalFooter>

@@ -25,7 +25,6 @@
     align-items: center;
     justify-content: center;
     /* background:linear-gradient(45deg, rgba(0,255,0,0.7) , black,rgba(0,255,0,0.7)); */
-    background:linear-gradient(45deg, black,black,rgba(0,255,0,0.7),black,black);
 }
 
 .oii{
@@ -34,7 +33,6 @@
     font-size: 50px;
     padding-left: 5px;
     padding-right: 5px;
-    border-bottom: 2px #48bb78 solid;
 }
 .oil{
     font-size: 35px;

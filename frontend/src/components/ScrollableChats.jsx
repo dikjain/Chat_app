@@ -17,7 +17,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
   const [speakVisible, setSpeakVisible] = useState(null); // State to control which message has the "Speak" button
   const [boling, setboling] = useState(false); // State to control which message has the "Speak" button
 
-  const { user , setChats , selectedChat , a , seta } = ChatState();
+  const { user , setChats , selectedChat , a , seta, primaryColor, secondaryColor } = ChatState();
   const messageRef = useRef(null);
   const messageRef2 = useRef(null);
   const toast = useToast();
@@ -333,7 +333,7 @@ useEffect(()=>{
 
   return (
     <ScrollableFeed>
-    { messages.length -qq > 0 ? <button style={{width:"50%",padding:"3px 0px",transform:"translateX(50%)", borderRadius:"999px" , backgroundColor:"#48bb78",alignSelf:"center",justifySelf:"center" , color:"white" }} onClick={()=> {messages.length -qq > 10 ?setqq((l)=>l+10) : setqq(messages.length);setd(true)}}>load more</button> : null}
+    { messages.length -qq > 0 ? <button style={{width:"50%",padding:"3px 0px",transform:"translateX(50%)", borderRadius:"999px" , backgroundColor:primaryColor,alignSelf:"center",justifySelf:"center" , color:"white" }} onClick={()=> {messages.length -qq > 10 ?setqq((l)=>l+10) : setqq(messages.length);setd(true)}}>load more</button> : null}
       {vismsg &&
         vismsg.map((m, i) => (
           <div className="allmsg" style={{ display: "flex", position: "relative"}} key={m._id}>
@@ -372,8 +372,8 @@ useEffect(()=>{
                 maxWidth: "75%",
                 position: "relative",
                 zIndex:"50",
-                color:`${m.sender._id === user._id ? "#48bb78" : "#fff"}`,
-                border:`${m.sender._id === user._id ? "1px solid #fff" : "1px solid #48bb78"}`,
+                color:`${m.sender._id === user._id ? primaryColor : "#fff"}`,
+                border:`${m.sender._id === user._id ? "1px solid #fff" : `1px solid ${primaryColor}`}`,
                 display:"flex",
                 fontFamily:"'DynaPuff', sans-serif",
                 alignItems:"center",
@@ -386,7 +386,7 @@ useEffect(()=>{
                 overflowWrap: "break-word",
               }}
               >
-              {selectedChat.isGroupChat && <span style={{fontWeight:"bold", color:"#48bb78"}}>{m.sender._id === user._id ? "" : m.sender.name + " : "}</span>} 
+              {selectedChat.isGroupChat && <span style={{fontWeight:"bold", color:primaryColor}}>{m.sender._id === user._id ? "" : m.sender.name + " : "}</span>} 
               {m.content ? (
                 m.type === "location" ? (
                   <a href={m.content} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline", color: "blue", fontFamily:"sans-serif,Roboto, Arial" }}>{m.content}</a>
@@ -412,7 +412,7 @@ useEffect(()=>{
                 }}>
                 </div>
               )}
-              {m.file && <Text style={{ fontSize:"10px",maxWidth:"150px" ,textAlign:"center",fontWeight:"semibold",color:`${m.sender._id === user._id ? "#48bb78" : "#fff"}`}}>{m.file.split("/").pop()}</Text>}
+              {m.file && <Text style={{ fontSize:"10px",maxWidth:"150px" ,textAlign:"center",fontWeight:"semibold",color:`${m.sender._id === user._id ? primaryColor : "#fff"}`}}>{m.file.split("/").pop()}</Text>}
               <span
               style={{
                 fontFamily:" 'Atomic Age', sans-serif,Roboto, Arial",
@@ -420,7 +420,7 @@ useEffect(()=>{
                 right:`${m.sender._id === user._id ? "50%" : ""}`,
                 position: "absolute",
                 zIndex:"100",
-                backgroundColor:"grey",
+                backgroundColor:secondaryColor,
                 color:"white",
               }}
               className={`yotem ${m.sender._id === user._id ? "raayit" : "lefat" }`}
@@ -430,15 +430,15 @@ useEffect(()=>{
                 <span
                 ref={messageRef}
                   onClick={() => speakText(m.content,i)}
-                  onMouseEnter={() => {messageRef.current.style.backgroundColor = "green";}}
-                  onMouseLeave={() => {messageRef.current.style.backgroundColor = "grey";}}
+                  onMouseEnter={() => {messageRef.current.style.backgroundColor = secondaryColor;}}
+                  onMouseLeave={() => {messageRef.current.style.backgroundColor = secondaryColor;}}
 
                   style={{
                     position: "absolute",
                     left: `${m.sender._id === user._id ? "-50px" : ""}`,
                     right: `${m.sender._id === user._id ? "" : "-50px"}`,
                     top: "30px",
-                    backgroundColor: "grey",
+                    backgroundColor: secondaryColor,
                     color: "white",
                     borderRadius: "5px",
                     padding: "2px 5px",
@@ -455,13 +455,13 @@ useEffect(()=>{
                 ref={messageRef2}
                   onClick={() => deleteMessage(m._id)}
                   onMouseEnter={() => {messageRef2.current.style.backgroundColor = "red";}}
-                  onMouseLeave={() => {messageRef2.current.style.backgroundColor = "grey";}}
+                  onMouseLeave={() => {messageRef2.current.style.backgroundColor = secondaryColor;}}
                   style={{
                     position: "absolute",
                     left: `${m.sender._id === user._id ? "-92px" : ""}`,
                     right: `${m.sender._id === user._id ? "" : "-92px"}`,
                     top: "0px",
-                    backgroundColor: "grey",
+                    backgroundColor: secondaryColor,
                     color: "white",
                     borderRadius: "5px",
                     padding: "2px 5px",

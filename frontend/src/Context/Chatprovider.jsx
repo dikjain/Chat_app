@@ -15,6 +15,8 @@ const ChatProvider = ({ children }) => {
   const [isOneOnOneCall, setIsOneOnOneCall] = useState(true)
   const [videoCallUser, setVideoCallUser] = useState([])
   const [chatsVideo, setChatsVideo] = useState([])
+  const [primaryColor, setPrimaryColor] = useState("#48bb78")
+  const [secondaryColor, setSecondaryColor] = useState("green")
 
 
   useEffect(() => {
@@ -46,7 +48,11 @@ const ChatProvider = ({ children }) => {
         videoCallUser,
         setVideoCallUser,
         chatsVideo,
-        setChatsVideo
+        setChatsVideo,
+        primaryColor,
+        setPrimaryColor,
+        secondaryColor,
+        setSecondaryColor
       }}
     >
       {children}

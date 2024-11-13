@@ -28,7 +28,7 @@ import {
     const [loading, setLoading] = useState(false);
     const toast = useToast();
   
-    const { user, chats, setChats } = ChatState();
+    const { user, chats, setChats, primaryColor, secondaryColor } = ChatState();
   
     const handleGroup = (userToAdd) => {
       if (selectedUsers.includes(userToAdd)) {
@@ -81,7 +81,7 @@ import {
     const handleSubmit = async () => {
       if (!groupChatName || !selectedUsers) {
         toast({
-          title: "Please fill all the feilds",
+          title: "Please fill all the fields",
           status: "warning",
           duration: 5000,
           isClosable: true,
@@ -131,22 +131,27 @@ import {
   
         <Modal onClose={onClose} isOpen={isOpen} isCentered>
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent bg="black" color={secondaryColor} border={`1px solid ${primaryColor}`}>
             <ModalHeader
               fontSize="35px"
               fontFamily="Work sans"
               display="flex"
               justifyContent="center"
+              color={secondaryColor}
             >
               Create Group Chat
             </ModalHeader>
-            <ModalCloseButton />
+            <ModalCloseButton bg={secondaryColor} color="black" />
             <ModalBody display="flex" flexDir="column" alignItems="center">
               <FormControl>
                 <Input
                   placeholder="Chat Name"
                   mb={3}
                   onChange={(e) => setGroupChatName(e.target.value)}
+                  bg="black"
+                  color={secondaryColor}
+                  borderColor={secondaryColor}
+                  _placeholder={{ color: "gray.500" }}
                 />
               </FormControl>
               <FormControl>
@@ -154,6 +159,10 @@ import {
                   placeholder="Add Users eg: abc123, ad"
                   mb={1}
                   onChange={(e) => handleSearch(e.target.value)}
+                  bg="black"
+                  color={secondaryColor}
+                  borderColor={secondaryColor}
+                  _placeholder={{ color: "gray.500" }}
                 />
               </FormControl>
               <Box w="100%" display="flex" flexWrap="wrap">
@@ -166,7 +175,6 @@ import {
                 ))}
               </Box>
               {loading ? (
-                // <ChatLoading />
                 <div>Loading...</div>
               ) : (
                 searchResult
@@ -181,7 +189,7 @@ import {
               )}
             </ModalBody>
             <ModalFooter>
-              <Button onClick={handleSubmit} colorScheme="blue">
+              <Button onClick={handleSubmit} colorScheme="green">
                 Create Chat
               </Button>
             </ModalFooter>

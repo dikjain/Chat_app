@@ -51,6 +51,10 @@ function SideDrawer() {
     setNotification,
     chats,
     setChats,
+    primaryColor,
+    setPrimaryColor,
+    secondaryColor,
+    setSecondaryColor
   } = ChatState();
   
   const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
@@ -140,29 +144,29 @@ function SideDrawer() {
         justifyContent="space-between"
         alignItems="center"
         bg="black" // Black background
-        color="green.400" // Neon green text
+        color={secondaryColor} // Neon green text
         w="100%"
         p="5px 10px"
-        border={"#48bb78 solid 3px"}
+        border={`${primaryColor} solid 3px`}
       >
         <Tooltip label="Search Users to chat" hasArrow placement="bottom">
           <Button variant="ghost" onClick={onOpen} colorScheme="green">
-            <FaSearch fill="#48bb78" />
+            <FaSearch fill={primaryColor} />
             <Text
               display={{ base: "none", md: "flex" }}
               px={4}
-              color="green.400"
+              color={primaryColor}
             >
               Search User
             </Text>
           </Button>
         </Tooltip>
-        <Text fontSize="2xl" fontFamily="Atomic Age" textColor="green.400">
+        <Text fontSize="2xl" fontFamily="Atomic Age" textColor={secondaryColor}>
           A{" "}
-          <span className="oii oil" fontSize={"1px !important"}>
+          <span className="oii oil" style={{borderBottom: `${primaryColor} solid 2px`,textDecoration: `line-through ${primaryColor}`}} fontSize={"1px !important"}>
             Basic
           </span>{" "}
-          <span className="oii oil">Chat</span> App
+          <span className="oii oil" style={{borderBottom: `${primaryColor} solid 2px`}}>Chat</span> App
         </Text>
         <div>
           <Menu zIndex={1000}>
@@ -175,12 +179,12 @@ function SideDrawer() {
                 fontSize="2xl"
                 m={1}
                 borderRadius={"99px"}
-                backgroundColor={"#48bb78"}
+                backgroundColor={primaryColor}
               />
             </MenuButton>
-            <MenuList pl={2} bg="black" color="green.400" zIndex={1000}>
+            <MenuList pl={2} bg="black" color={secondaryColor} zIndex={1000}>
               {!notification.length && (
-                <Text color="green.400">No New Messages</Text>
+                <Text color={secondaryColor}>No New Messages</Text>
               )}
 
               {/* Limit the notifications to the latest 10 */}
@@ -192,7 +196,7 @@ function SideDrawer() {
                     setNotification(notification.filter((n) => n !== notif));
                   }}
                   bg="black" // Black background
-                  color="#48bb78" // Neon green text
+                  color={primaryColor} // Neon green text
                   zIndex={1000}
                 >
                   {notif.chat.isGroupChat
@@ -209,41 +213,80 @@ function SideDrawer() {
               rightIcon={
                 <ChevronDownIcon
                   borderRadius={"999px"}
-                  backgroundColor={"#48bb78"}
+                  backgroundColor={primaryColor}
                 />
               }
-              color="green.400"
+              color={secondaryColor}
             >
               <Avatar
-                border={"2px solid #48bb78"}
+                border={`2px solid ${primaryColor}`}
                 size="sm"
                 cursor="pointer"
                 name={user.name}
                 src={user.pic}
               />
             </MenuButton>
-            <MenuList bg="black" color="green.400" zIndex="overlay">
+            <MenuList bg="black" color={secondaryColor} zIndex="overlay">
               <ProfileModal user={user} setUser={setUser}>
-                <MenuItem bg="black" color="green.400" zIndex={1000}>
+                <MenuItem bg="black" color={secondaryColor} zIndex={1000}>
                   My Profile
                 </MenuItem>{" "}
               </ProfileModal>
               <MenuDivider />
               <StatusModal>
-                <MenuItem bg="black" color="green.400">
+                <MenuItem bg="black" color={secondaryColor}>
                   My Status
                 </MenuItem>
               </StatusModal>
               <MenuDivider />
               <LanguageModal>
-                <MenuItem bg="black" color="green.400">
+                <MenuItem bg="black" color={secondaryColor}>
                   Language
                 </MenuItem>
               </LanguageModal>
               <MenuDivider />
-              <MenuItem onClick={logoutHandler} bg="black" color="green.400" zIndex={1000}>
+              <MenuItem onClick={logoutHandler} bg="black" color={secondaryColor} zIndex={1000}>
                 Logout
               </MenuItem>
+              <MenuDivider />
+              <Box display="flex" justifyContent="space-around" alignItems="center" p={2}>
+                <Box
+                  as="button"
+                  borderRadius="50%"
+                  bg="linear-gradient(45deg,black , #e69500,#d48500, black)"
+                  w="25px"
+                  h="25px"
+                  border={"0.5px white solid"}
+                  onClick={() => {setPrimaryColor('#e69500'); setSecondaryColor('#d48500')}}
+                />
+                <Box
+                  as="button"
+                  borderRadius="50%"
+                  bg="linear-gradient(45deg,black , #6b0073,#950aff, black)"
+                  w="25px"
+                  h="25px"
+                  border={"0.5px white solid"}
+                  onClick={() => {setPrimaryColor('#a32bff'); setSecondaryColor('#950aff')}}
+                />
+                <Box
+                  as="button"
+                  borderRadius="50%"
+                  bg="linear-gradient(45deg,black , #0099b0,#007a92, black)"
+                  w="25px"
+                  h="25px"
+                  border={"0.5px white solid"}
+                  onClick={() => {setPrimaryColor('#0099b0'); setSecondaryColor('#007a92')}}
+                />
+                <Box
+                  as="button"
+                  borderRadius="50%"
+                  bg="linear-gradient(45deg,black , #48bb78,green, black)"
+                  w="25px"
+                  h="25px"
+                  border={"0.5px white solid"}
+                  onClick={() => {setPrimaryColor('#48bb78'); setSecondaryColor('green')}}
+                />
+              </Box>
             </MenuList>
           </Menu>
         </div>
@@ -251,10 +294,10 @@ function SideDrawer() {
 
       <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
         <DrawerOverlay />
-        <DrawerContent bg="black" color="green.400">
+        <DrawerContent bg="black" color={secondaryColor}>
           {" "}
           {/* Black background for the drawer */}
-          <DrawerHeader borderBottomWidth="1px" color="green.400">
+          <DrawerHeader borderBottomWidth="1px" color={primaryColor}>
             Search Users
           </DrawerHeader>
           <DrawerBody>
@@ -265,8 +308,8 @@ function SideDrawer() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 bg="black" // Black background
-                color="green.400" // Neon green text
-                borderColor="green.400" // Neon green border
+                color={secondaryColor} // Neon green text
+                borderColor={primaryColor} // Neon green border
                 _placeholder={{ color: "gray.500" }} // Placeholder color
               />
               <Button onClick={handleSearch} colorScheme="green">
@@ -285,7 +328,7 @@ function SideDrawer() {
               ))
             )}
             {loadingChat && (
-              <Spinner ml="auto" display="flex" color="green.400" />
+              <Spinner ml="auto" display="flex" color={secondaryColor} />
             )}
           </DrawerBody>
         </DrawerContent>
