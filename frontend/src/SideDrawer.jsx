@@ -161,7 +161,7 @@ function SideDrawer() {
             </Text>
           </Button>
         </Tooltip>
-        <Text fontSize="2xl" fontFamily="Atomic Age" textColor={secondaryColor}>
+        <Text fontSize="2xl" fontFamily="Atomic Age" textColor={primaryColor}>
           A{" "}
           <span className="oii oil" style={{borderBottom: `${primaryColor} solid 2px`,textDecoration: `line-through ${primaryColor}`}} fontSize={"1px !important"}>
             Basic

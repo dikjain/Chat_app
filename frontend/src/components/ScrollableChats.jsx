@@ -287,6 +287,8 @@ useEffect(()=>{
     }
   }, [user.token, selectedChat._id, messages, toast, fetchChats]);
 
+
+
   const [c,setc] = useState(null)
   const [translating,setTranslating] = useState(false)
 
@@ -404,12 +406,26 @@ useEffect(()=>{
                   alignItems: "end",
                   justifyContent: "center",
                   borderRadius: "10px",
-                  backgroundImage: `url(${m.file}) `,
+                  backgroundImage: `url(${m.file})`,
                   opacity: 0.8,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
-                  cursor:"pointer"
-                }}>
+                  cursor: "pointer"
+                }}
+              >
+                {/* Lazy loaded thumbnail */}
+                <img
+                  src={m.file}
+                  alt="File thumbnail"
+                  loading="lazy"
+                  style={{
+                    display: "block",
+                    height: "100%",
+                    width: "100%",
+                    objectFit: "cover",
+                    borderRadius: "10px"
+                  }}
+                />
                 </div>
               )}
               {m.file && <Text style={{ fontSize:"10px",maxWidth:"150px" ,textAlign:"center",fontWeight:"semibold",color:`${m.sender._id === user._id ? primaryColor : "#fff"}`}}>{m.file.split("/").pop()}</Text>}
@@ -431,14 +447,14 @@ useEffect(()=>{
                 ref={messageRef}
                   onClick={() => speakText(m.content,i)}
                   onMouseEnter={() => {messageRef.current.style.backgroundColor = secondaryColor;}}
-                  onMouseLeave={() => {messageRef.current.style.backgroundColor = secondaryColor;}}
+                  onMouseLeave={() => {messageRef.current.style.backgroundColor = "grey";}}
 
                   style={{
                     position: "absolute",
                     left: `${m.sender._id === user._id ? "-50px" : ""}`,
                     right: `${m.sender._id === user._id ? "" : "-50px"}`,
                     top: "30px",
-                    backgroundColor: secondaryColor,
+                    backgroundColor: "grey",
                     color: "white",
                     borderRadius: "5px",
                     padding: "2px 5px",
@@ -455,13 +471,13 @@ useEffect(()=>{
                 ref={messageRef2}
                   onClick={() => deleteMessage(m._id)}
                   onMouseEnter={() => {messageRef2.current.style.backgroundColor = "red";}}
-                  onMouseLeave={() => {messageRef2.current.style.backgroundColor = secondaryColor;}}
+                  onMouseLeave={() => {messageRef2.current.style.backgroundColor = "grey";}}
                   style={{
                     position: "absolute",
                     left: `${m.sender._id === user._id ? "-92px" : ""}`,
                     right: `${m.sender._id === user._id ? "" : "-92px"}`,
                     top: "0px",
-                    backgroundColor: secondaryColor,
+                    backgroundColor: "grey",
                     color: "white",
                     borderRadius: "5px",
                     padding: "2px 5px",
