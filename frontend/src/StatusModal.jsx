@@ -146,17 +146,17 @@ function StatusModal({children}) {
         <ModalOverlay />
         <ModalContent bg="black" color={secondaryColor} overflow="hidden">
           <ModalHeader>Update Your Status</ModalHeader>
-          <ModalCloseButton bg={secondaryColor} color="black" />
+          <ModalCloseButton bg={primaryColor} color="black" />
           <ModalBody display="flex"  flexDirection={{ base: "column", md: "row" }} w={{base:"100%",md:"100%"}}>
             {/* Left side: Display current status */}
             <ViewStatusModal setStatus={setStatus} currUser={user} fetchStatus={fetchStatus} status={status.status} user={user}/>
 
             {/* Right side: Add new status */}
             <Box flex="1" ml={{ base: 0, md: 2 }}>
-              <ModalHeader color={secondaryColor}>Add New Status</ModalHeader>
+              <ModalHeader color={primaryColor}>Add New Status</ModalHeader>
               <Box>
-                <Text color={secondaryColor}>Upload an image</Text>
-                <Box onClick={takeImage} bg={secondaryColor} height={{ base: "30vh", md: "50vh" }} display={"flex"} justifyContent={"center"} alignItems={"center"}  color="black" p={2} borderRadius="md" cursor="pointer">
+                <Text color={primaryColor}>Upload an image</Text>
+                <Box onClick={takeImage} bg={primaryColor} height={{ base: "30vh", md: "50vh" }} display={"flex"} justifyContent={"center"} alignItems={"center"}  color="black" p={2} borderRadius="md" cursor="pointer">
                     {statusContent.imageUrl ? <Image src={statusContent.imageUrl} objectFit={"cover"} height={"100%"} alt="Status Image" /> : <Text>No image uploaded</Text>}
                 </Box>
               </Box>
