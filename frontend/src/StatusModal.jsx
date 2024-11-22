@@ -36,7 +36,6 @@ function StatusModal({children}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [statusContent, setStatusContent] = useState({ text: "", imageUrl: "" });
  
-  
 
 
   const takeImage = () => {

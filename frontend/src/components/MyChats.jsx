@@ -174,7 +174,7 @@ const MyChats = ({ fetchAgain }) => {
                 fontWeight={"300"}
                 zIndex={"30"}
               >
-                {!chat.isGroupChat &&  (chat.users[0]._id == user._id ? onlinepeople.includes(chat.users[1]._id) :onlinepeople.includes(chat.users[0]._id)) && <div id="online" style={{right:"5%",width:"10px",top:"40%",translate:"0px 0px", height:"10px",borderRadius:"999px", position:"absolute",backgroundColor:secondaryColor}}></div>}
+                {!chat.isGroupChat && chat.users[0] && chat.users[1] && (chat.users[0]._id == user._id ? onlinepeople.includes(chat.users[1]._id) :onlinepeople.includes(chat.users[0]._id)) && <div id="online" style={{right:"5%",width:"10px",top:"40%",translate:"0px 0px", height:"10px",borderRadius:"999px", position:"absolute",backgroundColor:secondaryColor}}></div>}
                 <Text className="yo" transform={"translateY(200px)"} opacity={0} fontWeight={"500"} color={ selectedChat ? (selectedChat._id === chat._id ? "white" : "black") : "black"}>
                   {!chat.isGroupChat
                     ? getSender(loggedUser, chat.users)

@@ -18,6 +18,7 @@
   );
 
   statusModel.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+  
 
   const Status = mongoose.model("Status", statusModel);
 

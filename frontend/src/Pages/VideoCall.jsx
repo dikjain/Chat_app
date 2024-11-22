@@ -18,8 +18,8 @@ function VideoCall() {
 
     if (videocall) {
       if (user && !zpRef.current) {
-        const appID = 1759019163; // Replace with your ZEGOCLOUD appID
-        const serverSecret = "fcb7b6c1af33c78d9d5d160fe586290d"; // Replace with your ZEGOCLOUD serverSecret
+        const appID = 873116539; // Replace with your ZEGOCLOUD appID
+        const serverSecret = "e144c068c1d7bdd4677607eedcd2fcf9"; // Replace with your ZEGOCLOUD serverSecret
         const roomID = id;
         const userID = user.name || `User_${new Date().getTime()}`;
         const userName = user.name || "user";
