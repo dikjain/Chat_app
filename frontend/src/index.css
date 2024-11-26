@@ -80,3 +80,15 @@
     }
 
   }
+@media screen and (max-width: 500px) {
+    .oii{
+        font-size: 25px;
+    }
+    #smtxt{
+        font-size: 20px;
+    }
+    #tem{
+        font-size: 1px;
+    }
+
+  }

@@ -20,7 +20,7 @@ import { Tooltip } from "@chakra-ui/tooltip";
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Avatar } from "@chakra-ui/avatar";
 import { useNavigate } from "react-router-dom"; // Changed to useNavigate
-import {  useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import axios from "axios";
 import { useToast } from "@chakra-ui/toast";
 import ChatLoading from "./Chatloading";
@@ -42,6 +42,7 @@ function SideDrawer() {
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
+  const [showColorInputs, setShowColorInputs] = useState(false);
   
   const {
     setSelectedChat,
@@ -64,6 +65,11 @@ function SideDrawer() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate(); // Replacing useHistory with useNavigate
   
+  useEffect(() => {
+    if (!isOpen) {
+      setShowColorInputs(false);
+    }
+  }, [isOpen]);
 
   const logoutHandler = () => {
     Socket.emit("userDisconnected", user);
@@ -161,7 +167,7 @@ function SideDrawer() {
             </Text>
           </Button>
         </Tooltip>
-        <Text fontSize="2xl" fontFamily="Atomic Age" textColor={primaryColor}>
+        <Text className="oip" fontSize="2xl" fontFamily="Atomic Age" textColor={primaryColor}>
           A{" "}
           <span className="oii oil" style={{borderBottom: `${primaryColor} solid 2px`,textDecoration: `line-through ${primaryColor}`}} fontSize={"1px !important"}>
             Basic
@@ -250,42 +256,70 @@ function SideDrawer() {
               </MenuItem>
               <MenuDivider />
               <Box display="flex" justifyContent="space-around" alignItems="center" p={2}>
-                <Box
-                  as="button"
-                  borderRadius="50%"
-                  bg="linear-gradient(45deg,black , #e69500,#d48500, black)"
-                  w="25px"
-                  h="25px"
-                  border={"0.5px white solid"}
-                  onClick={() => {setPrimaryColor('#e69500'); setSecondaryColor('#d48500')}}
-                />
-                <Box
-                  as="button"
-                  borderRadius="50%"
-                  bg="linear-gradient(45deg,black , #6b0073,#950aff, black)"
-                  w="25px"
-                  h="25px"
-                  border={"0.5px white solid"}
-                  onClick={() => {setPrimaryColor('#a32bff'); setSecondaryColor('#950aff')}}
-                />
-                <Box
-                  as="button"
-                  borderRadius="50%"
-                  bg="linear-gradient(45deg,black , #0099b0,#007a92, black)"
-                  w="25px"
-                  h="25px"
-                  border={"0.5px white solid"}
-                  onClick={() => {setPrimaryColor('#0099b0'); setSecondaryColor('#007a92')}}
-                />
-                <Box
-                  as="button"
-                  borderRadius="50%"
-                  bg="linear-gradient(45deg,black , #48bb78,green, black)"
-                  w="25px"
-                  h="25px"
-                  border={"0.5px white solid"}
-                  onClick={() => {setPrimaryColor('#48bb78'); setSecondaryColor('green')}}
-                />
+                {!showColorInputs ? (
+                  <>
+                    <Box
+                      as="button"
+                      borderRadius="50%"
+                      bg="linear-gradient(45deg,black , #e69500,#d48500, black)"
+                      w="25px"
+                      h="25px"
+                      border={"0.5px white solid"}
+                      onClick={() => {setPrimaryColor('#e69500'); setSecondaryColor('#d48500')}}
+                    />
+                    <Box
+                      as="button"
+                      borderRadius="50%"
+                      bg="linear-gradient(45deg,black , #6b0073,#950aff, black)"
+                      w="25px"
+                      h="25px"
+                      border={"0.5px white solid"}
+                      onClick={() => {setPrimaryColor('#a32bff'); setSecondaryColor('#950aff')}}
+                    />
+                    <Box
+                      as="button"
+                      borderRadius="50%"
+                      bg="linear-gradient(45deg,black , #0099b0,#007a92, black)"
+                      w="25px"
+                      h="25px"
+                      border={"0.5px white solid"}
+                      onClick={() => {setPrimaryColor('#0099b0'); setSecondaryColor('#007a92')}}
+                    />
+                    <Box
+                      as="button"
+                      borderRadius="50%"
+                      bg={`linear-gradient(45deg,black,${primaryColor},${secondaryColor},black)`}
+                      w="25px"
+                      h="25px"
+                      border={"0.5px white solid"}
+                      onClick={() => setShowColorInputs(true)}
+                    />
+                  </>
+                ) : (
+                  <Box display="flex" flexDirection="column" alignItems="center">
+                    <Box display="flex" justifyContent="space-between" gap={2} alignItems="center">
+                    <Input
+                      type="color"
+                      onChange={(e) => setPrimaryColor(e.target.value)}
+                      title="Select Primary Color"
+                      size="sm"
+                      w="40px"
+                      h="20px"
+                    />
+                    <Input
+                      type="color"
+                      onChange={(e) => setSecondaryColor(e.target.value)}
+                      title="Select Secondary Color"
+                      size="sm"
+                      w="40px"
+                      h="20px"
+                    />
+                    </Box>
+                    <Button mt={2} onClick={() => setShowColorInputs(false)}>
+                      Go Back
+                    </Button>
+                  </Box>
+                )}
               </Box>
             </MenuList>
           </Menu>
@@ -338,3 +372,5 @@ function SideDrawer() {
 }
 
 export default SideDrawer;
+
+
