@@ -26,7 +26,7 @@ const userSchema = mongoose.Schema(
       default: "English",
     },
   },
-  { timestamps: true } // Fixed typo here
+  { timestamps: true }
 );
 
 userSchema.methods.matchPassword = async function (enteredPassword) {
@@ -34,12 +34,12 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 };
 
 userSchema.pre("save", async function (next) {
-  if (!this.isModified) {
-    return next(); // Ensure to return next to stop execution
+  if (!this.isModified("password")) {
+    return next();
   }
 
   const salt = await bcrypt.genSalt(10);
-  this.password = bcrypt.hash(this.password, salt); // Ensure password is hashed correctly
+  this.password = await bcrypt.hash(this.password, salt); // Ensure password is hashed correctly
   next();
 });
 

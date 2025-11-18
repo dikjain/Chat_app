@@ -3,9 +3,6 @@ import Message from "../models/message.model.js"
 import User from "../models/user.model.js";
 import Chat from "../models/chat.model.js";
 
-//@description     Get all Messages
-//@route           GET /api/Message/:chatId
-//@access          Protected
 const allMessages = expressAsyncHandler(async (req, res) => {
   try {
     const messages = await Message.find({ chat: req.params.chatId })
@@ -13,24 +10,20 @@ const allMessages = expressAsyncHandler(async (req, res) => {
       .populate("chat");
     res.json(messages);
   } catch (error) {
-    
-    res.status(400);
-    throw new Error(error.message);
+    console.error(`[${new Date().toISOString()}] ERROR: Fetch messages failed:`, error.message);
+    return res.status(400).json({ success: false, message: "Failed to fetch messages" });
   }
 });
 
-//@description     Create New Message
-//@route           POST /api/Message/
-//@access          Protected
 const sendMessage = expressAsyncHandler(async (req, res) => {
   
   const { content, chatId , type} = req.body;
   const file = req.fileMessage;
   if (!content || !chatId) {
-    return res.sendStatus(400);
+    return res.status(400).json({ success: false, message: "Content and chatId are required" });
   }
 
-  var newMessage = {
+  const newMessage = {
     sender: req.user._id,
     content: content,
     chat: chatId,
@@ -39,8 +32,7 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
   };
 
   try {
-    
-    var message = await Message.create(newMessage);
+    let message = await Message.create(newMessage);
 
     message = await message.populate("sender", "name pic")
     message = await message.populate("chat")
@@ -53,8 +45,8 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
 
     res.json(message);
   } catch (error) {
-    res.status(400);
-    throw new Error(error.message);
+    console.error(`[${new Date().toISOString()}] ERROR: Send message failed:`, error.message);
+    return res.status(400).json({ success: false, message: "Failed to send message" });
   }
 });
 
@@ -63,9 +55,9 @@ const sendFileMessage = expressAsyncHandler(async (req, res) => {
   const { chatId, sender, filename, filepath, size, type, timestamp } = req.fileMessage;
 
   if (!filepath || !chatId) {
-    return res.sendStatus(400);
+    return res.status(400).json({ success: false, message: "Filepath and chatId are required" });
   }
-  var newMessage = {
+  const newMessage = {
     sender: sender,
     content: null,
     chat: chatId,
@@ -73,7 +65,7 @@ const sendFileMessage = expressAsyncHandler(async (req, res) => {
     type : `${type ? type : null}`
   };
   try {
-    var message = await Message.create(newMessage);
+    let message = await Message.create(newMessage);
     
     message = await message.populate("sender", "name pic")
     message = await message.populate("chat")
@@ -86,8 +78,8 @@ const sendFileMessage = expressAsyncHandler(async (req, res) => {
 
     res.json(message);
   } catch (error) {
-    res.status(400);
-    throw new Error(error.message);
+    console.error(`[${new Date().toISOString()}] ERROR: Send file message failed:`, error.message);
+    return res.status(400).json({ success: false, message: "Failed to send file message" });
   }
 });
 
@@ -96,17 +88,22 @@ const deleteMessage = expressAsyncHandler(async (req, res) => {
   try{
     const { messageId } = req.body;
     await Message.findByIdAndDelete(messageId);
-    res.status(200).json({ message: "Message deleted successfully" });
+    res.status(200).json({ success: true, message: "Message deleted successfully" });
   }catch(error){
-    res.status(400);
-    throw new Error(error.message);
+    console.error(`[${new Date().toISOString()}] ERROR: Delete message failed:`, error.message);
+    return res.status(400).json({ success: false, message: "Failed to delete message" });
   }
 });
 
 const ChangeLatestMessage = expressAsyncHandler(async (req, res) => {
-  const { chatId , latestMessage } = req.body;
-  await Chat.findByIdAndUpdate(chatId, { latestMessage: latestMessage });
-  res.status(200).json({ message: "Latest message updated successfully" });
+  try {
+    const { chatId , latestMessage } = req.body;
+    await Chat.findByIdAndUpdate(chatId, { latestMessage: latestMessage });
+    res.status(200).json({ success: true, message: "Latest message updated successfully" });
+  } catch (error) {
+    console.error(`[${new Date().toISOString()}] ERROR: Change latest message failed:`, error.message);
+    return res.status(400).json({ success: false, message: "Failed to update latest message" });
+  }
 });
 
 

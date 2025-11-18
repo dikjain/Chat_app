@@ -7,6 +7,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChatState } from "../../Context/Chatprovider";
+import { config as appConfig } from "../../constants/config";
 
 const Signup = () => {
   const { setUser, user } = ChatState();
@@ -124,9 +125,9 @@ const Signup = () => {
     if (pics.type === "image/jpeg" || pics.type === "image/png") {
       const data = new FormData();
       data.append("file", pics);
-      data.append("upload_preset", "chat-app");
-      data.append("cloud_name", "ddtkuyiwb");
-      fetch("https://api.cloudinary.com/v1_1/ddtkuyiwb/image/upload", {
+      data.append("upload_preset", appConfig.CLOUDINARY_UPLOAD_PRESET);
+      data.append("cloud_name", appConfig.CLOUDINARY_CLOUD_NAME);
+      fetch(`https://api.cloudinary.com/v1_1/${appConfig.CLOUDINARY_CLOUD_NAME}/image/upload`, {
         method: "post",
         body: data,
       })

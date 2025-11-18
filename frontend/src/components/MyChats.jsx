@@ -12,11 +12,12 @@ import io from "socket.io-client";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { FaVideo } from "react-icons/fa";
+import { config as appConfig } from "../constants/config";
 
 
 
 const MyChats = ({ fetchAgain }) => {
-  const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
+  const ENDPOINT = appConfig.SOCKET_URL;
   const Socket = useMemo(() => io(ENDPOINT), [ENDPOINT]);
   const [loggedUser, setLoggedUser] = useState();
   const [onlinepeople ,setonlinepeople] = useState([]) 
@@ -30,13 +31,13 @@ const MyChats = ({ fetchAgain }) => {
   const fetchChats = async () => {
     // console.log(user._id);
     try {
-      const config = {
+      const requestConfig = {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
       };
 
-      const { data } = await axios.get("/api/chat", config);
+      const { data } = await axios.get("/api/chat", requestConfig);
       setChats(data);
     } catch (error) {
       toast({

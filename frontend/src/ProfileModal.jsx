@@ -22,6 +22,7 @@ import axios from "axios";
 import { ChatState } from "./Context/Chatprovider";
 import { useState } from "react";
 import ViewStatusModal from "./ViewStatusModal";
+import { config as appConfig } from "./constants/config";
 
 const ProfileModal = ({ children, profileUser }) => {
   const [picupdate, setPicupdate] = useState(false);
@@ -40,7 +41,7 @@ const ProfileModal = ({ children, profileUser }) => {
     setisNaam((prev) => !prev);
   };
 
-  const config = {
+  const requestConfig = {
     headers: {
       "Content-type": "application/json",
       Authorization: `Bearer ${user.token}`,
@@ -58,7 +59,7 @@ const ProfileModal = ({ children, profileUser }) => {
           pic: user.pic,
           name: naam,
         },
-        config
+        requestConfig
       );
       if (data) {
         setUser({
@@ -96,9 +97,9 @@ const ProfileModal = ({ children, profileUser }) => {
         if (file.type === "image/jpeg" || file.type === "image/png") {
           const data = new FormData();
           data.append("file", file);
-          data.append("upload_preset", "chat-app");
-          data.append("cloud_name", "ddtkuyiwb");
-          fetch("https://api.cloudinary.com/v1_1/ddtkuyiwb/image/upload", {
+          data.append("upload_preset", appConfig.CLOUDINARY_UPLOAD_PRESET);
+          data.append("cloud_name", appConfig.CLOUDINARY_CLOUD_NAME);
+          fetch(`https://api.cloudinary.com/v1_1/${appConfig.CLOUDINARY_CLOUD_NAME}/image/upload`, {
             method: "post",
             body: data,
           })
@@ -115,7 +116,7 @@ const ProfileModal = ({ children, profileUser }) => {
                     pic: imgUrl,
                     name: user.name,
                   },
-                  config
+                  requestConfig
                 );
                 setUser({
                   ...user,

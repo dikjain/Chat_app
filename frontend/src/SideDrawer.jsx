@@ -35,6 +35,7 @@ import { FaSearch } from "react-icons/fa";
 import StatusModal from "./StatusModal";
 import io from "socket.io-client";
 import LanguageModal from "./LanguageModal";
+import { config as appConfig } from "./constants/config";
 
 
 function SideDrawer() {
@@ -58,7 +59,7 @@ function SideDrawer() {
     setSecondaryColor
   } = ChatState();
   
-  const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
+  const ENDPOINT = appConfig.SOCKET_URL;
   const Socket = useMemo(() => io(ENDPOINT), [ENDPOINT]);
   
   const toast = useToast();
@@ -93,13 +94,13 @@ function SideDrawer() {
     try {
       setLoading(true);
 
-      const config = {
+      const requestConfig = {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
       };
 
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
+      const { data } = await axios.get(`/api/user?search=${search}`, requestConfig);
 
       setLoading(false);
       setSearchResult(data);
@@ -119,13 +120,13 @@ function SideDrawer() {
 
     try {
       setLoadingChat(true);
-      const config = {
+      const requestConfig = {
         headers: {
           "Content-type": "application/json",
           Authorization: `Bearer ${user.token}`,
         },
       };
-      const { data } = await axios.post(`/api/chat`, { userId }, config);
+      const { data } = await axios.post(`/api/chat`, { userId }, requestConfig);
 
       if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
       setSelectedChat(data);

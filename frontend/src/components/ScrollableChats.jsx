@@ -10,6 +10,7 @@ import { Text, useToast } from "@chakra-ui/react";
 import axios from "axios"; // Import axios
 import { motion } from "framer-motion"; // Import framer-motion
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { config as appConfig } from "../constants/config";
 
 
 const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
@@ -28,14 +29,14 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
   const fetchChats = async () => {
     // console.log(user._id);
     try {
-      const config = {
+      const requestConfig = {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user.token}`,
         },
       };
 
-      const { data } = await axios.get("/api/chat", config);
+      const { data } = await axios.get("/api/chat", requestConfig);
       setChats(data);
     } catch (error) {
       toast({
@@ -253,15 +254,15 @@ useEffect(()=>{
 
   const deleteMessage = useCallback(async (messageId) => {
     try{      
-      const config = {
+      const requestConfig = {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user.token}`,
         },
       };
 
-      const deleteMessagePromise = axios.post(`/api/Message/delete`, { messageId }, config);
-      const changeLatestMessagePromise = axios.post(`/api/message/ChangeLatestMessage`, { chatId: selectedChat._id, latestMessage: messageId === messages[messages.length-1]._id ? (messages[messages.length-2] ? messages[messages.length-2]._id : null) : messages[messages.length-1]._id }, config);
+      const deleteMessagePromise = axios.post(`/api/Message/delete`, { messageId }, requestConfig);
+      const changeLatestMessagePromise = axios.post(`/api/message/ChangeLatestMessage`, { chatId: selectedChat._id, latestMessage: messageId === messages[messages.length-1]._id ? (messages[messages.length-2] ? messages[messages.length-2]._id : null) : messages[messages.length-1]._id }, requestConfig);
       await Promise.all([deleteMessagePromise, changeLatestMessagePromise]);
       setMessages(prevMessages => prevMessages.filter(message => message._id !== messageId));
       setMsggya(true)
@@ -303,7 +304,7 @@ useEffect(()=>{
     if(c == i && !translating && vismsg[i].type !== "location"){
       vismsg[i].content = "translating..."
       setTranslating(true)
-      const genAI = new GoogleGenerativeAI("AIzaSyBp2UduAnIpMswiu8JYu3uMX5F3fcFtVL0");
+      const genAI = new GoogleGenerativeAI(appConfig.GOOGLE_AI_API_KEY);
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       try {
         const result = await model.generateContent(

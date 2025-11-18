@@ -9,14 +9,13 @@ const updateUser = expressAsyncHandler(async (req, res) => {
         const updatedUser = await User.findByIdAndUpdate(UserId, { name, pic }, { new: true });
 
         if (!updatedUser) {
-            res.status(404);
-            throw new Error("User not found");
+        return res.status(404).json({ success: false, message: "User not found" });
         }
 
         res.json(updatedUser)
     } catch (error) {
-        res.status(500);
-        throw new Error("Error updating user");
+        console.error(`[${new Date().toISOString()}] ERROR: User update failed:`, error.message);
+        return res.status(500).json({ success: false, message: "Error updating user" });
     }
 });
 
@@ -31,16 +30,27 @@ const registeruser = expressAsyncHandler (async (req,res) => {
     const {name,email,password,pic} = req.body
 
     if (!name || !email || !password) {
-        res.status(404);
-        throw new Error("Please provide all fields");
+        return res.status(400).json({ success: false, message: "Please provide all fields" });
+    }
+
+    if (name.length < 2 || name.length > 50) {
+        return res.status(400).json({ success: false, message: "Name must be between 2 and 50 characters" });
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ success: false, message: "Please provide a valid email address" });
+    }
+    
+    if (password.length < 6) {
+        return res.status(400).json({ success: false, message: "Password must be at least 6 characters long" });
     }
 
 
     const userExists = await User.findOne({email})
 
     if(userExists) {
-        res.status(400);
-        throw new Error("User already exists");
+        return res.status(409).json({ success: false, message: "User already exists" });
     }
     const user = await User.create({name, email, password,pic})
 
@@ -54,8 +64,7 @@ const registeruser = expressAsyncHandler (async (req,res) => {
             TranslateLanguage: user.TranslateLanguage
         });
     }else{
-        res.status(400);
-        throw new Error("Invalid user data");
+        return res.status(400).json({ success: false, message: "Invalid user data" });
     }
 
 })
@@ -68,14 +77,18 @@ const authUser = expressAsyncHandler (async (req,res) => {
     const {email, password} = req.body
     
     if (!email || !password) {
-        res.status(409);
-        throw new Error("Please provide all fields");
+        return res.status(400).json({ success: false, message: "Please provide all fields" });
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ success: false, message: "Please provide a valid email address" });
     }
     
     const userExists = await User.findOne({email})
     
 
-    if(userExists && (userExists.matchPassword(password))){
+    if(userExists && (await userExists.matchPassword(password))){
         res.json({
             _id: userExists._id,
             name: userExists.name,
@@ -86,27 +99,31 @@ const authUser = expressAsyncHandler (async (req,res) => {
         })
         
     } else {
-        res.status(401); // Unauthorized status for invalid credentials
-        throw new Error("Invalid email or password");
+        return res.status(401).json({ success: false, message: "Invalid email or password" });
       }
 
     
 })
 const getuserdetails = expressAsyncHandler (async (req,res) => {
-    const {email} = req.body
-    const userExists = await User.findOne({email})
-    if(userExists){
-        res.json({
-            name: userExists.name,
-            pic: userExists.pic,
-        })
-        
-    } else {
-        res.status(401); // Unauthorized status for invalid credentials
-        throw new Error("Invalid email");
-      }
-
-    
+    try {
+        const {email} = req.body
+        if (!email) {
+            return res.status(400).json({ success: false, message: "Email is required" });
+        }
+        const userExists = await User.findOne({email})
+        if(userExists){
+            res.json({
+                success: true,
+                name: userExists.name,
+                pic: userExists.pic,
+            })
+        } else {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+    } catch (error) {
+        console.error(`[${new Date().toISOString()}] ERROR: Get user details failed:`, error.message);
+        return res.status(400).json({ success: false, message: "Failed to get user details" });
+    }
 })
 
 

@@ -20,6 +20,7 @@ import { useState } from "react";
 import { ChatState } from "./Context/Chatprovider";
 import axios from 'axios';
 import './Swiper.css';
+import { config as appConfig } from "./constants/config";
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -51,9 +52,9 @@ function StatusModal({children}) {
         if (file.type === "image/jpeg" || file.type === "image/png") {
           const data = new FormData();
           data.append("file", file); // Corrected the variable name from 'pics' to 'file'
-          data.append("upload_preset", "chat-app");
-          data.append("cloud_name", "ddtkuyiwb");
-          fetch("https://api.cloudinary.com/v1_1/ddtkuyiwb/image/upload", {
+          data.append("upload_preset", appConfig.CLOUDINARY_UPLOAD_PRESET);
+          data.append("cloud_name", appConfig.CLOUDINARY_CLOUD_NAME);
+          fetch(`https://api.cloudinary.com/v1_1/${appConfig.CLOUDINARY_CLOUD_NAME}/image/upload`, {
             method: "post",
             body: data,
           })
@@ -98,7 +99,7 @@ function StatusModal({children}) {
     }
     setIsLoading(true);
     try {
-      const config = {
+      const requestConfig = {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user.token}`,
@@ -108,7 +109,7 @@ function StatusModal({children}) {
         id: user._id,
         content: statusContent.text,
         mediaUrl: statusContent.imageUrl,
-      }, config);
+      }, requestConfig);
       setStatusContent({ text: "", imageUrl: "" });
       // Fetch the updated status
       fetchStatus({id: user._id});

@@ -21,7 +21,9 @@ import { MdLocationOn, MdMic } from "react-icons/md"; // Importing location and 
 import io from "socket.io-client";
 import UpdateGroupChatModal from "../UpdateGroupChatmodal";
 import { ChatState } from "../Context/Chatprovider";
-const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
+import { config as appConfig } from "../constants/config";
+
+const ENDPOINT = appConfig.SOCKET_URL;
 var socket, selectedChatCompare;
 
 import Notification from "../assets/notification.mp3";
@@ -44,7 +46,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const generateContents = async (prompt) => {
     try {
       setAITyping(true);
-      const genAI = new GoogleGenerativeAI("AIzaSyBp2UduAnIpMswiu8JYu3uMX5F3fcFtVL0");
+      const genAI = new GoogleGenerativeAI(appConfig.GOOGLE_AI_API_KEY);
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       const result = await model.generateContent(
         "Please complete the following message along with the user's input naturally as if it were sent by the user. Ensure the response feels like a continuation of the user's input and match the language used. Only provide the completed message without any additional text. Here's the message: " +
@@ -91,7 +93,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   }, [selectedChat, toast, user.token]);
 
-  const config = {
+  const requestConfig = {
     headers: {
       "Content-type": "application/json",
       Authorization: `Bearer ${user.token}`,
@@ -110,12 +112,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             content: newMessage,
             chatId: selectedChat,
           },
-          config
+          requestConfig
         );
         socket.emit("new message", data);
         setMessages((prevMessages) => [...prevMessages, data]);
         setMsgaaya(true);
-        const iop = await axios.get("/api/chat", config);
+        const iop = await axios.get("/api/chat", requestConfig);
         setChats(iop.data);
         setsent(false);
       } catch (error) {
@@ -138,10 +140,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         position: "top",
       });
     }
-  }, [sent, selectedChat, config]);
+  }, [sent, selectedChat, requestConfig]);
 
   const getmessages = async () => {
-    const iol = await axios.get("/api/chat", config);
+    const iol = await axios.get("/api/chat", requestConfig);
     setChats(iol.data);
   };
 
@@ -158,12 +160,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               chatId: selectedChat,
               type : "location"
             },
-            config
+            requestConfig
           );
           socket.emit("new message", data);
           setMessages((prevMessages) => [...prevMessages, data]);
           setMsgaaya(true);
-          const iop = await axios.get("/api/chat", config);
+          const iop = await axios.get("/api/chat", requestConfig);
           setChats(iop.data);
         } catch (error) {
           toast({
@@ -203,7 +205,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, [selectedChat, fetchMessages]);
   
   useEffect(() => {
-    socket.emit('koihai');
+    socket.emit('get_video_users');
   
     const handleVideoCallUsers = (newMessageReceived) => {
       
@@ -234,14 +236,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     };
   
     socket.on('videoCallUsers', handleVideoCallUsers);
-    socket.on('join_hua', handleJoin);
-    socket.on('leave_hua', handleLeave);
+    socket.on('video_user_joined', handleJoin);
+    socket.on('video_user_left', handleLeave);
   
     // Cleanup function to remove socket listeners
     return () => {
       socket.off('videoCallUsers', handleVideoCallUsers);
-      socket.off('join_hua', handleJoin);
-      socket.off('leave_hua', handleLeave);
+      socket.off('video_user_joined', handleJoin);
+      socket.off('video_user_left', handleLeave);
     };
   }, []);
 
@@ -264,10 +266,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       }
     };
 
-    socket.on("message recieved", handleMessageReceived);
+    socket.on("message received", handleMessageReceived);
 
     return () => {
-      socket.off("message recieved", handleMessageReceived);
+      socket.off("message received", handleMessageReceived);
     };
   }, [setFetchAgain, notification]);
 
@@ -392,7 +394,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             socket.emit("new message", response.data);
             setMessages((prevMessages) => [...prevMessages, response.data]);
             setMsgaaya(true);
-            const iop = await axios.get("/api/chat", config);
+            const iop = await axios.get("/api/chat", requestConfig);
             setChats(iop.data);
             setsent(false);
           } catch (error) {
@@ -597,4 +599,3 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 };
 
 export default SingleChat;
-

@@ -3,6 +3,7 @@ import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChatState } from '../Context/Chatprovider';
 import io from 'socket.io-client';
+import { config as appConfig } from '../constants/config';
 
 function VideoCall() {
   const { id } = useParams();
@@ -13,13 +14,13 @@ function VideoCall() {
   var socket;
 
   useEffect(() => {
-    const ENDPOINT = "https://chat-app-3-2cid.onrender.com/";
+    const ENDPOINT = appConfig.SOCKET_URL;
     socket = io(ENDPOINT);
 
     if (videocall) {
       if (user && !zpRef.current) {
-        const appID = 873116539; // Replace with your ZEGOCLOUD appID
-        const serverSecret = "e144c068c1d7bdd4677607eedcd2fcf9"; // Replace with your ZEGOCLOUD serverSecret
+        const appID = appConfig.ZEGO_APP_ID;
+        const serverSecret = appConfig.ZEGO_SERVER_SECRET;
         const roomID = id;
         const userID = user.name || `User_${new Date().getTime()}`;
         const userName = user.name || "user";
