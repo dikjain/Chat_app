@@ -12,7 +12,6 @@ import {
   IconButton,
   Text,
   Image,
-  Toast,
   useToast,
   Input,
   Spinner,
@@ -22,45 +21,31 @@ import axios from "axios";
 import { ChatState } from "./Context/Chatprovider";
 import { useState } from "react";
 import ViewStatusModal from "./ViewStatusModal";
-import { config as appConfig } from "./constants/config";
+import useCloudinaryUpload from "./hooks/useCloudinaryUpload";
+import { updateUser } from "./api/auth";
 
 const ProfileModal = ({ children, profileUser }) => {
-  const [picupdate, setPicupdate] = useState(false);
   const [isNaam, setisNaam] = useState(false);
   const [naam, setNaam] = useState("");
-  const [isViewStatusModal, setIsViewStatusModal] = useState(false); // State to track modal type
+  const [isViewStatusModal, setIsViewStatusModal] = useState(false);
 
   const { user, setUser, primaryColor, secondaryColor } = ChatState();
   if (!profileUser) profileUser = user;
 
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { uploadImage, isUploading } = useCloudinaryUpload(toast);
 
   const handleUpdate = () => {
     setNaam(user.name);
     setisNaam((prev) => !prev);
   };
 
-  const requestConfig = {
-    headers: {
-      "Content-type": "application/json",
-      Authorization: `Bearer ${user.token}`,
-    },
-  };
-
   const handleNameChange = async () => {
     setisNaam(false);
     setNaam(user.name);
     try {
-      const { data } = await axios.post(
-        "/api/user/update",
-        {
-          UserId: user._id,
-          pic: user.pic,
-          name: naam,
-        },
-        requestConfig
-      );
+      const data = await updateUser(user._id, naam, user.pic, user.token);
       if (data) {
         setUser({
           ...user,
@@ -83,74 +68,36 @@ const ProfileModal = ({ children, profileUser }) => {
     }
   };
 
-  const changePic = () => {
-    let imgUrl;
+  const changePic = async () => {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
-    input.onchange = (event) => {
+    input.onchange = async (event) => {
       const file = event.target.files[0];
       if (file) {
-        setPicupdate(true);
-        const filereader = new FileReader();
-        filereader.readAsDataURL(file);
-        if (file.type === "image/jpeg" || file.type === "image/png") {
-          const data = new FormData();
-          data.append("file", file);
-          data.append("upload_preset", appConfig.CLOUDINARY_UPLOAD_PRESET);
-          data.append("cloud_name", appConfig.CLOUDINARY_CLOUD_NAME);
-          fetch(`https://api.cloudinary.com/v1_1/${appConfig.CLOUDINARY_CLOUD_NAME}/image/upload`, {
-            method: "post",
-            body: data,
-          })
-            .then((res) => res.json())
-            .then((dats) => {
-              imgUrl = dats.url;
-            })
-            .then(async () => {
-              try {
-                await axios.post(
-                  "/api/user/update",
-                  {
-                    UserId: user._id,
-                    pic: imgUrl,
-                    name: user.name,
-                  },
-                  requestConfig
-                );
-                setUser({
-                  ...user,
-                  pic: imgUrl,
-                });
-                localStorage.setItem("userInfo", JSON.stringify({
-                  ...user,
-                  pic: imgUrl,
-                }));
-                setPicupdate(false);
-                toast({
-                  title: "Profile Picture Updated!",
-                  status: "success",
-                  duration: 5000,
-                  isClosable: true,
-                  position: "bottom",
-                });
-              } catch (err) {
-                console.log(err);
-              }
+        const imgUrl = await uploadImage(file);
+        if (imgUrl) {
+          try {
+            await updateUser(user._id, user.name, imgUrl, user.token);
+            setUser({
+              ...user,
+              pic: imgUrl,
             });
-        } else {
-          toast({
-            title: "Please Select an Image!",
-            status: "warning",
-          });
-          setPicupdate(false);
+            localStorage.setItem("userInfo", JSON.stringify({
+              ...user,
+              pic: imgUrl,
+            }));
+            toast({
+              title: "Profile Picture Updated!",
+              status: "success",
+              duration: 5000,
+              isClosable: true,
+              position: "bottom",
+            });
+          } catch (err) {
+            console.log(err);
+          }
         }
-      } else {
-        toast({
-          title: "Please Select an Image!",
-          status: "warning",
-        });
-        setPicupdate(false);
       }
     };
     input.click();
@@ -224,7 +171,7 @@ const ProfileModal = ({ children, profileUser }) => {
             alignItems="center"
             justifyContent="space-between"
           >
-            {picupdate ? (
+            {isUploading ? (
               <Spinner size="xl" color={primaryColor} thickness="4px" speed="0.65s" />
             ) : (
               <Image

@@ -20,7 +20,7 @@ import { useState } from "react";
 import { ChatState } from "./Context/Chatprovider";
 import axios from 'axios';
 import './Swiper.css';
-import { config as appConfig } from "./constants/config";
+import useCloudinaryUpload from "./hooks/useCloudinaryUpload";
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -33,51 +33,29 @@ function StatusModal({children}) {
   const toast = useToast();   
   const [status, setStatus] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { uploadImage } = useCloudinaryUpload(toast);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [statusContent, setStatusContent] = useState({ text: "", imageUrl: "" });
  
 
 
-  const takeImage = () => {
-    let imgUrl;
+  const takeImage = async () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    input.onchange = (event) => {
+    input.onchange = async (event) => {
       const file = event.target.files[0];
       if (file) {
-        const filereader = new FileReader();
-        filereader.readAsDataURL(file); // Start reading the file as Data URL
-        if (file.type === "image/jpeg" || file.type === "image/png") {
-          const data = new FormData();
-          data.append("file", file); // Corrected the variable name from 'pics' to 'file'
-          data.append("upload_preset", appConfig.CLOUDINARY_UPLOAD_PRESET);
-          data.append("cloud_name", appConfig.CLOUDINARY_CLOUD_NAME);
-          fetch(`https://api.cloudinary.com/v1_1/${appConfig.CLOUDINARY_CLOUD_NAME}/image/upload`, {
-            method: "post",
-            body: data,
-          })
-            .then((res) => res.json())
-            .then( (dats) => {imgUrl = dats.url})
-            .then(async () => {
-              try {
-                setStatusContent((prev) => ({
-                  ...prev,
-                  imageUrl: imgUrl,
-                }));
-              } catch (err) {
-                console.log(err);
-            }
-        });
-        } else {
-          toast({
-            title: "Please Select an Image!",
-            status: "warning",
-          });
+        const imgUrl = await uploadImage(file);
+        if (imgUrl) {
+          setStatusContent((prev) => ({
+            ...prev,
+            imageUrl: imgUrl,
+          }));
         }
       }
-    }
+    };
     input.click();
   }
   const CreateStatus = async () => {

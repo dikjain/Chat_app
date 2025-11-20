@@ -1,26 +1,25 @@
-import { Button } from "@chakra-ui/button";
-import { FormControl, FormLabel } from "@chakra-ui/form-control";
-import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
-import { VStack } from "@chakra-ui/layout";
 import { useState } from "react";
-import axios from "axios";
-import { useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { ChatState } from "../../Context/Chatprovider";
+import { login } from "../../api/auth";
+import useToast from "../../hooks/useToast";
+import ToastContainer from "../ToastContainer";
+import Input from "./Input";
+import Button from "./Button";
+import { motion } from "framer-motion";
 
-const Login = () => {
-  const { setUser, user } = ChatState();
-  const [show, setShow] = useState(false);
-  const handleClick = () => setShow(!show);
-  const toast = useToast();
+const Login = ({ onSwitchToSignup }) => {
+  const { setUser } = ChatState();
+  const navigate = useNavigate();
+  const { toast, toasts, removeToast } = useToast();
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
 
   const submitHandler = async () => {
     setLoading(true);
+    
     if (!email || !password) {
       toast({
         title: "Please Fill all the Fields",
@@ -34,18 +33,7 @@ const Login = () => {
     }
 
     try {
-      const config = {
-        headers: {
-          "Content-type": "application/json",
-        },
-      };
-
-      const { data } = await axios.post(
-        "/api/user/login",
-        { email, password },
-        config
-      );
-      console.log(data);
+      const data = await login(email, password);
       toast({
         title: "Login Successful",
         status: "success",
@@ -54,11 +42,9 @@ const Login = () => {
         position: "bottom",
       });
       localStorage.setItem("userInfo", JSON.stringify(data));
-      setUser(data)
-      setLoading(false);
+      setUser(data);
       navigate("/chats");
     } catch (error) {
-      console.error("Error details:", error); // Log full error
       toast({
         title: "Error Occurred!",
         description: error.response?.data?.message || error.message || "Unknown error",
@@ -67,55 +53,70 @@ const Login = () => {
         isClosable: true,
         position: "bottom",
       });
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <VStack spacing="10px" align="stretch">
-      <FormControl id="email" isRequired>
-        <FormLabel color="green.400">Email Address</FormLabel>
-        <Input
-          value={email}
-          type="email"
-          placeholder="Enter Your Email Address"
-          onChange={(e) => setEmail(e.target.value)}
-          bg="black" // Black background for input
-          color="green.400" // Neon green text color
-          borderColor="green.400" // Neon green border
-          _placeholder={{ color: "gray.500" }} // Placeholder color
-        />
-      </FormControl>
-      <FormControl id="password" isRequired>
-        <FormLabel color="green.400">Password</FormLabel>
-        <InputGroup size="md">
-          <Input
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type={show ? "text" : "password"}
-            placeholder="Enter password"
-            bg="black" // Black background for input
-            color="green.400" // Neon green text color
-            borderColor="green.400" // Neon green border
-            _placeholder={{ color: "gray.500" }} // Placeholder color
-          />
-          <InputRightElement width="4.5rem">
-            <Button h="1.75rem" size="sm" onClick={handleClick} colorScheme="green">
-              {show ? "Hide" : "Show"}
-            </Button>
-          </InputRightElement>
-        </InputGroup>
-      </FormControl>
-      <Button
-        colorScheme="green" // Neon green button
-        width="100%"
-        style={{ marginTop: 15 }}
-        onClick={submitHandler}
-        isLoading={loading}
+    <>
+      <motion.div 
+      
+        className="flex flex-col gap-4 w-full h-full"
+        initial={{ x: -100, opacity: 0 , filter: "blur(10px)"}}
+        animate={{ x: 0, opacity: 1 , filter: "blur(0px)"}}
+        exit={{ x: -100, opacity: 0 , filter: "blur(10px)"}}
+        transition={{ 
+          type: "spring", 
+          stiffness: 300, 
+          damping: 30,
+          duration: 0.4
+        }}
       >
-        Login
-      </Button>
-    </VStack>
+        <Input
+          id="email"
+          label="Email Address"
+          type="email"
+          value={email}
+          placeholder="jack.sparrow@gmail.com"
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        
+        <Input
+          id="password"
+          label="Password"
+          value={password}
+          placeholder="Enter password"
+          onChange={(e) => setPassword(e.target.value)}
+          showPasswordToggle
+          required
+        />
+        
+        <div className="w-5/6 mx-auto h-px bg-neutral-300 my-1  "></div>
+        
+        <Button
+          onClick={submitHandler}
+          loading={loading}
+          loadingText="Loading..."
+          variant="primary"
+        >
+          Login
+        </Button>
+        
+        {onSwitchToSignup && (
+          <div className="text-center  text-sm text-gray-400">
+            <button
+              onClick={onSwitchToSignup}
+              className="underline  hover:text-gray-300 transition-colors"
+            >
+              Don't have an account?
+            </button>
+          </div>
+        )}
+      </motion.div>
+      <ToastContainer toasts={toasts} removeToast={removeToast} position="bottom" />
+    </>
   );
 };
 
