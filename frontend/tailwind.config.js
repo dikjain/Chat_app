@@ -77,6 +77,14 @@ module.exports = {
     			saira: [
     				'Saira',
     				'sans-serif'
+    			],
+    			inter: [
+    				'Inter',
+    				'sans-serif'
+    			],
+    			vend: [
+    				'Vend Sans',
+    				'sans-serif'
     			]
     		}
     	}
