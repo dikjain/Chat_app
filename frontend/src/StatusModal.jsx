@@ -29,7 +29,7 @@ import { EffectCards } from 'swiper/modules';
 import ViewStatusModal from './ViewStatusModal';
 
 function StatusModal({children}) {
-  const { user, primaryColor, secondaryColor } = ChatState();
+  const { user, primaryColor } = ChatState();
   const toast = useToast();   
   const [status, setStatus] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -122,7 +122,7 @@ function StatusModal({children}) {
 
       <Modal isOpen={isOpen} onClose={onClose} size="full">
         <ModalOverlay />
-        <ModalContent bg="black" color={secondaryColor} overflow="hidden">
+        <ModalContent bg="black" color="#10b981" overflow="hidden">
           <ModalHeader>Update Your Status</ModalHeader>
           <ModalCloseButton bg={primaryColor} color="black" />
           <ModalBody display="flex"  flexDirection={{ base: "column", md: "row" }} w={{base:"100%",md:"100%"}}>
@@ -144,8 +144,8 @@ function StatusModal({children}) {
                 value={statusContent.text}
                 onChange={(e) => setStatusContent((prev) => ({ ...prev, text: e.target.value }))}
                 bg="black"
-                color={secondaryColor}
-                borderColor={secondaryColor}
+                color="#10b981"
+                borderColor="#10b981"
                 _placeholder={{ color: "gray.500" }}
               />
               <Button colorScheme="green" mt={3} onClick={CreateStatus} isLoading={isLoading}>

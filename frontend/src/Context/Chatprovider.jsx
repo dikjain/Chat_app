@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const ChatContext = createContext();
 
@@ -9,22 +9,22 @@ const ChatProvider = ({ children }) => {
   const [notification, setNotification] = useState([]);
   const [chats, setChats] = useState();
   const navigate = useNavigate()
-  const [a, seta] = useState(true)
+  const location = useLocation()
   const [videocall, setVideocall] = useState(false)
-  const [enableAnimation, setEnableAnimation] = useState(true)
   const [isOneOnOneCall, setIsOneOnOneCall] = useState(true)
   const [videoCallUser, setVideoCallUser] = useState([])
   const [chatsVideo, setChatsVideo] = useState([])
   const [primaryColor, setPrimaryColor] = useState("#48bb78")
-  const [secondaryColor, setSecondaryColor] = useState("green")
 
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     setUser(userInfo);
 
-    if (!userInfo) navigate("/")
-  }, []);
+    if (!userInfo && location.pathname !== "/" && location.pathname !== "/auth") {
+      navigate("/")
+    }
+  }, [location.pathname, navigate]);
 
   return (
     <ChatContext.Provider
@@ -37,10 +37,6 @@ const ChatProvider = ({ children }) => {
         setNotification,
         chats,
         setChats,
-        a,
-        seta,
-        enableAnimation,
-        setEnableAnimation,
         videocall,
         setVideocall,
         isOneOnOneCall,
@@ -50,9 +46,7 @@ const ChatProvider = ({ children }) => {
         chatsVideo,
         setChatsVideo,
         primaryColor,
-        setPrimaryColor,
-        secondaryColor,
-        setSecondaryColor
+        setPrimaryColor
       }}
     >
       {children}

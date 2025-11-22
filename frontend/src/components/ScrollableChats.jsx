@@ -18,7 +18,7 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
   const [speakVisible, setSpeakVisible] = useState(null); // State to control which message has the "Speak" button
   const [boling, setboling] = useState(false); // State to control which message has the "Speak" button
 
-  const { user , setChats , selectedChat , a , seta, primaryColor, secondaryColor } = ChatState();
+  const { user , setChats , selectedChat , primaryColor } = ChatState();
   const messageRef = useRef(null);
   const messageRef2 = useRef(null);
   const toast = useToast();
@@ -178,46 +178,6 @@ useEffect(()=>{
   }
 },[vismsg])
 
-  useEffect(() => {
-    if (vismsg && vismsg.length > 0) {
-      if(a){
-        seta(false)
-        gsap.fromTo(
-          "#messageeL", 
-          { x: "-200%" , scale:0.1,duration:0.01, opacity:0}, 
-          { x: "0",scale:1, opacity:1,stagger:0.1, ease: "elastic.out(1,0.7)", onComplete: () => gsap.set("#messageeL", { clearProps: "transform" }) }
-        );
-        gsap.fromTo(
-          "#messageeR", 
-          { x: "200%" , scale:0.1,duration:0.0001, opacity:0}, 
-          { x: "0", scale:1, opacity:1,  stagger:0.1, ease: "elastic.out(1,0.7)", onComplete: () => gsap.set("#messageeR", { clearProps: "transform" }) }
-        );
-      }
-      else if(d){
-        const newMsg = vismsg.slice(0,qq - curmsglen )
-        newMsg.forEach(el=>{
-          if(el.sender._id === user._id){
-          gsap.fromTo(
-            `.messagee${el._id}`,
-            { x: "200%", scale: 0.1, duration: 0.01, opacity: 0 },
-            { x: "0", scale: 1, opacity: 1, stagger:0.1,  duration: 1.4, ease: "elastic.out(1, 0.7)", onComplete: () => gsap.set(`.messagee${el._id}`, { clearProps: "transform" }) }
-          );
-          }else{
-            gsap.fromTo(
-              `.messagee${el._id}`,
-              { x: "-200%", scale: 0.1, duration: 0.01, opacity: 0 },
-              { x: "0", scale: 1, opacity: 1, stagger:0.1,duration: 1.4, ease: "elastic.out(1, 0.7)", onComplete: () => gsap.set(`.messagee${el._id}`, { clearProps: "transform" }) }
-            );
-          }
-        })
-        setd(false)
-      }
-    }
-  }, [vismsg]);
-
-  useEffect(()=>{
-    seta(true)
-  },[selectedChat])
 
 
 
@@ -437,7 +397,7 @@ useEffect(()=>{
                 right:`${m.sender._id === user._id ? "50%" : ""}`,
                 position: "absolute",
                 zIndex:"100",
-                backgroundColor:secondaryColor,
+                backgroundColor:"#10b981",
                 color:"white",
               }}
               className={`yotem ${m.sender._id === user._id ? "raayit" : "lefat" }`}
@@ -447,7 +407,7 @@ useEffect(()=>{
                 <span
                 ref={messageRef}
                   onClick={() => speakText(m.content,i)}
-                  onMouseEnter={() => {messageRef.current.style.backgroundColor = secondaryColor;}}
+                  onMouseEnter={() => {messageRef.current.style.backgroundColor = "#10b981";}}
                   onMouseLeave={() => {messageRef.current.style.backgroundColor = "grey";}}
 
                   style={{

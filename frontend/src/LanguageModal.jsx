@@ -5,7 +5,7 @@ import { ChatState } from './Context/Chatprovider';
 import axios from 'axios';
 
 function LanguageModal({children}) {
-  const { user, setUser, primaryColor, secondaryColor } = ChatState();
+  const { user, setUser, primaryColor } = ChatState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const languages = ['Hindi', 'English', 'Spanish', 'French', 'German', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Bengali'];
   const [selectedLanguage, setSelectedLanguage] = useState(null);
@@ -58,9 +58,9 @@ function LanguageModal({children}) {
 
     <Modal isOpen={isOpen}  onClose={onClose} size="md" isCentered>
       <ModalOverlay />
-      <ModalContent bg="black" color={secondaryColor} overflow="hidden">
+      <ModalContent bg="black" color="#10b981" overflow="hidden">
         <ModalHeader>Choose Your Language</ModalHeader>
-        <ModalCloseButton bg={secondaryColor} color="black" />
+        <ModalCloseButton bg="#10b981" color="black" />
         <ModalBody display="flex" flexDirection="column" alignItems="center" justifyContent="center">
           <Select placeholder="Select language" bg={primaryColor} fontFamily={"Orbitron"} color="black" width="full" mt={2} mb={2} value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.target.value)}>
             {languages.map((language) => (

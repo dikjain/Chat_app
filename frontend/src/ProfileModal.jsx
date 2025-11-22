@@ -29,7 +29,7 @@ const ProfileModal = ({ children, profileUser }) => {
   const [naam, setNaam] = useState("");
   const [isViewStatusModal, setIsViewStatusModal] = useState(false);
 
-  const { user, setUser, primaryColor, secondaryColor } = ChatState();
+  const { user, setUser, primaryColor } = ChatState();
   if (!profileUser) profileUser = user;
 
   const toast = useToast();

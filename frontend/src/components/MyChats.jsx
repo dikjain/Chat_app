@@ -22,7 +22,7 @@ const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
   const [onlinepeople ,setonlinepeople] = useState([]) 
 
-  const { selectedChat, setSelectedChat, user, chats, setChats , a , chatsVideo, primaryColor, secondaryColor } = ChatState();
+  const { selectedChat, setSelectedChat, user, chats, setChats , chatsVideo, primaryColor } = ChatState();
 
   const toast = useToast();
 
@@ -150,17 +150,17 @@ const MyChats = ({ fetchAgain }) => {
         borderRadius="lg"
         overflowY="scroll"
         border={`2px solid ${primaryColor}`}
-        boxShadow={`0px 0px 10px 5px ${secondaryColor}`}
+        boxShadow="0px 0px 10px 5px #10b981"
         >
         {chats ? (
             chats.map((chat) => (
               <Box
               className="chat"
-              onClick={selectedChat ? () => !a && setSelectedChat(chat) : () => setSelectedChat(chat)}
+              onClick={() => setSelectedChat(chat)}
               cursor="pointer"
               bg={selectedChat ? (selectedChat._id === chat._id ? primaryColor : "#E8E8E8") : "#E8E8E8"}
-                boxShadow={selectedChat ? (selectedChat._id === chat._id ? `${secondaryColor} 0px 0px 12px 5px` : `${secondaryColor} 0px 0px 7px 2px`) : `${secondaryColor} 0px 0px 7px 2px`}
-                border={`${secondaryColor} solid 2px`}
+                boxShadow={selectedChat ? (selectedChat._id === chat._id ? "#10b981 0px 0px 12px 5px" : "#10b981 0px 0px 7px 2px") : "#10b981 0px 0px 7px 2px"}
+                border="#10b981 solid 2px"
                 transition={"all 0.2s ease-in-out"}
                 px={3}
                 transform={"translateY(-100px)"}
@@ -175,7 +175,7 @@ const MyChats = ({ fetchAgain }) => {
                 fontWeight={"300"}
                 zIndex={"30"}
               >
-                {!chat.isGroupChat && chat.users[0] && chat.users[1] && (chat.users[0]._id == user._id ? onlinepeople.includes(chat.users[1]._id) :onlinepeople.includes(chat.users[0]._id)) && <div id="online" style={{right:"5%",width:"10px",top:"40%",translate:"0px 0px", height:"10px",borderRadius:"999px", position:"absolute",backgroundColor:secondaryColor}}></div>}
+                {!chat.isGroupChat && chat.users[0] && chat.users[1] && (chat.users[0]._id == user._id ? onlinepeople.includes(chat.users[1]._id) :onlinepeople.includes(chat.users[0]._id)) && <div id="online" style={{right:"5%",width:"10px",top:"40%",translate:"0px 0px", height:"10px",borderRadius:"999px", position:"absolute",backgroundColor:"#10b981"}}></div>}
                 <Text className="yo" transform={"translateY(200px)"} opacity={0} fontWeight={"500"} color={ selectedChat ? (selectedChat._id === chat._id ? "white" : "black") : "black"}>
                   {!chat.isGroupChat
                     ? getSender(loggedUser, chat.users)
@@ -194,7 +194,7 @@ const MyChats = ({ fetchAgain }) => {
                 )}
 
                 {chatsVideo.some(videouser => videouser.selectedChat._id === chat._id) && (
-                  <FaVideo style={{ position: "absolute", right: "40px", top: "50%", transform: "translateY(-50%)", color: secondaryColor }} />
+                  <FaVideo style={{ position: "absolute", right: "40px", top: "50%", transform: "translateY(-50%)", color: "#10b981" }} />
                 )}
               </Box>
             ))

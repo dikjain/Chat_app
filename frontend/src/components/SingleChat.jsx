@@ -61,7 +61,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   //api
   const sound = new Audio(Notification);
-  const { selectedChat, setSelectedChat, setChats, user, notification, setNotification , setVideocall  ,setIsOneOnOneCall , videoCallUser, setVideoCallUser , setChatsVideo, primaryColor, secondaryColor } = ChatState();
+  const { selectedChat, setSelectedChat, setChats, user, notification, setNotification , setVideocall  ,setIsOneOnOneCall , videoCallUser, setVideoCallUser , setChatsVideo, primaryColor } = ChatState();
 
   const fetchMessages = useCallback(async () => {
     if (!selectedChat) return;
@@ -477,7 +477,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             justifyContent="flex-end"
             p={3}
             border={`2px solid ${primaryColor}`}
-            boxShadow={`0px 0px 10px 5px ${secondaryColor}`}
+            boxShadow="0px 0px 10px 5px #10b981"
             bg="#020202"
             w="100%"
             h="100%"

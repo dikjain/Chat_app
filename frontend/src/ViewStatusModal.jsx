@@ -7,7 +7,7 @@ import './Swiper.css';
 import { ChatState } from "../src/Context/Chatprovider";
 
 function ViewStatusModal({ fetchStatus, user, status, currUser }) {
-  const { primaryColor, secondaryColor } = ChatState();
+  const { primaryColor } = ChatState();
   const [currentStatus, setCurrentStatus] = useState([]);
   const toast = useToast();
 
@@ -65,7 +65,7 @@ function ViewStatusModal({ fetchStatus, user, status, currUser }) {
                   <Image objectFit={"contain"} maxHeight={"100%"} src={item.mediaUrl} />
                   <Text position={"absolute"} bottom={0} h={"fit-content"} maxW={"100%"} w={"100%"} display={"flex"} justifyContent={"center"} px={3} bg={"black"} opacity={0.6} color={"white"}>{item.content}</Text>
                   {user._id === currUser._id && <Button position={"absolute"} top={2} right={2} colorScheme="red" size="sm" onClick={() => deleteStatus(item._id)}>Delete</Button>}
-                  <Button position={"absolute"} top={2} left={2} color={"white"} bg={secondaryColor} size="sm">{calculateTimeRemaining(item.expiresAt)}</Button>
+                  <Button position={"absolute"} top={2} left={2} color={"white"} bg="#10b981" size="sm">{calculateTimeRemaining(item.expiresAt)}</Button>
                 </Box>
               </SwiperSlide>
             ))}

@@ -28,7 +28,7 @@ import {
     const [loading, setLoading] = useState(false);
     const toast = useToast();
   
-    const { user, chats, setChats, primaryColor, secondaryColor } = ChatState();
+    const { user, chats, setChats, primaryColor } = ChatState();
   
     const handleGroup = (userToAdd) => {
       if (selectedUsers.includes(userToAdd)) {
@@ -131,17 +131,17 @@ import {
   
         <Modal onClose={onClose} isOpen={isOpen} isCentered>
           <ModalOverlay />
-          <ModalContent bg="black" color={secondaryColor} border={`1px solid ${primaryColor}`}>
+          <ModalContent bg="black" color="#10b981" border={`1px solid ${primaryColor}`}>
             <ModalHeader
               fontSize="35px"
               fontFamily="Work sans"
               display="flex"
               justifyContent="center"
-              color={secondaryColor}
+              color="#10b981"
             >
               Create Group Chat
             </ModalHeader>
-            <ModalCloseButton bg={secondaryColor} color="black" />
+            <ModalCloseButton bg="#10b981" color="black" />
             <ModalBody display="flex" flexDir="column" alignItems="center">
               <FormControl>
                 <Input
@@ -149,8 +149,8 @@ import {
                   mb={3}
                   onChange={(e) => setGroupChatName(e.target.value)}
                   bg="black"
-                  color={secondaryColor}
-                  borderColor={secondaryColor}
+                  color="#10b981"
+                  borderColor="#10b981"
                   _placeholder={{ color: "gray.500" }}
                 />
               </FormControl>
@@ -160,8 +160,8 @@ import {
                   mb={1}
                   onChange={(e) => handleSearch(e.target.value)}
                   bg="black"
-                  color={secondaryColor}
-                  borderColor={secondaryColor}
+                  color="#10b981"
+                  borderColor="#10b981"
                   _placeholder={{ color: "gray.500" }}
                 />
               </FormControl>

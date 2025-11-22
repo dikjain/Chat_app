@@ -7,8 +7,6 @@ import { ChatState } from './Context/Chatprovider'
 import { config, validateConfig } from './constants/config'
 import LandingPage from './Pages/landingPage'
 function App() {
-  const {secondaryColor} = ChatState();
-  
   useEffect(() => {
     validateConfig();
   }, []);
@@ -18,7 +16,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage/>}/>
         <Route path="/auth" element={<AuthPage/>}/>
-        <Route path="/Chats" element={<ChatPage/>}/>
+        <Route path="/chats" element={<ChatPage/>}/>
         <Route path="/videocall/:id" element={<VideoCall/>}/>
       </Routes>
     </div>

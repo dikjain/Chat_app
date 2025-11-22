@@ -54,9 +54,7 @@ function SideDrawer() {
     chats,
     setChats,
     primaryColor,
-    setPrimaryColor,
-    secondaryColor,
-    setSecondaryColor
+    setPrimaryColor
   } = ChatState();
   
   const ENDPOINT = appConfig.SOCKET_URL;
@@ -151,7 +149,7 @@ function SideDrawer() {
         justifyContent="space-between"
         alignItems="center"
         bg="black" // Black background
-        color={secondaryColor} // Neon green text
+        color="#10b981" // Neon green text
         w="100%"
         p="5px 10px"
         border={`${primaryColor} solid 3px`}
@@ -189,9 +187,9 @@ function SideDrawer() {
                 backgroundColor={primaryColor}
               />
             </MenuButton>
-            <MenuList pl={2} bg="black" color={secondaryColor} zIndex={1000}>
+            <MenuList pl={2} bg="black" color="#10b981" zIndex={1000}>
               {!notification.length && (
-                <Text color={secondaryColor}>No New Messages</Text>
+                <Text color="#10b981">No New Messages</Text>
               )}
 
               {/* Limit the notifications to the latest 10 */}
@@ -223,7 +221,7 @@ function SideDrawer() {
                   backgroundColor={primaryColor}
                 />
               }
-              color={secondaryColor}
+              color="#10b981"
             >
               <Avatar
                 border={`2px solid ${primaryColor}`}
@@ -233,26 +231,26 @@ function SideDrawer() {
                 src={user.pic}
               />
             </MenuButton>
-            <MenuList bg="black" color={secondaryColor} zIndex="overlay">
+            <MenuList bg="black" color="#10b981" zIndex="overlay">
               <ProfileModal user={user} setUser={setUser}>
-                <MenuItem bg="black" color={secondaryColor} zIndex={1000}>
+                <MenuItem bg="black" color="#10b981" zIndex={1000}>
                   My Profile
                 </MenuItem>{" "}
               </ProfileModal>
               <MenuDivider />
               <StatusModal>
-                <MenuItem bg="black" color={secondaryColor}>
+                <MenuItem bg="black" color="#10b981">
                   My Status
                 </MenuItem>
               </StatusModal>
               <MenuDivider />
               <LanguageModal>
-                <MenuItem bg="black" color={secondaryColor}>
+                <MenuItem bg="black" color="#10b981">
                   Language
                 </MenuItem>
               </LanguageModal>
               <MenuDivider />
-              <MenuItem onClick={logoutHandler} bg="black" color={secondaryColor} zIndex={1000}>
+              <MenuItem onClick={logoutHandler} bg="black" color="#10b981" zIndex={1000}>
                 Logout
               </MenuItem>
               <MenuDivider />
@@ -289,7 +287,7 @@ function SideDrawer() {
                     <Box
                       as="button"
                       borderRadius="50%"
-                      bg={`linear-gradient(45deg,black,${primaryColor},${secondaryColor},black)`}
+                      bg={`linear-gradient(45deg,black,${primaryColor},#10b981,black)`}
                       w="25px"
                       h="25px"
                       border={"0.5px white solid"}
@@ -329,7 +327,7 @@ function SideDrawer() {
 
       <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
         <DrawerOverlay />
-        <DrawerContent bg="black" color={secondaryColor}>
+        <DrawerContent bg="black" color="#10b981">
           {" "}
           {/* Black background for the drawer */}
           <DrawerHeader borderBottomWidth="1px" color={primaryColor}>
@@ -343,7 +341,7 @@ function SideDrawer() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 bg="black" // Black background
-                color={secondaryColor} // Neon green text
+                color="#10b981" // Neon green text
                 borderColor={primaryColor} // Neon green border
                 _placeholder={{ color: "gray.500" }} // Placeholder color
               />
@@ -363,7 +361,7 @@ function SideDrawer() {
               ))
             )}
             {loadingChat && (
-              <Spinner ml="auto" display="flex" color={secondaryColor} />
+              <Spinner ml="auto" display="flex" color="#10b981" />
             )}
           </DrawerBody>
         </DrawerContent>
