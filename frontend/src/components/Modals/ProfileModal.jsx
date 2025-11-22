@@ -1,24 +1,18 @@
-import { ViewIcon } from "@chakra-ui/icons";
+import { Eye } from "lucide-react";
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  useDisclosure,
-  IconButton,
-  Text,
-  Image,
-  useToast,
-  Input,
-  Spinner,
-} from "@chakra-ui/react";
-
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 import axios from "axios";
-import { ChatState } from "@/Context/Chatprovider";
+import { ChatState } from "@/context/Chatprovider";
 import { useState } from "react";
 import ViewStatusModal from "./ViewStatusModal";
 import useCloudinaryUpload from "@/hooks/useCloudinaryUpload";
@@ -32,9 +26,8 @@ const ProfileModal = ({ children, profileUser }) => {
   const { user, setUser, primaryColor } = ChatState();
   if (!profileUser) profileUser = user;
 
-  const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { uploadImage, isUploading } = useCloudinaryUpload(toast);
+  const [isOpen, setIsOpen] = useState(false);
+  const { uploadImage, isUploading } = useCloudinaryUpload();
 
   const handleUpdate = () => {
     setNaam(user.name);
@@ -55,13 +48,7 @@ const ProfileModal = ({ children, profileUser }) => {
           ...user,
           name: naam,
         }));
-        toast({
-          title: "Name Updated!",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
-        });
+        toast.success("Name Updated!");
       }
     } catch (err) {
       console.log(err);
@@ -87,13 +74,7 @@ const ProfileModal = ({ children, profileUser }) => {
               ...user,
               pic: imgUrl,
             }));
-            toast({
-              title: "Profile Picture Updated!",
-              status: "success",
-              duration: 5000,
-              isClosable: true,
-              position: "bottom",
-            });
+            toast.success("Profile Picture Updated!");
           } catch (err) {
             console.log(err);
           }
@@ -124,91 +105,71 @@ const ProfileModal = ({ children, profileUser }) => {
   const handleCloseModal = () => {
     setIsViewStatusModal(false); // Reset state when closing modal
     setStatus([])
-    onClose();
+    setIsOpen(false);
   };
 
   return (
     <>
-      {children ? (
-        <span onClick={onOpen}>{children}</span>
-      ) : (
-        <IconButton display={{ base: "flex" }} icon={<ViewIcon />} onClick={onOpen} />
-      )}
- { !isViewStatusModal && <Modal size="lg" onClose={handleCloseModal} isOpen={isOpen} isCentered>
-        <ModalOverlay />
-        <ModalContent h="410px" bg={"#18191a"}>
-          <ModalHeader
-            position={"relative"}
-            fontSize="40px"
-            fontFamily="Roboto"
-            display="flex"
-            justifyContent="center"
-            color={primaryColor}
-          >
-            {!isNaam && profileUser && profileUser.name.toUpperCase()}
-            {isNaam && (
-              <Input
-                type="text"
-                placeholder="name"
-                bg={"black"}
-                color={primaryColor}
-                fontSize={"20px"}
-                fontWeight={"bold"}
-                mx={"10px"}
-                w={"50%"}
-                h={"40px"}
-                zIndex={"1000"}
-                value={naam}
-                onChange={(e) => setNaam(e.target.value)}
-              />
-            )}
-            {isNaam && <Button onClick={handleNameChange}>Done</Button>}
-          </ModalHeader>
-          <ModalCloseButton bg={primaryColor} fontWeight={"bold"} />
-          <ModalBody
-            display="flex"
-            flexDir="column"
-            alignItems="center"
-            justifyContent="space-between"
-          >
+      <Dialog open={isOpen && !isViewStatusModal} onOpenChange={setIsOpen}>
+        {children ? (
+          <DialogTrigger asChild onClick={() => setIsOpen(true)}>
+            {children}
+          </DialogTrigger>
+        ) : (
+          <DialogTrigger asChild>
+            <Button variant="ghost" size="icon" className="flex">
+              <Eye className="h-4 w-4" />
+            </Button>
+          </DialogTrigger>
+        )}
+        <DialogContent className="h-[410px] bg-[#18191a] max-w-lg">
+          <DialogHeader className="relative text-4xl font-['Roboto'] flex justify-center" style={{ color: primaryColor }}>
+            <DialogTitle className="text-4xl">
+              {!isNaam && profileUser && profileUser.name.toUpperCase()}
+              {isNaam && (
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    placeholder="name"
+                    className="bg-black text-xl font-bold mx-[10px] w-[50%] h-10 z-[1000]"
+                    style={{ color: primaryColor }}
+                    value={naam}
+                    onChange={(e) => setNaam(e.target.value)}
+                  />
+                  <Button onClick={handleNameChange}>Done</Button>
+                </div>
+              )}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center justify-between">
             {isUploading ? (
-              <Spinner size="xl" color={primaryColor} thickness="4px" speed="0.65s" />
+              <Spinner className="h-12 w-12" style={{ color: primaryColor }} />
             ) : (
-              <Image
-                transition={"all 0.3s ease"}
-                border={`4px solid ${primaryColor}`}
-                borderRadius="full"
-                boxSize="150px"
+              <img
+                className="transition-all duration-300 rounded-full w-[150px] h-[150px]"
+                style={{ border: `4px solid ${primaryColor}` }}
                 src={profileUser && profileUser.pic}
                 alt={profileUser && profileUser.name}
               />
             )}
-            <Text fontSize={{ base: "28px", md: "30px" }} color={primaryColor}>
+            <p className="text-[28px] md:text-[30px]" style={{ color: primaryColor }}>
               {profileUser && `Email: ${profileUser.email}`}
-            </Text>
-          </ModalBody>
-          <ModalFooter w={"100%"} display={"flex"} justifyContent={"space-between"}>
+            </p>
+          </div>
+          <DialogFooter className="w-full flex justify-between">
             {profileUser && user._id === profileUser._id && (
               <>
                 <Button
-                  bg={primaryColor}
+                  className="my-1 text-[15px] rounded-[10px] font-bold"
+                  style={{ backgroundColor: primaryColor, color: "white" }}
                   onClick={changePic}
-                  color={"white"}
-                  fontWeight={"bold"}
-                  my={"4px"}
-                  fontSize={"15px"}
-                  borderRadius={"10px"}
                 >
                   Change Picture
                 </Button>
                 <Button
-                  bg={primaryColor}
+                  className="my-1 text-[15px] rounded-[10px] font-bold"
+                  style={{ backgroundColor: primaryColor, color: "white" }}
                   onClick={handleUpdate}
-                  color={"white"}
-                  fontWeight={"bold"}
-                  my={"4px"}
-                  fontSize={"15px"}
-                  borderRadius={"10px"}
                 >
                   Edit Name
                 </Button>
@@ -216,26 +177,21 @@ const ProfileModal = ({ children, profileUser }) => {
             )}
             {profileUser && user._id !== profileUser._id && (
               <Button
-                bg={primaryColor}
+                className="my-1 text-[15px] rounded-[10px] font-bold"
+                style={{ backgroundColor: primaryColor, color: "white" }}
                 onClick={handleViewStatus}
-                color={"white"}
-                fontWeight={"bold"}
-                my={"4px"}
-                fontSize={"15px"}
-                borderRadius={"10px"}
               >
                 View Status
               </Button>
             )}
             <Button onClick={handleCloseModal}>Close</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       {/* Conditionally render ViewStatusModal content based on state */}
       {isViewStatusModal && (
-        <Modal size="xl" onClose={handleCloseModal}  isOpen={isViewStatusModal} isCentered>
-          <ModalOverlay />
-          <ModalContent bg="black" color={primaryColor} borderColor={primaryColor} borderWidth={2}  rounded={"10px"}>
+        <Dialog open={isViewStatusModal} onOpenChange={handleCloseModal}>
+          <DialogContent className="bg-black border-2 rounded-[10px] max-w-4xl" style={{ color: primaryColor, borderColor: primaryColor }}>
             <ViewStatusModal
               currUser={user}
               isOpen={isViewStatusModal}
@@ -245,8 +201,8 @@ const ProfileModal = ({ children, profileUser }) => {
               status={status.status}
               user={profileUser}
             />
-          </ModalContent>
-        </Modal>
+          </DialogContent>
+        </Dialog>
       )}
     </>
   );

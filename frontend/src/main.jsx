@@ -1,16 +1,15 @@
 import { createRoot } from 'react-dom/client'
 import App from '@/App.jsx'
 import '@/index.css'
-import { ChakraProvider } from '@chakra-ui/react'
 import { BrowserRouter } from 'react-router-dom'
-import ChatProvider from '@/Context/Chatprovider.jsx'
+import ChatProvider from '@/context/Chatprovider.jsx'
+import { Toaster } from '@/components/ui/sonner'
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
   <ChatProvider>
-    <ChakraProvider>
     <App />
-    </ChakraProvider>
+    <Toaster />
   </ChatProvider>
   </BrowserRouter>
 )

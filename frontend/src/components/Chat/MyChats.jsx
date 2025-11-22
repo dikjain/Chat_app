@@ -1,13 +1,12 @@
-import { AddIcon } from "@chakra-ui/icons";
-import { Box, Stack, Text } from "@chakra-ui/layout";
-import { useToast } from "@chakra-ui/toast";
+import { Plus } from "lucide-react";
+import { toast } from "sonner";
 import axios from "axios";
 import { useEffect, useRef, useState, useMemo } from "react";
-import { getSender } from "@/configs/ChatLogics";
+import { getSender } from "@/utils/chatLogics";
 import ChatLoading from "./ChatLoading";
 import GroupChatModal from "@/components/Modals/GroupChatModal";
-import { Button } from "@chakra-ui/react";
-import { ChatState } from "@/Context/Chatprovider";
+import { Button } from "@/components/ui/button";
+import { ChatState } from "@/context/Chatprovider";
 import io from "socket.io-client";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -24,12 +23,9 @@ const MyChats = ({ fetchAgain }) => {
 
   const { selectedChat, setSelectedChat, user, chats, setChats , chatsVideo, primaryColor } = ChatState();
 
-  const toast = useToast();
-
   
 
   const fetchChats = async () => {
-    // console.log(user._id);
     try {
       const requestConfig = {
         headers: {
@@ -40,13 +36,8 @@ const MyChats = ({ fetchAgain }) => {
       const { data } = await axios.get("/api/chat", requestConfig);
       setChats(data);
     } catch (error) {
-      toast({
-        title: "Error Occured!",
+      toast.error("Error Occured!", {
         description: "Failed to Load the chats",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom-left",
       });
     }
   };
@@ -105,104 +96,72 @@ const MyChats = ({ fetchAgain }) => {
 
 
   return (
-    <Box
-    display={{ base: selectedChat ? "none" : "flex", md: "flex" }}
-    flexDir="column"
-    alignItems="center"
-    p={3}
-    bg="white"
-    w={{ base: "100%", md: "31%" }}
-    borderRadius="lg"
-    borderWidth="1px"
-    backgroundColor={"black"}
+    <div
+    className={`${selectedChat ? "hidden" : "flex"} md:flex flex-col items-center p-3 bg-black w-full md:w-[31%] rounded-lg border`}
     >
-      <Box
-        pb={3}
-        px={3}
-        fontSize={{ base: "28px", md: "30px" }}
-        display="flex"
-        width="100%"
-        justifyContent="space-around"
-        alignItems="center"
-        color={primaryColor}
-        fontFamily={"Atomic Age"}
-        
-        >
+      <div
+        className="pb-3 px-3 text-[28px] md:text-[30px] flex w-full justify-around items-center font-['Atomic_Age']"
+        style={{ color: primaryColor }}
+      >
         My Chats
         <GroupChatModal>
           <Button
-            display="flex"
-            fontSize={{ base: "17px", md: "10px", lg: "17px" }}
-            rightIcon={<AddIcon />}
-            fontFamily={"Roboto"}
-            >
+            className="flex text-[17px] md:text-[10px] lg:text-[17px] font-['Roboto']"
+          >
             New Group Chat
+            <Plus className="ml-1 h-4 w-4" />
           </Button>
         </GroupChatModal>
-      </Box>
-      <Box
-        display="flex"
-        flexDir="column"
-        p={3}
-        bg="#020202"
-        w="100%"
-        h="100%"
-        borderRadius="lg"
-        overflowY="scroll"
-        border={`2px solid ${primaryColor}`}
-        boxShadow="0px 0px 10px 5px #10b981"
-        >
+      </div>
+      <div
+        className="flex flex-col p-3 bg-[#020202] w-full h-full rounded-lg overflow-y-scroll"
+        style={{ 
+          border: `2px solid ${primaryColor}`,
+          boxShadow: "0px 0px 10px 5px #10b981"
+        }}
+      >
         {chats ? (
             chats.map((chat) => (
-              <Box
-              className="chat"
+              <div
+              className="chat cursor-pointer transition-all duration-200 px-3 py-2 mx-[7px] my-[2px] rounded-lg relative font-['Roboto'] font-light z-30"
               onClick={() => setSelectedChat(chat)}
-              cursor="pointer"
-              bg={selectedChat ? (selectedChat._id === chat._id ? primaryColor : "#E8E8E8") : "#E8E8E8"}
-                boxShadow={selectedChat ? (selectedChat._id === chat._id ? "#10b981 0px 0px 12px 5px" : "#10b981 0px 0px 7px 2px") : "#10b981 0px 0px 7px 2px"}
-                border="#10b981 solid 2px"
-                transition={"all 0.2s ease-in-out"}
-                px={3}
-                transform={"translateY(-100px)"}
-                opacity={0}
-                py={2}
-                mx={"7px"}
-                my={"2px"}
-                borderRadius="lg"
-                key={chat._id}
-                position="relative"
-                fontFamily={"Roboto"}
-                fontWeight={"300"}
-                zIndex={"30"}
+              style={{
+                transform: "translateY(-100px)",
+                opacity: 0,
+                backgroundColor: selectedChat ? (selectedChat._id === chat._id ? primaryColor : "#E8E8E8") : "#E8E8E8",
+                boxShadow: selectedChat ? (selectedChat._id === chat._id ? "#10b981 0px 0px 12px 5px" : "#10b981 0px 0px 7px 2px") : "#10b981 0px 0px 7px 2px",
+                border: "#10b981 solid 2px",
+              }}
+              key={chat._id}
               >
                 {!chat.isGroupChat && chat.users[0] && chat.users[1] && (chat.users[0]._id == user._id ? onlinepeople.includes(chat.users[1]._id) :onlinepeople.includes(chat.users[0]._id)) && <div id="online" style={{right:"5%",width:"10px",top:"40%",translate:"0px 0px", height:"10px",borderRadius:"999px", position:"absolute",backgroundColor:"#10b981"}}></div>}
-                <Text className="yo" transform={"translateY(200px)"} opacity={0} fontWeight={"500"} color={ selectedChat ? (selectedChat._id === chat._id ? "white" : "black") : "black"}>
+                <p className="yo font-medium" style={{ transform: "translateY(200px)", opacity: 0, color: selectedChat ? (selectedChat._id === chat._id ? "white" : "black") : "black" }}>
                   {!chat.isGroupChat
                     ? getSender(loggedUser, chat.users)
                     : chat.chatName}
-                </Text>
+                </p>
 
                 {chat.latestMessage && (
-                  <Text className="yo" transform={"translateY(200px)"} opacity={0} fontSize="xs" color={ selectedChat ? (selectedChat._id === chat._id ? "white" : "black") : "black"}>
+                  <p className="yo text-xs" style={{ transform: "translateY(200px)", opacity: 0, color: selectedChat ? (selectedChat._id === chat._id ? "white" : "black") : "black" }}>
                     <b>{chat.latestMessage.sender.name} : </b>
                     {chat.latestMessage.content 
                       ? (chat.latestMessage.content.length > 50
                         ? chat.latestMessage.content.substring(0, 51) + "..."
                         : chat.latestMessage.content)
                       : "File"}
-                  </Text>
+                  </p>
                 )}
 
                 {chatsVideo.some(videouser => videouser.selectedChat._id === chat._id) && (
                   <FaVideo style={{ position: "absolute", right: "40px", top: "50%", transform: "translateY(-50%)", color: "#10b981" }} />
                 )}
-              </Box>
+              </div>
             ))
         ) : (
           <ChatLoading />
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

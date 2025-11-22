@@ -1,44 +1,33 @@
 import {
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
-    Button,
-    useDisclosure,
-    FormControl,
-    Input,
-    useToast,
-    Box,
-  } from "@chakra-ui/react";
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogFooter,
+    DialogTitle,
+    DialogTrigger,
+  } from "@/components/ui/dialog";
+  import { Button } from "@/components/ui/button";
+  import { Input } from "@/components/ui/input";
+  import { toast } from "sonner";
   import axios from "axios";
   import { useState } from "react";
-  import { ChatState } from "@/Context/Chatprovider";
+  import { ChatState } from "@/context/Chatprovider";
   import UserBadgeItem from "@/components/UI/UserBadgeItem";
   import UserListItem from "@/components/UI/UserListItem";
   
   const GroupChatModal = ({ children }) => {
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [isOpen, setIsOpen] = useState(false);
     const [groupChatName, setGroupChatName] = useState();
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [search, setSearch] = useState("");
     const [searchResult, setSearchResult] = useState([]);
     const [loading, setLoading] = useState(false);
-    const toast = useToast();
   
     const { user, chats, setChats, primaryColor } = ChatState();
   
     const handleGroup = (userToAdd) => {
       if (selectedUsers.includes(userToAdd)) {
-        toast({
-          title: "User already added",
-          status: "warning",
-          duration: 5000,
-          isClosable: true,
-          position: "top",
-        });
+        toast.warning("User already added");
         return;
       }
   
@@ -59,17 +48,11 @@ import {
           },
         };
         const { data } = await axios.get(`/api/user?search=${search}`, config);
-        console.log(data);
         setLoading(false);
         setSearchResult(data);
       } catch (error) {
-        toast({
-          title: "Error Occured!",
+        toast.error("Error Occured!", {
           description: "Failed to Load the Search Results",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom-left",
         });
       }
     };
@@ -80,13 +63,7 @@ import {
   
     const handleSubmit = async () => {
       if (!groupChatName || !selectedUsers) {
-        toast({
-          title: "Please fill all the fields",
-          status: "warning",
-          duration: 5000,
-          isClosable: true,
-          position: "top",
-        });
+        toast.warning("Please fill all the fields");
         return;
       }
   
@@ -105,67 +82,45 @@ import {
           config
         );
         setChats([data, ...chats]);
-        onClose();
-        toast({
-          title: "New Group Chat Created!",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
-        });
+        setIsOpen(false);
+        toast.success("New Group Chat Created!");
       } catch (error) {
-        toast({
-          title: "Failed to Create the Chat!",
+        toast.error("Failed to Create the Chat!", {
           description: error.response.data,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
         });
       }
     };
   
     return (
       <>
-        <span onClick={onOpen}>{children}</span>
-  
-        <Modal onClose={onClose} isOpen={isOpen} isCentered>
-          <ModalOverlay />
-          <ModalContent bg="black" color="#10b981" border={`1px solid ${primaryColor}`}>
-            <ModalHeader
-              fontSize="35px"
-              fontFamily="Work sans"
-              display="flex"
-              justifyContent="center"
-              color="#10b981"
-            >
-              Create Group Chat
-            </ModalHeader>
-            <ModalCloseButton bg="#10b981" color="black" />
-            <ModalBody display="flex" flexDir="column" alignItems="center">
-              <FormControl>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogTrigger asChild onClick={() => setIsOpen(true)}>
+            {children}
+          </DialogTrigger>
+          <DialogContent className="bg-black text-[#10b981] max-w-lg" style={{ border: `1px solid ${primaryColor}` }}>
+            <DialogHeader>
+              <DialogTitle className="text-[35px] font-['Work_sans'] flex justify-center text-[#10b981]">
+                Create Group Chat
+              </DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col items-center">
+              <div className="w-full mb-3">
                 <Input
                   placeholder="Chat Name"
-                  mb={3}
+                  className="bg-black border-[#10b981] placeholder:text-gray-500"
+                  style={{ color: "#10b981" }}
                   onChange={(e) => setGroupChatName(e.target.value)}
-                  bg="black"
-                  color="#10b981"
-                  borderColor="#10b981"
-                  _placeholder={{ color: "gray.500" }}
                 />
-              </FormControl>
-              <FormControl>
+              </div>
+              <div className="w-full mb-1">
                 <Input
                   placeholder="Add Users eg: abc123, ad"
-                  mb={1}
+                  className="bg-black border-[#10b981] placeholder:text-gray-500"
+                  style={{ color: "#10b981" }}
                   onChange={(e) => handleSearch(e.target.value)}
-                  bg="black"
-                  color="#10b981"
-                  borderColor="#10b981"
-                  _placeholder={{ color: "gray.500" }}
                 />
-              </FormControl>
-              <Box w="100%" display="flex" flexWrap="wrap">
+              </div>
+              <div className="w-full flex flex-wrap">
                 {selectedUsers.map((u) => (
                   <UserBadgeItem
                     key={u._id}
@@ -173,7 +128,7 @@ import {
                     handleFunction={() => handleDelete(u)}
                   />
                 ))}
-              </Box>
+              </div>
               {loading ? (
                 <div>Loading...</div>
               ) : (
@@ -187,14 +142,14 @@ import {
                     />
                   ))
               )}
-            </ModalBody>
-            <ModalFooter>
-              <Button onClick={handleSubmit} colorScheme="green">
+            </div>
+            <DialogFooter>
+              <Button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700">
                 Create Chat
               </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </>
     );
   };

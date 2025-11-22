@@ -1,25 +1,19 @@
 import React,{useEffect} from 'react'
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  useDisclosure,
-  Textarea,
-  Box,
-  Text,
-  Image,
-  useToast,
-  Spinner,
-} from "@chakra-ui/react";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 import { useState } from "react";
-import { ChatState } from "@/Context/Chatprovider";
+import { ChatState } from "@/context/Chatprovider";
 import axios from 'axios';
-import '@/Swiper.css';
+import '@/styles/swiper.css';
 import useCloudinaryUpload from "@/hooks/useCloudinaryUpload";
 
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -30,12 +24,11 @@ import ViewStatusModal from './ViewStatusModal';
 
 function StatusModal({children}) {
   const { user, primaryColor } = ChatState();
-  const toast = useToast();   
   const [status, setStatus] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { uploadImage } = useCloudinaryUpload(toast);
+  const { uploadImage } = useCloudinaryUpload();
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
   const [statusContent, setStatusContent] = useState({ text: "", imageUrl: "" });
  
 
@@ -61,18 +54,12 @@ function StatusModal({children}) {
   const CreateStatus = async () => {
 
     if(statusContent.text === "" && statusContent.imageUrl === ""){
-      toast({
-        title: "Please Enter Some Text or Upload an Image!",
-        status: "warning",
-      });
+      toast.warning("Please Enter Some Text or Upload an Image!");
       return;
     }
 
     if(statusContent.text.length > 200){
-      toast({
-        title: "Maximum 200 characters allowed!",
-        status: "warning",
-      });
+      toast.warning("Maximum 200 characters allowed!");
       return;
     }
     setIsLoading(true);
@@ -94,10 +81,7 @@ function StatusModal({children}) {
       setIsLoading(false);
     } catch (err) {
       console.log(err);
-      toast({
-        title: "Error Occured!",
-        status: "error",
-      });
+      toast.error("Error Occured!");
       setIsLoading(false);
     }
   }
@@ -116,51 +100,56 @@ function StatusModal({children}) {
 
   return (
     <>
-      <Box onClick={onOpen} >
-        {children}
-      </Box>
-
-      <Modal isOpen={isOpen} onClose={onClose} size="full">
-        <ModalOverlay />
-        <ModalContent bg="black" color="#10b981" overflow="hidden">
-          <ModalHeader>Update Your Status</ModalHeader>
-          <ModalCloseButton bg={primaryColor} color="black" />
-          <ModalBody display="flex"  flexDirection={{ base: "column", md: "row" }} w={{base:"100%",md:"100%"}}>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild onClick={() => setIsOpen(true)}>
+          {children}
+        </DialogTrigger>
+        <DialogContent className="bg-black text-[#10b981] overflow-hidden max-w-[95vw] h-[95vh]">
+          <DialogHeader>
+            <DialogTitle>Update Your Status</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col md:flex-row w-full h-full">
             {/* Left side: Display current status */}
             <ViewStatusModal setStatus={setStatus} currUser={user} fetchStatus={fetchStatus} status={status.status} user={user}/>
 
             {/* Right side: Add new status */}
-            <Box flex="1" ml={{ base: 0, md: 2 }}>
-              <ModalHeader color={primaryColor}>Add New Status</ModalHeader>
-              <Box>
-                <Text color={primaryColor}>Upload an image</Text>
-                <Box onClick={takeImage} bg={primaryColor} height={{ base: "30vh", md: "50vh" }} display={"flex"} justifyContent={"center"} alignItems={"center"}  color="black" p={2} borderRadius="md" cursor="pointer">
-                    {statusContent.imageUrl ? <Image src={statusContent.imageUrl} objectFit={"cover"} height={"100%"} alt="Status Image" /> : <Text>No image uploaded</Text>}
-                </Box>
-              </Box>
-              <Textarea
+            <div className="flex-1 ml-0 md:ml-2">
+              <h3 className="text-xl font-semibold mb-4" style={{ color: primaryColor }}>Add New Status</h3>
+              <div>
+                <p style={{ color: primaryColor }}>Upload an image</p>
+                <div 
+                  onClick={takeImage} 
+                  className="flex justify-center items-center p-2 rounded-md cursor-pointer"
+                  style={{ backgroundColor: primaryColor, height: "30vh", color: "black" }}
+                >
+                    {statusContent.imageUrl ? (
+                      <img src={statusContent.imageUrl} className="object-cover h-full" alt="Status Image" />
+                    ) : (
+                      <p>No image uploaded</p>
+                    )}
+                </div>
+              </div>
+              <textarea
                 placeholder="What's on your mind?"
-                maxH={"100px"}
+                className="w-full mt-3 p-2 bg-black border border-[#10b981] rounded-md placeholder:text-gray-500 resize-none"
+                style={{ color: "#10b981", maxHeight: "100px" }}
                 value={statusContent.text}
                 onChange={(e) => setStatusContent((prev) => ({ ...prev, text: e.target.value }))}
-                bg="black"
-                color="#10b981"
-                borderColor="#10b981"
-                _placeholder={{ color: "gray.500" }}
               />
-              <Button colorScheme="green" mt={3} onClick={CreateStatus} isLoading={isLoading}>
+              <Button className="bg-green-600 hover:bg-green-700 mt-3" onClick={CreateStatus} disabled={isLoading}>
+                {isLoading ? <Spinner className="mr-2 h-4 w-4" /> : null}
                 Add
               </Button>
-            </Box>
-          </ModalBody>
+            </div>
+          </div>
 
-          <ModalFooter>
-            <Button colorScheme="green" mr={3} onClick={onClose}>
+          <DialogFooter>
+            <Button className="bg-green-600 hover:bg-green-700 mr-3" onClick={() => setIsOpen(false)}>
               Close
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

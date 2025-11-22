@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChatState } from "@/Context/Chatprovider";
+import { ChatState } from "@/context/Chatprovider";
 import useCloudinaryUpload from "@/hooks/useCloudinaryUpload";
 import { signup } from "@/api/auth";
 import useToast from "@/hooks/useToast";

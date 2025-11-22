@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from 'react'
-import { Box, Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Spinner, Toast } from '@chakra-ui/react';
-import { useDisclosure } from '@chakra-ui/react';
-import { ChatState } from '@/Context/Chatprovider';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
+import { ChatState } from '@/context/Chatprovider';
 import axios from 'axios';
 
 function LanguageModal({children}) {
   const { user, setUser, primaryColor } = ChatState();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
   const languages = ['Hindi', 'English', 'Spanish', 'French', 'German', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Bengali'];
   const [selectedLanguage, setSelectedLanguage] = useState(null);
   const [isLoading, setIsLoading] = useState(false); // Added state for loading
@@ -34,16 +43,11 @@ function LanguageModal({children}) {
           language: selectedLanguage,
         }, config);
         setUser({ ...user, TranslateLanguage: selectedLanguage });
-        onClose();
+        setIsOpen(false);
         localStorage.setItem("userInfo", JSON.stringify({ ...user, TranslateLanguage: selectedLanguage }))
       } catch (err) {
-        Toast({
-          title: "Error Occured!",
+        toast.error("Error Occured!", {
           description: err.response.data.message,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom-right",
         });
       }
     }
@@ -52,33 +56,44 @@ function LanguageModal({children}) {
 
   return (
     <>
-    <Box onClick={onOpen} >
-      {children}
-    </Box>
-
-    <Modal isOpen={isOpen}  onClose={onClose} size="md" isCentered>
-      <ModalOverlay />
-      <ModalContent bg="black" color="#10b981" overflow="hidden">
-        <ModalHeader>Choose Your Language</ModalHeader>
-        <ModalCloseButton bg="#10b981" color="black" />
-        <ModalBody display="flex" flexDirection="column" alignItems="center" justifyContent="center">
-          <Select placeholder="Select language" bg={primaryColor} fontFamily={"Orbitron"} color="black" width="full" mt={2} mb={2} value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.target.value)}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild onClick={() => setIsOpen(true)}>
+        {children}
+      </DialogTrigger>
+      <DialogContent className="bg-black text-[#10b981] overflow-hidden max-w-md">
+        <DialogHeader>
+          <DialogTitle>Choose Your Language</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col items-center justify-center">
+          <select 
+            className="w-full mt-2 mb-2 font-['Orbitron'] text-black rounded-md px-3 py-2"
+            style={{ backgroundColor: primaryColor }}
+            value={selectedLanguage || ""} 
+            onChange={(e) => setSelectedLanguage(e.target.value)}
+          >
+            <option value="">Select language</option>
             {languages.map((language) => (
               <option key={language} value={language}>{language}</option>
             ))}
-          </Select>
-          {isLoading && <Spinner />} {/* Added Spinner */}
-        </ModalBody>
-        <ModalFooter display="flex" justifyContent="space-between">
-          <Button bg={primaryColor} color="white" mr={3} onClick={handleLanguageChange} isLoading={isLoading}>
-            {isLoading ? <Spinner /> : "Submit"}
+          </select>
+          {isLoading && <Spinner className="mt-2" />}
+        </div>
+        <DialogFooter className="flex justify-between">
+          <Button 
+            className="mr-3" 
+            style={{ backgroundColor: primaryColor, color: "white" }}
+            onClick={handleLanguageChange}
+            disabled={isLoading}
+          >
+            {isLoading ? <Spinner className="mr-2 h-4 w-4" /> : null}
+            Submit
           </Button>
-          <Button bg="red" color={"white"} mr={3} onClick={onClose}>
+          <Button className="mr-3 bg-red-600 hover:bg-red-700 text-white" onClick={() => setIsOpen(false)}>
             Close
           </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </>  )
 }
 

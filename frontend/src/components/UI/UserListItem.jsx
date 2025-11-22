@@ -1,43 +1,24 @@
-import { Avatar } from "@chakra-ui/avatar";
-import { Box, Text } from "@chakra-ui/layout";
-import { ChatState } from "@/Context/Chatprovider";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { ChatState } from "@/context/Chatprovider";
 
 const UserListItem = ({ user, handleFunction }) => {
   return (
-    <Box
+    <div
       onClick={handleFunction}
-      cursor="pointer"
-      bg="black" // Set background to black
-      _hover={{
-        background: "green.500", // Neon green on hover
-        color: "white",
-      }}
-      w="100%"
-      display="flex"
-      alignItems="center"
-      color="green.300" // Neon green text
-      px={3}
-      py={2}
-      mb={2}
-      borderRadius="lg"
-      borderWidth="1px" // Optional: add a border
-      borderColor="green.400" // Optional: neon green border
+      className="cursor-pointer bg-black hover:bg-green-500 hover:text-white w-full flex items-center text-green-300 px-3 py-2 mb-2 rounded-lg border border-green-400 transition-colors"
     >
-      <Avatar
-        mr={2}
-        size="sm"
-        cursor="pointer"
-        name={user.name}
-        src={user.pic}
-      />
-      <Box>
-        <Text color="white">{user.name}</Text>
-        <Text fontSize="xs" color="green.300"> {/* Neon green for email text */}
-          <b style={{color:"white"}}>Email : </b>
+      <Avatar className="mr-2 h-8 w-8 cursor-pointer">
+        <AvatarImage src={user.pic} alt={user.name} />
+        <AvatarFallback>{user.name?.charAt(0)?.toUpperCase()}</AvatarFallback>
+      </Avatar>
+      <div>
+        <p className="text-white">{user.name}</p>
+        <p className="text-xs text-green-300">
+          <b className="text-white">Email : </b>
           {user.email}
-        </Text>
-      </Box>
-    </Box>
+        </p>
+      </div>
+    </div>
   );
 };
 

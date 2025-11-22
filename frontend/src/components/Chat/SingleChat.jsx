@@ -1,16 +1,15 @@
-import { FormControl } from "@chakra-ui/form-control";
-import { Input } from "@chakra-ui/input";
-import { Box, Text } from "@chakra-ui/layout";
-import "@/components/style.css";
-import { IconButton, Spinner, useToast, Button, Avatar } from "@chakra-ui/react";
-import { getSender, getSenderFull } from "@/configs/ChatLogics";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Spinner } from "@/components/ui/spinner";
+import "@/styles/components.css";
+import { getSender, getSenderFull } from "@/utils/chatLogics";
 import { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 import ProfileModal from "@/components/Modals/ProfileModal";
 import ScrollableChat from "./ScrollableChats";
-// import Lottie from "react-lottie";
-// import animationData from "@/animations/typing.json";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { gsap } from "gsap";
 import { FiFile } from "react-icons/fi"; // Importing file icon from react-icons
@@ -20,7 +19,7 @@ import { MdLocationOn, MdMic } from "react-icons/md"; // Importing location and 
 
 import io from "socket.io-client";
 import UpdateGroupChatModal from "@/components/Modals/UpdateGroupChatModal";
-import { ChatState } from "@/Context/Chatprovider";
+import { ChatState } from "@/context/Chatprovider";
 import { config as appConfig } from "@/constants/config";
 
 const ENDPOINT = appConfig.SOCKET_URL;
@@ -35,7 +34,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [socketConnected, setSocketConnected] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [sent, setsent] = useState(false);
-  const toast = useToast();
   const inputRef = useRef(null);
   const [aiMessage, setAIMessage] = useState("");
   const [aiTyping, setAITyping] = useState(false);
@@ -82,16 +80,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
       socket.emit("join chat", selectedChat._id);
     } catch (error) {
-      toast({
-        title: "Error Occured!",
+      toast.error("Error Occured!", {
         description: "Failed to Load the Messages",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
       });
     }
-  }, [selectedChat, toast, user.token]);
+  }, [selectedChat, user.token]);
 
   const requestConfig = {
     headers: {
@@ -121,23 +114,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setChats(iop.data);
         setsent(false);
       } catch (error) {
-        toast({
-          title: "Error Occured!",
+        toast.error("Error Occured!", {
           description: "Failed to send the Message",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
         });
       }
     } else if (event.key === "Enter" && sent) {
-      toast({
-        title: "Error Occured!",
+      toast.error("Error Occured!", {
         description: "Wait before sending another message",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-        position: "top",
       });
     }
   }, [sent, selectedChat, requestConfig]);
@@ -168,24 +151,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           const iop = await axios.get("/api/chat", requestConfig);
           setChats(iop.data);
         } catch (error) {
-          toast({
-            title: "Error Occured!",
+          toast.error("Error Occured!", {
             description: "Failed to send the location",
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-            position: "bottom",
           });
         }
       });
     } else {
-      toast({
-        title: "Geolocation Not Supported",
+      toast.error("Geolocation Not Supported", {
         description: "Your browser does not support geolocation.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
       });
     }
   };
@@ -285,13 +258,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const toggleSpeechRecognition = () => {
     if (!("webkitSpeechRecognition" in window)) {
-      toast({
-        title: "Speech Recognition Not Supported",
+      toast.error("Speech Recognition Not Supported", {
         description: "Your browser does not support speech recognition.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
       });
       return;
     }
@@ -339,13 +307,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       if (event.error === "aborted") {
         setIsListening(false);
       } else {
-        toast({
-          title: "Speech Recognition Error",
+        toast.error("Speech Recognition Error", {
           description: `An error occurred: ${event.error}`,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
         });
       }
     };
@@ -420,179 +383,137 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     <>
       {selectedChat ? (
         <>
-          <Box
-            fontSize={{ base: "28px", md: "30px" }}
-            pb={3}
-            px={2}
-            w="100%"
-            display="flex"
-            justifyContent={{ base: "space-between" }}
-            alignItems="center"
-            fontFamily={"Atomic Age"}
-            color={primaryColor}
+          <div
+            className="text-[28px] md:text-[30px] pb-3 px-2 w-full flex justify-between items-center font-['Atomic_Age']"
+            style={{ color: primaryColor }}
           >
-            <IconButton
-              display={{ base: "flex", md: "none" }}
-              icon={<ArrowBackIcon />}
+            <Button
+              className={`${window.innerWidth < 768 ? "flex" : "hidden"} md:hidden`}
+              variant="ghost"
+              size="icon"
               onClick={() => setSelectedChat("")}
-            />
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
             {messages &&
               (!selectedChat.isGroupChat ? (
                 <>
-                  <Box display="flex" color={primaryColor} gap={4} alignItems="center">
+                  <div className="flex gap-4 items-center" style={{ color: primaryColor }}>
                     {getSender(user, selectedChat.users).length > 7 && window.innerWidth < 550 ? (
-                      <Avatar size="sm" border={`1px solid ${primaryColor}`} name={getSender(user, selectedChat.users)} src={getSenderFull(user, selectedChat.users).pic} />
+                      <Avatar className="h-8 w-8" style={{ border: `1px solid ${primaryColor}` }}>
+                        <AvatarImage src={getSenderFull(user, selectedChat.users).pic} alt={getSender(user, selectedChat.users)} />
+                        <AvatarFallback>{getSender(user, selectedChat.users)?.charAt(0)?.toUpperCase()}</AvatarFallback>
+                      </Avatar>
                     ) : (
                       getSender(user, selectedChat.users)
                     )}
                     <ProfileModal profileUser={getSenderFull(user, selectedChat.users)} />
-                  </Box>
+                  </div>
                 </>
               ) : (
                 <>
-                  <Box display="flex" color={primaryColor} gap={4} alignItems="center">
+                  <div className="flex gap-4 items-center" style={{ color: primaryColor }}>
                     {selectedChat.chatName.toUpperCase()}
                     <UpdateGroupChatModal
                       fetchMessages={fetchMessages}
                       fetchAgain={fetchAgain}
                       setFetchAgain={setFetchAgain}
                     />
-                  </Box>
+                  </div>
                 </>
               ))}
-              <IconButton
-                icon={<FaVideo />}
-                size="sm"
+              <Button
+                variant="ghost"
+                size="icon"
                 aria-label="Start Video Call"
                 onClick={() => {setVideocall(true); selectedChat.isGroupChat ? setIsOneOnOneCall(false) : setIsOneOnOneCall(true); handleVideoCall()}}
-              /> 
+              >
+                <FaVideo />
+              </Button> 
               {videoCallUser && videoCallUser.map((u,i) => (selectedChat._id == u.selectedChat._id &&
               <img key={i} src={u.user.pic}  alt="User" style={{ position: "absolute",backgroundColor:"black", borderRadius: "50%", width: "20px",border: `0.5px solid ${primaryColor}`, height: "20px", transform: `translateX(${-70*i}%)`, right: "60px" }} />
               ))}
-          </Box>
-          <Box
+          </div>
+          <div
             id="msgdabba"
-            display="flex"
-            flexDir="column"
-            justifyContent="flex-end"
-            p={3}
-            border={`2px solid ${primaryColor}`}
-            boxShadow="0px 0px 10px 5px #10b981"
-            bg="#020202"
-            w="100%"
-            h="100%"
-            borderRadius="lg"
-            overflowY="hidden"
+            className="flex flex-col justify-end p-3 bg-[#020202] w-full h-full rounded-lg overflow-y-hidden"
+            style={{ 
+              border: `2px solid ${primaryColor}`,
+              boxShadow: "0px 0px 10px 5px #10b981"
+            }}
           >
             {loading ? (
-              <Spinner
-                borderRadius={"999px"}
-                size="xl"
-                w={10}
-                h={10}
-                alignSelf="center"
-                margin="auto"
-                backgroundColor={primaryColor}
-                _before={{
-                  content: '""',
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  borderRadius: "50%",
-                  width: "90%",
-                  height: "90%",
-                  backgroundColor: "black",
-                }}
-              />
+              <div className="flex justify-center items-center m-auto">
+                <Spinner className="h-10 w-10" style={{ color: primaryColor }} />
+              </div>
             ) : (
               <div style={{ position: "relative", overflowX: "hidden", maxWidth: "100%" }} className="messages">
                 <ScrollableChat msgaaya={msgaaya} setMsgaaya={setMsgaaya} messages={messages} setMessages={setMessages} />
               </div>
             )}
 
-            <FormControl onKeyDown={sendMessage} id="first-name" isRequired mt={3}>
-              <Box display="flex" alignItems="center" mt={"20px"} pos="relative">
+            <div onKeyDown={sendMessage} className="mt-3">
+              <div className="flex items-center mt-5 relative">
                 <Input
                   onClick={() => {
                     setNewMessage(aiMessage);
                     setAIMessage("");
                   }}
-                  zIndex={"50"}
-                  // h="70%"
-                  variant="filled"
-                  bg="black"
-                  color={primaryColor}
-                  pos="absolute"
+                  className="absolute -top-[70%] z-50 bg-black cursor-pointer h-fit"
+                  style={{ color: primaryColor }}
                   placeholder="Ai Assistant..."
-                  top={"-70%"}
                   value={aiMessage}
                   readOnly
-                  cursor={"pointer"}
-                  height={"fit-content"}
                 />
-                <IconButton
-                  icon={<FiFile />} // Using file icon from react-icons
-                  size="sm"
+                <Button
                   variant="outline"
-                  colorScheme="teal"
+                  size="icon"
+                  className="h-10 p-0 m-0 ml-2"
+                  style={{ backgroundColor: primaryColor }}
                   aria-label="Upload File"
-                  height={"40px"}
-                  padding={"0px"}
-                  margin={"0px"}
-                  bg={primaryColor}
-                  ml={2}
-                  _hover={{}}
                   onClick={handleFileUpload}
-                />
+                >
+                  <FiFile />
+                </Button>
                 <Input
-                  variant="filled"
-                  bg="#E0E0E0"
-                  color={primaryColor}
+                  className="bg-[#E0E0E0]"
+                  style={{ color: primaryColor }}
                   placeholder="Enter a message.."
                   value={newMessage}
                   onChange={typingHandler}
                   ref={inputRef}
                 />
-                <IconButton
-                  icon={<MdMic />}
-                  size="sm"
+                <Button
                   variant="outline"
-                  colorScheme={isListening ? "red" : primaryColor}
+                  size="icon"
+                  className="h-10 p-0 m-0 ml-2"
+                  style={{ backgroundColor: isListening ? "red" : primaryColor }}
                   aria-label="Toggle Speech Recognition"
-                  height={"40px"}
-                  padding={"0px"}
-                  margin={"0px"}
-                  bg={isListening ? "red" : primaryColor}
-                  ml={2}
-                  _hover={{}}
                   onClick={toggleSpeechRecognition}
-                />
-                <IconButton
-                  icon={<MdLocationOn />} // Using location icon from react-icons
-                  size="sm"
+                >
+                  <MdMic />
+                </Button>
+                <Button
                   variant="outline"
-                  colorScheme="blue"
+                  size="icon"
+                  className="h-10 p-0 m-0 ml-2"
+                  style={{ backgroundColor: primaryColor }}
                   aria-label="Send Location"
-                  height={"40px"}
-                  padding={"0px"}
-                  margin={"0px"}
-                  bg={primaryColor}
-                  ml={2}
-                  _hover={{}}
                   onClick={sendLocation}
-                />
-              </Box>
-            </FormControl>
-          </Box>
+                >
+                  <MdLocationOn />
+                </Button>
+              </div>
+            </div>
+          </div>
         </>
       ) : (
         // to get socket.io on same page
-        <Box display="flex" alignItems="center" justifyContent="center" h="100%">
-          <Text fontSize="3xl" pb={3} color={primaryColor} fontFamily="Atomic Age">
+        <div className="flex items-center justify-center h-full">
+          <p className="text-3xl pb-3 font-['Atomic_Age']" style={{ color: primaryColor }}>
             Click on a user to start chatting
-          </Text>
-        </Box>
+          </p>
+        </div>
       )}
     </>
   );

@@ -1,12 +1,12 @@
-import { Avatar } from "@chakra-ui/avatar";
-import { Tooltip } from "@chakra-ui/tooltip";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import ScrollableFeed from "react-scrollable-feed";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from "@/configs/ChatLogics";
-import { ChatState } from "@/Context/Chatprovider";
-import "@/components/UserAvatar/Scroll.css";
+import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from "@/utils/chatLogics";
+import { ChatState } from "@/context/Chatprovider";
+import "@/styles/scroll.css";
 import gsap from "gsap";
-import { Text, useToast } from "@chakra-ui/react";
+import { toast } from "sonner";
 import axios from "axios"; // Import axios
 import { motion } from "framer-motion"; // Import framer-motion
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -21,13 +21,11 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
   const { user , setChats , selectedChat , primaryColor } = ChatState();
   const messageRef = useRef(null);
   const messageRef2 = useRef(null);
-  const toast = useToast();
   const [msggya , setMsggya] = useState(false)
   const [d , setd] = useState(false)  
   const [curmsglen , setcurmsglen] = useState(0)
 
   const fetchChats = async () => {
-    // console.log(user._id);
     try {
       const requestConfig = {
         headers: {
@@ -39,13 +37,8 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
       const { data } = await axios.get("/api/chat", requestConfig);
       setChats(data);
     } catch (error) {
-      toast({
-        title: "Error Occured!",
+      toast.error("Error Occured!", {
         description: "Failed to Fetch the chats",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom-left",
       });
     }
   };
@@ -84,16 +77,11 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
       speechSynthesis.cancel();
       speechSynthesis.speak(utterance);
     } else {
-      toast({
-        title: "Text-to-Speech Not Supported",
+      toast.error("Text-to-Speech Not Supported", {
         description: "Your browser does not support text-to-speech.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
       });
     }
-  }, [toast]);
+  }, []);
 
   let todayIST = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }).slice(0, 9);
   
@@ -227,26 +215,17 @@ useEffect(()=>{
       setMessages(prevMessages => prevMessages.filter(message => message._id !== messageId));
       setMsggya(true)
       fetchChats();
-      toast({
-        title: "Message deleted successfully",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+      toast.success("Message deleted successfully");
       document.querySelectorAll(".allmsg").forEach(el=>{
         el.style.opacity = "1";
       });
       setSpeakVisible(null)
     }catch(error){
-      toast({
-        title: "Failed to delete message",
+      toast.error("Failed to delete message", {
         description: error?.response?.data?.message || error.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
       });
     }
-  }, [user.token, selectedChat._id, messages, toast, fetchChats]);
+  }, [user.token, selectedChat._id, messages, fetchChats]);
 
 
 
@@ -278,12 +257,8 @@ useEffect(()=>{
         vismsg[i].content = msg
         setc(null)
         setTranslating(false)
-        toast({
-          title: "Error Translating",
+        toast.error("Error Translating", {
           description: error?.response?.data?.message || error.message,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
         });
       }
     }
@@ -295,26 +270,28 @@ useEffect(()=>{
 
 
   return (
-    <ScrollableFeed>
-    { messages.length -qq > 0 ? <button style={{width:"50%",padding:"3px 0px",transform:"translateX(50%)", borderRadius:"999px" , backgroundColor:primaryColor,alignSelf:"center",justifySelf:"center" , color:"white" }} onClick={()=> {messages.length -qq > 10 ?setqq((l)=>l+10) : setqq(messages.length);setd(true)}}>load more</button> : null}
-      {vismsg &&
-        vismsg.map((m, i) => (
-          <div className="allmsg" style={{ display: "flex", position: "relative"}} key={m._id}>
-            {isSameSender(vismsg, m, i, user._id)&& (
-              <Tooltip label={m.sender.name} placement="bottom-start" hasArrow>
-                <Avatar
-                transition="none"
-                className={`messagee${m._id}`}
-                id={`messagee${m.sender._id === user._id ? "R" : "L"}`}   
-                  mt="7px"
-                  mr={1}
-                  size="sm"
-                  cursor="pointer"
-                  name={m.sender.name}
-                  src={m.sender.pic}
-                />
-              </Tooltip>
-            )}
+    <TooltipProvider>
+      <ScrollableFeed>
+      { messages.length -qq > 0 ? <button style={{width:"50%",padding:"3px 0px",transform:"translateX(50%)", borderRadius:"999px" , backgroundColor:primaryColor,alignSelf:"center",justifySelf:"center" , color:"white" }} onClick={()=> {messages.length -qq > 10 ?setqq((l)=>l+10) : setqq(messages.length);setd(true)}}>load more</button> : null}
+        {vismsg &&
+          vismsg.map((m, i) => (
+            <div className="allmsg" style={{ display: "flex", position: "relative"}} key={m._id}>
+              {isSameSender(vismsg, m, i, user._id)&& (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Avatar
+                    className={`messagee${m._id} mt-[7px] mr-1 h-8 w-8 cursor-pointer`}
+                    id={`messagee${m.sender._id === user._id ? "R" : "L"}`}
+                    >
+                      <AvatarImage src={m.sender.pic} alt={m.sender.name} />
+                      <AvatarFallback>{m.sender.name?.charAt(0)?.toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" align="start">
+                    {m.sender.name}
+                  </TooltipContent>
+                </Tooltip>
+              )}
             <motion.span
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
@@ -389,7 +366,7 @@ useEffect(()=>{
                 />
                 </div>
               )}
-              {m.file && <Text style={{ fontSize:"10px",maxWidth:"150px" ,textAlign:"center",fontWeight:"semibold",color:`${m.sender._id === user._id ? primaryColor : "#fff"}`}}>{m.file.split("/").pop()}</Text>}
+              {m.file && <p style={{ fontSize:"10px",maxWidth:"150px" ,textAlign:"center",fontWeight:"semibold",color:`${m.sender._id === user._id ? primaryColor : "#fff"}`}}>{m.file.split("/").pop()}</p>}
               <span
               style={{
                 fontFamily:" 'Atomic Age', sans-serif,Roboto, Arial",
@@ -452,7 +429,8 @@ useEffect(()=>{
             </motion.span>
           </div>
         ))}
-    </ScrollableFeed>
+      </ScrollableFeed>
+    </TooltipProvider>
   );
 };
 

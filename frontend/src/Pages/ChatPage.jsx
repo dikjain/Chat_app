@@ -1,9 +1,8 @@
-import { Box } from "@chakra-ui/layout";
 import { useEffect, useState } from "react";
 import Chatbox from "@/components/Chat/ChatBox";
 import MyChats from "@/components/Chat/MyChats";
 import SideDrawer from "@/components/UI/SideDrawer";
-import { ChatState } from "@/Context/Chatprovider";
+import { ChatState } from "@/context/Chatprovider";
 import axios from "axios";
 
 
@@ -47,12 +46,12 @@ const Chatpage = () => {
   return (
     <div style={{ width: "100%", overflow: "hidden" }}>
       {user && <SideDrawer />}
-      <Box display="flex" justifyContent="space-between" w="100%" h="91.5vh" p="10px">
+      <div className="flex justify-between w-full h-[91.5vh] p-[10px]">
         {user && <MyChats fetchAgain={fetchAgain} />}
         {user && (
           <Chatbox fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
         )}
-      </Box>
+      </div>
     </div>
   );
 };

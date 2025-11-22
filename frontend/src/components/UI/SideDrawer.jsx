@@ -1,36 +1,33 @@
-import { Button } from "@chakra-ui/button";
-import { useDisclosure } from "@chakra-ui/hooks";
-import { Input } from "@chakra-ui/input";
-import { Box, Text } from "@chakra-ui/layout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  MenuList,
-} from "@chakra-ui/menu";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
-} from "@chakra-ui/modal";
-import { Tooltip } from "@chakra-ui/tooltip";
-import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
-import { Avatar } from "@chakra-ui/avatar";
-import { useNavigate } from "react-router-dom"; // Changed to useNavigate
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Spinner } from "@/components/ui/spinner";
+import { Bell, ChevronDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useMemo, useState, useEffect } from "react";
 import axios from "axios";
-import { useToast } from "@chakra-ui/toast";
+import { toast } from "sonner";
 import ChatLoading from "@/components/Chat/ChatLoading";
-import { Spinner } from "@chakra-ui/spinner";
 import ProfileModal from "@/components/Modals/ProfileModal";
 import NotificationBadge from "react-notification-badge";
 import { Effect } from "react-notification-badge";
-import { getSender } from "@/configs/ChatLogics";
+import { getSender } from "@/utils/chatLogics";
 import UserListItem from "@/components/UI/UserListItem";
-import { ChatState } from "@/Context/Chatprovider";
+import { ChatState } from "@/context/Chatprovider";
 import { FaSearch } from "react-icons/fa";
 import StatusModal from "@/components/Modals/StatusModal";
 import io from "socket.io-client";
@@ -60,9 +57,8 @@ function SideDrawer() {
   const ENDPOINT = appConfig.SOCKET_URL;
   const Socket = useMemo(() => io(ENDPOINT), [ENDPOINT]);
   
-  const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const navigate = useNavigate(); // Replacing useHistory with useNavigate
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   
   useEffect(() => {
     if (!isOpen) {
@@ -79,13 +75,7 @@ function SideDrawer() {
 
   const handleSearch = async () => {
     if (!search) {
-      toast({
-        title: "Please Enter something in search",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "top-left",
-      });
+      toast.warning("Please Enter something in search");
       return;
     }
 
@@ -103,13 +93,8 @@ function SideDrawer() {
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
-      toast({
-        title: "Error Occured!",
+      toast.error("Error Occured!", {
         description: "Failed to Load the Search Results",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom-left",
       });
     }
   };
@@ -129,226 +114,179 @@ function SideDrawer() {
       if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
       setSelectedChat(data);
       setLoadingChat(false);
-      onClose();
+      setIsOpen(false);
     } catch (error) {
-      toast({
-        title: "Error fetching the chat",
+      toast.error("Error fetching the chat", {
         description: error.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom-left",
       });
     }
   };
 
   return (
-    <>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        bg="black" // Black background
-        color="#10b981" // Neon green text
-        w="100%"
-        p="5px 10px"
-        border={`${primaryColor} solid 3px`}
+    <TooltipProvider>
+      <div
+        className="flex justify-between items-center bg-black text-[#10b981] w-full px-[10px] py-[5px]"
+        style={{ border: `${primaryColor} solid 3px` }}
       >
-        <Tooltip label="Search Users to chat" hasArrow placement="bottom">
-          <Button variant="ghost" onClick={onOpen} colorScheme="green">
-            <FaSearch fill={primaryColor} />
-            <Text
-              display={{ base: "none", md: "flex" }}
-              px={4}
-              color={primaryColor}
-            >
-              Search User
-            </Text>
-          </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" onClick={() => setIsOpen(true)} className="bg-green-600 hover:bg-green-700">
+              <FaSearch style={{ fill: primaryColor }} />
+              <span className="hidden md:flex px-4" style={{ color: primaryColor }}>
+                Search User
+              </span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            Search Users to chat
+          </TooltipContent>
         </Tooltip>
-        <Text className="oip" fontSize="2xl" fontFamily="Atomic Age" textColor={primaryColor}>
+        <p className="oip text-2xl font-['Atomic_Age']" style={{ color: primaryColor }}>
           A{" "}
-          <span className="oii oil" style={{borderBottom: `${primaryColor} solid 2px`,textDecoration: `line-through ${primaryColor}`}} fontSize={"1px !important"}>
+          <span className="oii oil" style={{borderBottom: `${primaryColor} solid 2px`,textDecoration: `line-through ${primaryColor}`}}>
             Basic
           </span>{" "}
           <span className="oii oil" style={{borderBottom: `${primaryColor} solid 2px`}}>Chat</span> App
-        </Text>
-        <div>
-          <Menu zIndex={1000}>
-            <MenuButton p={1}>
-              <NotificationBadge
-                count={notification.length}
-                effect={Effect.SCALE}
-              />
-              <BellIcon
-                fontSize="2xl"
-                m={1}
-                borderRadius={"99px"}
-                backgroundColor={primaryColor}
-              />
-            </MenuButton>
-            <MenuList pl={2} bg="black" color="#10b981" zIndex={1000}>
+        </p>
+        <div className="flex gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="p-1">
+                <NotificationBadge
+                  count={notification.length}
+                  effect={Effect.SCALE}
+                />
+                <Bell
+                  className="text-2xl m-1 rounded-full"
+                  style={{ backgroundColor: primaryColor }}
+                />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-black text-[#10b981] z-[1000] pl-2">
               {!notification.length && (
-                <Text color="#10b981">No New Messages</Text>
+                <p className="text-[#10b981] px-2 py-1.5">No New Messages</p>
               )}
-
-              {/* Limit the notifications to the latest 10 */}
               {notification.slice(-10).map((notif) => (
-                <MenuItem
+                <DropdownMenuItem
                   key={notif._id}
                   onClick={() => {
                     setSelectedChat(notif.chat);
                     setNotification(notification.filter((n) => n !== notif));
                   }}
-                  bg="black" // Black background
-                  color={primaryColor} // Neon green text
-                  zIndex={1000}
+                  className="bg-black z-[1000]"
+                  style={{ color: primaryColor }}
                 >
                   {notif.chat.isGroupChat
                     ? `New Message in ${notif.chat.chatName}`
                     : `New Message from ${getSender(user, notif.chat.users)}`}
-                </MenuItem>
+                </DropdownMenuItem>
               ))}
-            </MenuList>
-          </Menu>
-          <Menu>
-            <MenuButton
-              as={Button}
-              bg="black"
-              rightIcon={
-                <ChevronDownIcon
-                  borderRadius={"999px"}
-                  backgroundColor={primaryColor}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="bg-black text-[#10b981]">
+                <Avatar className="h-8 w-8" style={{ border: `2px solid ${primaryColor}` }}>
+                  <AvatarImage src={user.pic} alt={user.name} />
+                  <AvatarFallback>{user.name?.charAt(0)?.toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <ChevronDown
+                  className="rounded-full"
+                  style={{ backgroundColor: primaryColor }}
                 />
-              }
-              color="#10b981"
-            >
-              <Avatar
-                border={`2px solid ${primaryColor}`}
-                size="sm"
-                cursor="pointer"
-                name={user.name}
-                src={user.pic}
-              />
-            </MenuButton>
-            <MenuList bg="black" color="#10b981" zIndex="overlay">
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-black text-[#10b981] z-[9999]">
               <ProfileModal user={user} setUser={setUser}>
-                <MenuItem bg="black" color="#10b981" zIndex={1000}>
+                <DropdownMenuItem className="bg-black z-[1000]" style={{ color: "#10b981" }}>
                   My Profile
-                </MenuItem>{" "}
+                </DropdownMenuItem>
               </ProfileModal>
-              <MenuDivider />
+              <DropdownMenuSeparator />
               <StatusModal>
-                <MenuItem bg="black" color="#10b981">
+                <DropdownMenuItem className="bg-black" style={{ color: "#10b981" }}>
                   My Status
-                </MenuItem>
+                </DropdownMenuItem>
               </StatusModal>
-              <MenuDivider />
+              <DropdownMenuSeparator />
               <LanguageModal>
-                <MenuItem bg="black" color="#10b981">
+                <DropdownMenuItem className="bg-black" style={{ color: "#10b981" }}>
                   Language
-                </MenuItem>
+                </DropdownMenuItem>
               </LanguageModal>
-              <MenuDivider />
-              <MenuItem onClick={logoutHandler} bg="black" color="#10b981" zIndex={1000}>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={logoutHandler} className="bg-black z-[1000]" style={{ color: "#10b981" }}>
                 Logout
-              </MenuItem>
-              <MenuDivider />
-              <Box display="flex" justifyContent="space-around" alignItems="center" p={2}>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <div className="flex justify-around items-center p-2">
                 {!showColorInputs ? (
                   <>
-                    <Box
-                      as="button"
-                      borderRadius="50%"
-                      bg="linear-gradient(45deg,black , #e69500,#d48500, black)"
-                      w="25px"
-                      h="25px"
-                      border={"0.5px white solid"}
-                      onClick={() => {setPrimaryColor('#e69500'); setSecondaryColor('#d48500')}}
+                    <button
+                      className="rounded-full w-[25px] h-[25px] border-[0.5px] border-white"
+                      style={{ background: "linear-gradient(45deg,black , #e69500,#d48500, black)" }}
+                      onClick={() => setPrimaryColor('#e69500')}
                     />
-                    <Box
-                      as="button"
-                      borderRadius="50%"
-                      bg="linear-gradient(45deg,black , #6b0073,#950aff, black)"
-                      w="25px"
-                      h="25px"
-                      border={"0.5px white solid"}
-                      onClick={() => {setPrimaryColor('#a32bff'); setSecondaryColor('#950aff')}}
+                    <button
+                      className="rounded-full w-[25px] h-[25px] border-[0.5px] border-white"
+                      style={{ background: "linear-gradient(45deg,black , #6b0073,#950aff, black)" }}
+                      onClick={() => setPrimaryColor('#a32bff')}
                     />
-                    <Box
-                      as="button"
-                      borderRadius="50%"
-                      bg="linear-gradient(45deg,black , #0099b0,#007a92, black)"
-                      w="25px"
-                      h="25px"
-                      border={"0.5px white solid"}
-                      onClick={() => {setPrimaryColor('#0099b0'); setSecondaryColor('#007a92')}}
+                    <button
+                      className="rounded-full w-[25px] h-[25px] border-[0.5px] border-white"
+                      style={{ background: "linear-gradient(45deg,black , #0099b0,#007a92, black)" }}
+                      onClick={() => setPrimaryColor('#0099b0')}
                     />
-                    <Box
-                      as="button"
-                      borderRadius="50%"
-                      bg={`linear-gradient(45deg,black,${primaryColor},#10b981,black)`}
-                      w="25px"
-                      h="25px"
-                      border={"0.5px white solid"}
+                    <button
+                      className="rounded-full w-[25px] h-[25px] border-[0.5px] border-white"
+                      style={{ background: `linear-gradient(45deg,black,${primaryColor},#10b981,black)` }}
                       onClick={() => setShowColorInputs(true)}
                     />
                   </>
                 ) : (
-                  <Box display="flex" flexDirection="column" alignItems="center">
-                    <Box display="flex" justifyContent="space-between" gap={2} alignItems="center">
-                    <Input
-                      type="color"
-                      onChange={(e) => setPrimaryColor(e.target.value)}
-                      title="Select Primary Color"
-                      size="sm"
-                      w="40px"
-                      h="20px"
-                    />
-                    <Input
-                      type="color"
-                      onChange={(e) => setSecondaryColor(e.target.value)}
-                      title="Select Secondary Color"
-                      size="sm"
-                      w="40px"
-                      h="20px"
-                    />
-                    </Box>
-                    <Button mt={2} onClick={() => setShowColorInputs(false)}>
+                  <div className="flex flex-col items-center">
+                    <div className="flex justify-between gap-2 items-center">
+                      <input
+                        type="color"
+                        onChange={(e) => setPrimaryColor(e.target.value)}
+                        title="Select Primary Color"
+                        className="w-10 h-5"
+                      />
+                      <input
+                        type="color"
+                        title="Select Secondary Color"
+                        className="w-10 h-5"
+                      />
+                    </div>
+                    <Button className="mt-2" onClick={() => setShowColorInputs(false)}>
                       Go Back
                     </Button>
-                  </Box>
+                  </div>
                 )}
-              </Box>
-            </MenuList>
-          </Menu>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      </Box>
+      </div>
 
-      <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
-        <DrawerOverlay />
-        <DrawerContent bg="black" color="#10b981">
-          {" "}
-          {/* Black background for the drawer */}
-          <DrawerHeader borderBottomWidth="1px" color={primaryColor}>
-            Search Users
-          </DrawerHeader>
-          <DrawerBody>
-            <Box display="flex" pb={2}>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetContent side="left" className="bg-black text-[#10b981] w-[300px] sm:w-[400px]">
+          <SheetHeader className="border-b pb-2" style={{ color: primaryColor }}>
+            <SheetTitle>Search Users</SheetTitle>
+          </SheetHeader>
+          <div className="flex flex-col gap-4 mt-4">
+            <div className="flex gap-2 pb-2">
               <Input
                 placeholder="Search by name or email"
-                mr={2}
+                className="bg-black border-[#10b981] placeholder:text-gray-500"
+                style={{ color: "#10b981", borderColor: primaryColor }}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                bg="black" // Black background
-                color="#10b981" // Neon green text
-                borderColor={primaryColor} // Neon green border
-                _placeholder={{ color: "gray.500" }} // Placeholder color
               />
-              <Button onClick={handleSearch} colorScheme="green">
+              <Button onClick={handleSearch} className="bg-green-600 hover:bg-green-700">
                 Go
               </Button>
-            </Box>
+            </div>
             {loading ? (
               <ChatLoading />
             ) : (
@@ -357,16 +295,18 @@ function SideDrawer() {
                   key={user._id}
                   user={user}
                   handleFunction={() => accessChat(user._id)}
-                  />
+                />
               ))
             )}
             {loadingChat && (
-              <Spinner ml="auto" display="flex" color="#10b981" />
+              <div className="ml-auto flex">
+                <Spinner className="h-6 w-6" style={{ color: "#10b981" }} />
+              </div>
             )}
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
-    </>
+          </div>
+        </SheetContent>
+      </Sheet>
+    </TooltipProvider>
   );
 }
 

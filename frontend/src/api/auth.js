@@ -16,7 +16,6 @@ export const signup = async (name, email, password, pic) => {
       "Content-type": "application/json",
     },
   };
-  console.log(name, email, password, pic);
   const { data } = await axios.post("/api/user", { name, email, password, pic }, config);
   return data;
 };

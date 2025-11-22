@@ -1,30 +1,19 @@
 import { useState } from "react";
 import { config as appConfig } from "@/constants/config";
+import { toast } from "sonner";
 
-const useCloudinaryUpload = (toast) => {
+const useCloudinaryUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
 
   const uploadImage = async (file) => {
     if (!file) {
-      toast({
-        title: "Please Select an Image!",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
+      toast.warning("Please Select an Image!");
       return null;
     }
 
     if (file.type !== "image/jpeg" && file.type !== "image/png") {
-      toast({
-        title: "Please Select a Valid Image (JPEG or PNG)!",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
+      toast.warning("Please Select a Valid Image (JPEG or PNG)!");
       return null;
     }
 
@@ -56,13 +45,8 @@ const useCloudinaryUpload = (toast) => {
       return url;
     } catch (error) {
       console.error("Cloudinary upload error:", error);
-      toast({
-        title: "Image Upload Failed",
+      toast.error("Image Upload Failed", {
         description: "Please try again later",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
       });
       setIsUploading(false);
       return null;
