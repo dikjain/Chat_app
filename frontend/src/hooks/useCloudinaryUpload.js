@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { config as appConfig } from "../constants/config";
+import { config as appConfig } from "@/constants/config";
 
 const useCloudinaryUpload = (toast) => {
   const [isUploading, setIsUploading] = useState(false);

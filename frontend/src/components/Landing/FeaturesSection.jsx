@@ -1,11 +1,11 @@
 import React from "react";
-import RealTimeMessagingBox from "./RealTimeMessagingBox";
-import AudioCallBox from "./AudioCallBox";
-import VideoCallBox from "./VideoCallBox";
-import StoriesBox from "./StoriesBox";
-import LiveLocationBox from "./LiveLocationBox";
-import MultilingualBox from "./MultilingualBox";
-import TransferBox from "./TransferBox";
+import RealTimeMessagingBox from "@/components/Features/RealTimeMessagingBox";
+import AudioCallBox from "@/components/Features/AudioCallBox";
+import VideoCallBox from "@/components/Features/VideoCallBox";
+import StoriesBox from "@/components/Features/StoriesBox";
+import LiveLocationBox from "@/components/Features/LiveLocationBox";
+import MultilingualBox from "@/components/Features/MultilingualBox";
+import TransferBox from "@/components/Features/TransferBox";
 
 export default function FeaturesSection() {
   return (

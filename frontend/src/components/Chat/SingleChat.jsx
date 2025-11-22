@@ -1,16 +1,16 @@
 import { FormControl } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Box, Text } from "@chakra-ui/layout";
-import "./style.css";
+import "@/components/style.css";
 import { IconButton, Spinner, useToast, Button, Avatar } from "@chakra-ui/react";
-import { getSender, getSenderFull } from "../configs/ChatLogics";
+import { getSender, getSenderFull } from "@/configs/ChatLogics";
 import { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import ProfileModal from "../ProfileModal";
+import ProfileModal from "@/components/Modals/ProfileModal";
 import ScrollableChat from "./ScrollableChats";
 // import Lottie from "react-lottie";
-// import animationData from "../animations/typing.json";
+// import animationData from "@/animations/typing.json";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { gsap } from "gsap";
 import { FiFile } from "react-icons/fi"; // Importing file icon from react-icons
@@ -19,14 +19,14 @@ import { useNavigate } from "react-router-dom"; // Importing useNavigate from re
 import { MdLocationOn, MdMic } from "react-icons/md"; // Importing location and mic icons from react-icons
 
 import io from "socket.io-client";
-import UpdateGroupChatModal from "../UpdateGroupChatmodal";
-import { ChatState } from "../Context/Chatprovider";
-import { config as appConfig } from "../constants/config";
+import UpdateGroupChatModal from "@/components/Modals/UpdateGroupChatModal";
+import { ChatState } from "@/Context/Chatprovider";
+import { config as appConfig } from "@/constants/config";
 
 const ENDPOINT = appConfig.SOCKET_URL;
 var socket, selectedChatCompare;
 
-import Notification from "../assets/notification.mp3";
+import Notification from "@/assets/notification.mp3";
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { PlusIcon } from "../svg/svgs.jsx";
+import { PlusIcon } from "@/svg/svgs.jsx";
 
 export default function GithubBadge() {
   const [isHovered, setIsHovered] = useState(false);

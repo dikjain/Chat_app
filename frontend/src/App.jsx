@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react'
 import { Routes,Route } from 'react-router-dom'
-import AuthPage from './Pages/AuthPage'
-import ChatPage from './Pages/ChatPage'
-import VideoCall from './Pages/VideoCall'
-import { ChatState } from './Context/Chatprovider'
-import { config, validateConfig } from './constants/config'
-import LandingPage from './Pages/landingPage'
+import AuthPage from '@/Pages/AuthPage'
+import ChatPage from '@/Pages/ChatPage'
+import VideoCall from '@/Pages/VideoCall'
+import { ChatState } from '@/Context/Chatprovider'
+import { config, validateConfig } from '@/constants/config'
+import LandingPage from '@/Pages/landingPage'
 function App() {
   useEffect(() => {
     validateConfig();

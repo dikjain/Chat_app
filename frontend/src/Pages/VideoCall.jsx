@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChatState } from '../Context/Chatprovider';
+import { ChatState } from '@/Context/Chatprovider';
 import io from 'socket.io-client';
-import { config as appConfig } from '../constants/config';
+import { config as appConfig } from '@/constants/config';
 
 function VideoCall() {
   const { id } = useParams();

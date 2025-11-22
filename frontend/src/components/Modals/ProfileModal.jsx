@@ -18,11 +18,11 @@ import {
 } from "@chakra-ui/react";
 
 import axios from "axios";
-import { ChatState } from "./Context/Chatprovider";
+import { ChatState } from "@/Context/Chatprovider";
 import { useState } from "react";
 import ViewStatusModal from "./ViewStatusModal";
-import useCloudinaryUpload from "./hooks/useCloudinaryUpload";
-import { updateUser } from "./api/auth";
+import useCloudinaryUpload from "@/hooks/useCloudinaryUpload";
+import { updateUser } from "@/api/auth";
 
 const ProfileModal = ({ children, profileUser }) => {
   const [isNaam, setisNaam] = useState(false);

@@ -1,5 +1,5 @@
 import React from "react";
-import Noise from "./Noise";
+import Noise from "@/components/Noise";
 
 export default function QuoteSection() {
   return (

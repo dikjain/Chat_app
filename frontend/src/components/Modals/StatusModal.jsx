@@ -17,10 +17,10 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { ChatState } from "./Context/Chatprovider";
+import { ChatState } from "@/Context/Chatprovider";
 import axios from 'axios';
-import './Swiper.css';
-import useCloudinaryUpload from "./hooks/useCloudinaryUpload";
+import '@/Swiper.css';
+import useCloudinaryUpload from "@/hooks/useCloudinaryUpload";
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';

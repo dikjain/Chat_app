@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Spinner, Toast } from '@chakra-ui/react';
 import { useDisclosure } from '@chakra-ui/react';
-import { ChatState } from './Context/Chatprovider';
+import { ChatState } from '@/Context/Chatprovider';
 import axios from 'axios';
 
 function LanguageModal({children}) {

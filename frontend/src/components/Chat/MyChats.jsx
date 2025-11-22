@@ -3,16 +3,16 @@ import { Box, Stack, Text } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
 import { useEffect, useRef, useState, useMemo } from "react";
-import { getSender } from "../configs/ChatLogics";
-import ChatLoading from "../Chatloading";
-import GroupChatModal from "../GroupChatmodal";
+import { getSender } from "@/configs/ChatLogics";
+import ChatLoading from "./ChatLoading";
+import GroupChatModal from "@/components/Modals/GroupChatModal";
 import { Button } from "@chakra-ui/react";
-import { ChatState } from "../Context/Chatprovider";
+import { ChatState } from "@/Context/Chatprovider";
 import io from "socket.io-client";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { FaVideo } from "react-icons/fa";
-import { config as appConfig } from "../constants/config";
+import { config as appConfig } from "@/constants/config";
 
 
 

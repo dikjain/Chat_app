@@ -1,6 +1,6 @@
 import React from "react";
 import { MainButton } from "./MainButton";
-import GithubBadge from "./GithubBadge";
+import GithubBadge from "@/components/GithubBadge";
 
 export default function HeroSection() {
   return (

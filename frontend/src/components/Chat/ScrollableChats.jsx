@@ -2,15 +2,15 @@ import { Avatar } from "@chakra-ui/avatar";
 import { Tooltip } from "@chakra-ui/tooltip";
 import ScrollableFeed from "react-scrollable-feed";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from "../configs/ChatLogics";
-import { ChatState } from "../Context/Chatprovider";
-import "./UserAvatar/Scroll.css";
+import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from "@/configs/ChatLogics";
+import { ChatState } from "@/Context/Chatprovider";
+import "@/components/UserAvatar/Scroll.css";
 import gsap from "gsap";
 import { Text, useToast } from "@chakra-ui/react";
 import axios from "axios"; // Import axios
 import { motion } from "framer-motion"; // Import framer-motion
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { config as appConfig } from "../constants/config";
+import { config as appConfig } from "@/constants/config";
 
 
 const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {

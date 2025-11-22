@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChatState } from "../../Context/Chatprovider";
-import { login } from "../../api/auth";
-import useToast from "../../hooks/useToast";
-import ToastContainer from "../ToastContainer";
+import { ChatState } from "@/Context/Chatprovider";
+import { login } from "@/api/auth";
+import useToast from "@/hooks/useToast";
+import ToastContainer from "@/components/UI/ToastContainer";
 import Input from "./Input";
 import Button from "./Button";
 import { motion } from "framer-motion";

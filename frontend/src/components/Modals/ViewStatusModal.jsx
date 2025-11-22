@@ -3,8 +3,8 @@ import { Box, ModalHeader, Text, Image, useToast, Button } from "@chakra-ui/reac
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCards } from 'swiper/modules';
 import axios from 'axios';
-import './Swiper.css';
-import { ChatState } from "../src/Context/Chatprovider";
+import '@/Swiper.css';
+import { ChatState } from "@/Context/Chatprovider";
 
 function ViewStatusModal({ fetchStatus, user, status, currUser }) {
   const { primaryColor } = ChatState();

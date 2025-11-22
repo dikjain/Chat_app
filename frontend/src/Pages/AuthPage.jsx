@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import LeftSection from "../components/Authentication/LeftSection";
-import LogoSection from "../components/Authentication/LogoSection";
-import AuthFormContainer from "../components/Authentication/AuthFormContainer";
+import LeftSection from "@/components/Authentication/LeftSection";
+import LogoSection from "@/components/Authentication/LogoSection";
+import AuthFormContainer from "@/components/Authentication/AuthFormContainer";
 
 function Homepage() {
   const [activeTab, setActiveTab] = useState("login");

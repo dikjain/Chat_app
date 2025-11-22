@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChatState } from "../../Context/Chatprovider";
-import useCloudinaryUpload from "../../hooks/useCloudinaryUpload";
-import { signup } from "../../api/auth";
-import useToast from "../../hooks/useToast";
-import ToastContainer from "../ToastContainer";
+import { ChatState } from "@/Context/Chatprovider";
+import useCloudinaryUpload from "@/hooks/useCloudinaryUpload";
+import { signup } from "@/api/auth";
+import useToast from "@/hooks/useToast";
+import ToastContainer from "@/components/UI/ToastContainer";
 import Input from "./Input";
 import Button from "./Button";
 

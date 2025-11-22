@@ -1,5 +1,5 @@
 import { useState } from "react";
-import PixelBlast from "./Authentication/PixelBlast";
+import PixelBlast from "@/components/Authentication/PixelBlast";
 
 const VideoCallIcon = () => (
   <svg width="18" height="18" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
