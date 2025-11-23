@@ -11,19 +11,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
-import axios from "axios";
-import { ChatState } from "@/context/Chatprovider";
-import { useState } from "react";
+import { fetchStatus, updateUser  } from "@/api";
+import { useAuthStore, useThemeStore } from "@/stores";
+import { useState, useRef } from "react";
 import ViewStatusModal from "./ViewStatusModal";
 import useCloudinaryUpload from "@/hooks/useCloudinaryUpload";
-import { updateUser } from "@/api/auth";
 
 const ProfileModal = ({ children, profileUser }) => {
   const [isNaam, setisNaam] = useState(false);
   const [naam, setNaam] = useState("");
   const [isViewStatusModal, setIsViewStatusModal] = useState(false);
 
-  const { user, setUser, primaryColor } = ChatState();
+  const user = useAuthStore((state) => state.user);
+  const updateUser = useAuthStore((state) => state.updateUser);
+  const primaryColor = useThemeStore((state) => state.primaryColor);
   if (!profileUser) profileUser = user;
 
   const [isOpen, setIsOpen] = useState(false);
@@ -37,68 +38,46 @@ const ProfileModal = ({ children, profileUser }) => {
   const handleNameChange = async () => {
     setisNaam(false);
     setNaam(user.name);
-    try {
-      const data = await updateUser(user._id, naam, user.pic, user.token);
+      const data = await updateUser(user._id, naam, user.pic);
       if (data) {
-        setUser({
-          ...user,
-          name: naam,
-        });
-        localStorage.setItem("userInfo", JSON.stringify({
-          ...user,
-          name: naam,
-        }));
+        updateUser({ name: naam }); // Zustand handles sessionStorage sync automatically
         toast.success("Name Updated!");
       }
-    } catch (err) {
-      console.log(err);
+  };
+
+  const fileInputRef = useRef(null);
+
+  const changePic = async () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
 
-  const changePic = async () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.onchange = async (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const imgUrl = await uploadImage(file);
-        if (imgUrl) {
-          try {
-            await updateUser(user._id, user.name, imgUrl, user.token);
-            setUser({
-              ...user,
-              pic: imgUrl,
-            });
-            localStorage.setItem("userInfo", JSON.stringify({
-              ...user,
-              pic: imgUrl,
-            }));
-            toast.success("Profile Picture Updated!");
-          } catch (err) {
-            console.log(err);
-          }
-        }
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const imgUrl = await uploadImage(file);
+      if (imgUrl) {
+        await updateUser(user._id, user.name, imgUrl);
+        updateUser({ pic: imgUrl }); // Zustand handles sessionStorage sync automatically
+        toast.success("Profile Picture Updated!");  
       }
-    };
-    input.click();
+    }
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const [status, setStatus] = useState([]);
 
-  const fetchStatus = async ({ id }) => {
-    try {
-      const { data } = await axios.post("/api/status/fetch", {
-        id: id,
-      });
-      setStatus(data);
-    } catch (err) {
-      console.log(err);
-    }
+  const handleFetchStatus = async (id) => {
+    const data = await fetchStatus(id);
+    setStatus(data);
   };
 
   const handleViewStatus = () => {
-    fetchStatus({ id: profileUser._id });
+    handleFetchStatus(profileUser._id);
     setIsViewStatusModal(true); // Set to view status modal
   };
 
@@ -159,6 +138,13 @@ const ProfileModal = ({ children, profileUser }) => {
           <DialogFooter className="w-full flex justify-between">
             {profileUser && user._id === profileUser._id && (
               <>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
                 <Button
                   className="my-1 text-[15px] rounded-[10px] font-bold"
                   style={{ backgroundColor: primaryColor, color: "white" }}

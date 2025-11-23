@@ -1,23 +1,27 @@
 import React, { useEffect, useRef } from 'react';
 import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChatState } from '@/context/Chatprovider';
-import io from 'socket.io-client';
+import { useAuthStore, useChatStore, useVideoCallStore } from '@/stores';
+import { useSocket } from '@/hooks';
 import { config as appConfig } from '@/constants/config';
 
 function VideoCall() {
   const { id } = useParams();
   const callContainerRef = useRef(null);
   const navigate = useNavigate();
-  const { selectedChat, user, setEnableAnimation, videocall, setVideocall, isOneOnOneCall } = ChatState();
+  const user = useAuthStore((state) => state.user);
+  const selectedChat = useChatStore((state) => state.selectedChat);
+  const isVideoCallActive = useVideoCallStore((state) => state.isVideoCallActive);
+  const setVideoCallActive = useVideoCallStore((state) => state.setVideoCallActive);
+  const isOneOnOneCall = useVideoCallStore((state) => state.isOneOnOneCall);
   const zpRef = useRef(null);
-  var socket;
+  
+  // Custom hooks - single source of truth
+  const { socket, emit } = useSocket();
 
   useEffect(() => {
-    const ENDPOINT = appConfig.SOCKET_URL;
-    socket = io(ENDPOINT);
 
-    if (videocall) {
+    if (isVideoCallActive) {
       if (user && !zpRef.current) {
         const appID = appConfig.ZEGO_APP_ID;
         const serverSecret = appConfig.ZEGO_SERVER_SECRET;
@@ -39,23 +43,20 @@ function VideoCall() {
                 mode: isOneOnOneCall ? ZegoUIKitPrebuilt.OneONoneCall : ZegoUIKitPrebuilt.GroupCall,
               },
               onJoinRoom: () => {
-                socket.emit('Video_join', { selectedChat, user});
+                emit('Video_join', { selectedChat, user});
                 setTimeout(()=>{
-                  socket.emit('Video_join', { selectedChat, user});
+                  emit('Video_join', { selectedChat, user});
                 },500)
               },
               onLeaveRoom: () => {
                 zpRef.current.destroy();
                 zpRef.current = null;
-                setVideocall(false);
-                socket.emit('Video_leave', { selectedChat, user});
+                emit('Video_leave', { selectedChat, user});
                 setTimeout(()=>{
-                  socket.emit('Video_leave', { selectedChat, user});
+                  emit('Video_leave', { selectedChat, user});
                 },500)
-                setEnableAnimation(false);
                 navigate('/chats', { state: { selectedChat } });
               },
-              // Event when a user joins the room
             });
           } else {
             console.error('Zego instance could not be created');
@@ -71,15 +72,11 @@ function VideoCall() {
           zpRef.current.destroy();
           zpRef.current = null; // Reset ref after leaving room
         }
-        if (socket.current) {
-          socket.current.disconnect();
-        }
       };
     } else {
-      setEnableAnimation(false);
       navigate('/chats', { state: { selectedChat } });
     }
-  }, [id, navigate, selectedChat, user, setEnableAnimation, videocall, isOneOnOneCall]);
+  }, [id, navigate, selectedChat, user, isVideoCallActive, isOneOnOneCall, emit]);
 
 
   return (

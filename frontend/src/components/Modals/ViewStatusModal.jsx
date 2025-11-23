@@ -3,22 +3,25 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCards } from 'swiper/modules';
-import axios from 'axios';
-import '@/styles/swiper.css';
-import { ChatState } from "@/context/Chatprovider";
+import { deleteStatus, fetchStatus as fetchStatusAPI } from "@/api";
+import { useThemeStore } from "@/stores";
 
 function ViewStatusModal({ fetchStatus, user, status, currUser }) {
-  const { primaryColor } = ChatState();
+  const primaryColor = useThemeStore((state) => state.primaryColor);
   const [currentStatus, setCurrentStatus] = useState([]);
 
-  const deleteStatus = async (id) => {
+  const handleDeleteStatus = async (id) => {
     try {
-      await axios.post("/api/status/delete", { id: id });
+      await deleteStatus(id);
       toast.success("Status deleted successfully");
-      fetchStatus({ id: user._id });
+      if (fetchStatus) {
+        fetchStatus(user._id);
+      } else {
+        const statusData = await fetchStatusAPI(user._id);
+        setCurrentStatus(statusData);
+      }
     } catch (err) {
-      console.log(err);
-      toast.error("Error deleting status");
+      // Error handling is done by interceptor
     }
   };
 
@@ -31,8 +34,12 @@ function ViewStatusModal({ fetchStatus, user, status, currUser }) {
   };
 
   useEffect(() => {
-    fetchStatus({ id: user._id });
-  }, []);
+    if (fetchStatus) {
+      fetchStatus(user._id);
+    } else {
+      fetchStatusAPI(user._id).then(setCurrentStatus);
+    }
+  }, [user._id, fetchStatus]);
 
   useEffect(() => {
     setCurrentStatus(status);
@@ -45,15 +52,15 @@ function ViewStatusModal({ fetchStatus, user, status, currUser }) {
           <div className="flex items-center mb-4" style={{ color: primaryColor }}>
             <img 
               src={user.pic} 
-              className="w-9 h-9 rounded-full mr-2" 
-              style={{ border: `1px ${primaryColor} solid` }}
+              className="w-9 h-9 rounded-full mr-2 border" 
+              style={{ borderColor: primaryColor }}
               alt={user.name}
             />
             <h3 className="text-xl font-semibold">
               {user._id === currUser._id ? "Your Status" : `${user.name}'s Status`}
             </h3>
           </div>
-          <div className="flex items-center justify-center rounded-md relative" style={{ height: "50vh" }}>
+          <div className="flex items-center justify-center rounded-md relative h-[50vh]">
             {currentStatus && currentStatus.length === 0 && (
               <p className="absolute text-lg mt-4" style={{ color: primaryColor }}>No status found</p>
             )}
@@ -61,7 +68,7 @@ function ViewStatusModal({ fetchStatus, user, status, currUser }) {
               effect={'cards'}
               grabCursor={true}
               modules={[EffectCards]}
-              className="mySwiper"
+              className="w-[30vw] max-w-[400px] h-[60vh] min-w-[325px] min-h-[500px] xl:h-[50vh] lg:h-[40vh] md:min-w-[250px] md:min-h-[300px] md:h-[90%] sm:h-[30vh] [&_.swiper-slide]:rounded-[10px] [&_.swiper-slide]:text-base sm:[&_.swiper-slide]:text-sm"
             >
               {currentStatus.length > 0 && currentStatus.map((item, index) => (
                 <SwiperSlide key={index}>
@@ -71,7 +78,7 @@ function ViewStatusModal({ fetchStatus, user, status, currUser }) {
                     {user._id === currUser._id && (
                       <Button 
                         className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white text-sm h-8"
-                        onClick={() => deleteStatus(item._id)}
+                        onClick={() => handleDeleteStatus(item._id)}
                       >
                         Delete
                       </Button>

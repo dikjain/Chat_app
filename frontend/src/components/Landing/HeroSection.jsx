@@ -21,17 +21,12 @@ export default function HeroSection() {
       <div
        className="size-full p-24   pr-0 relative">
         <div className="size-full relative  ">
-            <div style={{maskImage : "linear-gradient(to bottom,   transparent,   transparent , black)"}} className="absolute bg-white inset-0"/>
+            <div className="absolute bg-white inset-0 [mask-image:linear-gradient(to_bottom,transparent,transparent,black)]"/>
         <div  className="size-full border-8 border-neutral-200  rounded-xl overflow-hidden  ">
         <img 
           src="https://www.sellyoursaas.org/medias/image/sellyoursaas.org/images/Example_screen_datadog.png" 
           alt="Hero Image" 
-          className="w-full h-full object-cover "
-          style={{
-            transformOrigin: 'center ',
-            borderRadius: '8px',
-            opacity: 1,
-        }}
+          className="w-full h-full object-cover origin-center rounded-lg opacity-100"
         />
         </div>
         </div>

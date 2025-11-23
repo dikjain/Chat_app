@@ -15,8 +15,8 @@ const Input = ({
   const [show, setShow] = useState(false);
   const inputType = showPasswordToggle ? (show ? "text" : "password") : type;
 
-  const inputClasses = "shadow-[inset_0px_1px_1] w-full px-3 py-2 text-neutral-500 bg-neutral-100 rounded-lg outline-none focus:outline-none focus-visible:outline-none active:outline-none focus:ring-0 focus-visible:ring-0 placeholder-gray-500 border border-neutral-200/70";
-  const labelClasses = "block text-gray-400 mb-1 text-sm font-medium";
+  const inputClasses = "font-inter text-sm shadow-[inset_0px_1px_1] w-full px-3 py-2 text-neutral-400 bg-neutral-100 rounded-lg outline-none focus:outline-none focus-visible:outline-none active:outline-none focus:ring-0 focus-visible:ring-0 placeholder-gray-500 border border-neutral-200/70";
+  const labelClasses = "block text-gray-500 mb-1 text-sm font-medium font-inter";
 
   return (
     <div className="w-full">

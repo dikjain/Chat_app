@@ -1,9 +1,8 @@
-import "@/styles/components.css";
 import SingleChat from "./SingleChat";
-import { ChatState } from "@/context/Chatprovider";
+import { useChatStore } from "@/stores";
 
 const Chatbox = ({ fetchAgain, setFetchAgain }) => {
-  const { selectedChat } = ChatState();
+  const selectedChat = useChatStore((state) => state.selectedChat);
 
   return (
     <div

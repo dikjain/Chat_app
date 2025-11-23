@@ -2,43 +2,47 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Spinner } from "@/components/ui/spinner";
-import "@/styles/components.css";
 import { getSender, getSenderFull } from "@/utils/chatLogics";
 import { useEffect, useState, useRef, useCallback } from "react";
-import axios from "axios";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import ProfileModal from "@/components/Modals/ProfileModal";
 import ScrollableChat from "./ScrollableChats";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { gsap } from "gsap";
 import { FiFile } from "react-icons/fi"; // Importing file icon from react-icons
 import { FaVideo } from "react-icons/fa"; // Importing video icon from react-icons
 import { useNavigate } from "react-router-dom"; // Importing useNavigate from react-router-dom
 import { MdLocationOn, MdMic } from "react-icons/md"; // Importing location and mic icons from react-icons
 
-import io from "socket.io-client";
 import UpdateGroupChatModal from "@/components/Modals/UpdateGroupChatModal";
-import { ChatState } from "@/context/Chatprovider";
+import { useAuthStore, useChatStore, useNotificationStore, useVideoCallStore, useThemeStore } from "@/stores";
+import { useChat, useSocket } from "@/hooks";
 import { config as appConfig } from "@/constants/config";
-
-const ENDPOINT = appConfig.SOCKET_URL;
-var socket, selectedChatCompare;
 
 import Notification from "@/assets/notification.mp3";
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
+  // Custom hooks - single source of truth
+  const { 
+    fetchMessages, 
+    sendMessage: sendMessageHook, 
+    sendFile,
+    fetchChats,
+    loading: chatLoading
+  } = useChat();
+  const { socket, on, off, emit, isConnected } = useSocket();
+  
+  // Local UI state
   const [newMessage, setNewMessage] = useState("");
-  const [socketConnected, setSocketConnected] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [sent, setsent] = useState(false);
   const inputRef = useRef(null);
   const [aiMessage, setAIMessage] = useState("");
   const [aiTyping, setAITyping] = useState(false);
-  const [msgaaya, setMsgaaya] = useState(false);
-  const navigate = useNavigate(); // Initializing useNavigate
+  const navigate = useNavigate();
+  
+  // Store references
+  const selectedChatCompareRef = useRef(null);
 
   //api
   const generateContents = async (prompt) => {
@@ -59,101 +63,59 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   //api
   const sound = new Audio(Notification);
-  const { selectedChat, setSelectedChat, setChats, user, notification, setNotification , setVideocall  ,setIsOneOnOneCall , videoCallUser, setVideoCallUser , setChatsVideo, primaryColor } = ChatState();
+  const user = useAuthStore((state) => state.user);
+  const selectedChat = useChatStore((state) => state.selectedChat);
+  const setSelectedChat = useChatStore((state) => state.setSelectedChat);
+  const getMessages = useChatStore((state) => state.getMessages);
+  const messages = selectedChat ? getMessages(selectedChat._id) : [];
+  const notifications = useNotificationStore((state) => state.notifications);
+  const setVideoCallActive = useVideoCallStore((state) => state.setVideoCallActive);
+  const setIsOneOnOneCall = useVideoCallStore((state) => state.setIsOneOnOneCall);
+  const videoCallUsers = useVideoCallStore((state) => state.videoCallUsers);
+  const setVideoCallUsers = useVideoCallStore((state) => state.setVideoCallUsers);
+  const setChatsVideo = useVideoCallStore((state) => state.setChatsVideo);
+  const primaryColor = useThemeStore((state) => state.primaryColor);
 
-  const fetchMessages = useCallback(async () => {
-    if (!selectedChat) return;
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-
-      setLoading(true);
-
-      const { data } = await axios.get(`/api/message/${selectedChat._id}`, config);
-      setMessages(data);
-      setLoading(false);
-      // const iol = await axios.get("/api/chat", config);
-      // setChats(iol.data);
-
-      socket.emit("join chat", selectedChat._id);
-    } catch (error) {
-      toast.error("Error Occured!", {
-        description: "Failed to Load the Messages",
-      });
+  // Fetch messages when chat changes
+  useEffect(() => {
+    if (selectedChat) {
+      fetchMessages(selectedChat._id);
+      selectedChatCompareRef.current = selectedChat;
     }
-  }, [selectedChat, user.token]);
+  }, [selectedChat, fetchMessages]);
 
-  const requestConfig = {
-    headers: {
-      "Content-type": "application/json",
-      Authorization: `Bearer ${user.token}`,
-    },
-  };
-
-  const sendMessage = useCallback(async (event) => {
-    if (event.key === "Enter" && newMessage && !sent) {
+  const handleSendMessage = useCallback(async (event) => {
+    if (event.key === "Enter" && newMessage && !sent && selectedChat) {
       setAIMessage("");
       setsent(true);
       try {
+        const messageContent = newMessage;
         setNewMessage("");
-        const { data } = await axios.post(
-          "/api/message",
-          {
-            content: newMessage,
-            chatId: selectedChat,
-          },
-          requestConfig
-        );
-        socket.emit("new message", data);
-        setMessages((prevMessages) => [...prevMessages, data]);
-        setMsgaaya(true);
-        const iop = await axios.get("/api/chat", requestConfig);
-        setChats(iop.data);
+        await sendMessageHook(messageContent, selectedChat._id);
         setsent(false);
       } catch (error) {
-        toast.error("Error Occured!", {
-          description: "Failed to send the Message",
-        });
+        // Error handling is done by interceptor
+        setsent(false);
       }
     } else if (event.key === "Enter" && sent) {
       toast.error("Error Occured!", {
         description: "Wait before sending another message",
       });
     }
-  }, [sent, selectedChat, requestConfig]);
+  }, [sent, selectedChat, newMessage, sendMessageHook]);
 
-  const getmessages = async () => {
-    const iol = await axios.get("/api/chat", requestConfig);
-    setChats(iol.data);
-  };
 
   const sendLocation = async () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async (position) => {
         const { latitude, longitude } = position.coords;
         const locationMessage = `https://www.google.com/maps?q=${latitude},${longitude}`;
-        try {
-          const { data } = await axios.post(
-            "/api/message",
-            {
-              content: locationMessage,
-              chatId: selectedChat,
-              type : "location"
-            },
-            requestConfig
-          );
-          socket.emit("new message", data);
-          setMessages((prevMessages) => [...prevMessages, data]);
-          setMsgaaya(true);
-          const iop = await axios.get("/api/chat", requestConfig);
-          setChats(iop.data);
-        } catch (error) {
-          toast.error("Error Occured!", {
-            description: "Failed to send the location",
-          });
+        if (selectedChat) {
+          try {
+            await sendMessageHook(locationMessage, selectedChat._id, "location");
+          } catch (error) {
+            // Error handling is done by interceptor
+          }
         }
       });
     } else {
@@ -163,88 +125,69 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
+  // Video call socket events - using shared socket instance
   useEffect(() => {
-    socket = io(ENDPOINT);
-    socket.emit("setup", user);
-    socket.on("connected", () => setSocketConnected(true));
-    return () => {
-      socket.disconnect();
-    };
-  }, [user]);
-  
-  useEffect(() => {
-    fetchMessages();
-    selectedChatCompare = selectedChat;
-  }, [selectedChat, fetchMessages]);
-  
-  useEffect(() => {
-    socket.emit('get_video_users');
-  
+    if (!socket || !isConnected) return;
+
+    emit('get_video_users');
+
     const handleVideoCallUsers = (newMessageReceived) => {
-      
       if (newMessageReceived.length > 0) {
         const updatedVideoCallUsers = newMessageReceived.filter(
           users => users.user._id !== user._id
         );
-        if (updatedVideoCallUsers.length > 0) {
-          setVideoCallUser(updatedVideoCallUsers);
-        }else{
-          setVideoCallUser([]);
-        }
+        setVideoCallUsers(updatedVideoCallUsers.length > 0 ? updatedVideoCallUsers : []);
       }
     };
-  
+
     const handleJoin = (newMessageReceived) => {
       const Revisedmsg = newMessageReceived.filter(users => users.user._id !== user._id);
-      setVideoCallUser(Revisedmsg);
+      setVideoCallUsers(Revisedmsg);
     };
     
     const handleLeave = (newMessageReceived) => {
       const Revisedmsg = newMessageReceived.filter(users => users.user._id !== user._id);
-      if(Revisedmsg.length > 0){
-        setVideoCallUser(Revisedmsg);
-      }else{
-        setVideoCallUser([]);
-      }
+      setVideoCallUsers(Revisedmsg.length > 0 ? Revisedmsg : []);
     };
-  
-    socket.on('videoCallUsers', handleVideoCallUsers);
-    socket.on('video_user_joined', handleJoin);
-    socket.on('video_user_left', handleLeave);
-  
-    // Cleanup function to remove socket listeners
-    return () => {
-      socket.off('videoCallUsers', handleVideoCallUsers);
-      socket.off('video_user_joined', handleJoin);
-      socket.off('video_user_left', handleLeave);
-    };
-  }, []);
 
+    on('videoCallUsers', handleVideoCallUsers);
+    on('video_user_joined', handleJoin);
+    on('video_user_left', handleLeave);
+
+    return () => {
+      off('videoCallUsers');
+      off('video_user_joined');
+      off('video_user_left');
+    };
+  }, [socket, isConnected, user, on, off, emit, setVideoCallUsers]);
+
+  // Real-time message handling - handled by useChat hook
+  // This effect handles additional UI updates (sound, fetchAgain)
   useEffect(() => {
+    if (!socket || !isConnected) return;
+
     const handleMessageReceived = (newMessageRecieved) => {
-      if (
-        !selectedChatCompare || // if chat is not selected or doesn't match current chat
-        selectedChatCompare._id !== newMessageRecieved.chat._id
-      ) {
-        if (!notification.includes(newMessageRecieved)) {
-          setNotification([newMessageRecieved, ...notification]);
+      const chatId = newMessageRecieved.chat._id;
+      
+      // If message is for different chat, play sound and refresh
+      if (!selectedChatCompareRef.current || selectedChatCompareRef.current._id !== chatId) {
+        if (!notifications.find(n => n._id === newMessageRecieved._id)) {
           setFetchAgain((prevFetchAgain) => !prevFetchAgain);
-          getmessages();
+          fetchChats();
           sound.play();
         }
       } else {
-        getmessages();
-        setMessages((prevMessages) => [...prevMessages, newMessageRecieved]);
-        setMsgaaya(true);
+        // Message is for current chat - UI update handled by useChat
+        fetchChats();
       }
     };
 
-    socket.on("message received", handleMessageReceived);
+    on("message received", handleMessageReceived);
 
     return () => {
-      socket.off("message received", handleMessageReceived);
+      off("message received");
     };
-  }, [setFetchAgain, notification]);
+  }, [socket, isConnected, notifications, on, off, fetchChats]);
 
   const typingHandler =  useCallback((e) => {
     if (e.target.value.length == 0) {
@@ -333,40 +276,35 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
+  const fileInputRef = useRef(null);
+
   const handleFileUpload = async (e) => {
     return new Promise((resolve, reject) => {
-      const inputElement = document.createElement("input");
-      inputElement.type = "file";
-      inputElement.accept = "image/*,audio/*,application/pdf";
-      inputElement.onchange = async (e) => {
-        let file = e.target.files[0];
+      if (!fileInputRef.current) {
+        reject(new Error("File input not available"));
+        return;
+      }
+      
+      const handleFileChange = async (e) => {
+        const file = e.target.files[0];
         if (file) {
-          const formData = new FormData();
-          formData.append("file", file);
-          formData.append("chatId", selectedChat._id);
-          formData.append("sender", user._id);
-
           try {
-            const response = await axios.post("/api/message/upload", formData, {
-              headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${user.token}`,
-              },
-            });
-            resolve(response.data);
-            socket.emit("new message", response.data);
-            setMessages((prevMessages) => [...prevMessages, response.data]);
-            setMsgaaya(true);
-            const iop = await axios.get("/api/chat", requestConfig);
-            setChats(iop.data);
+            const data = await sendFile(file, selectedChat._id);
+            resolve(data);
             setsent(false);
           } catch (error) {
             reject(error.message);
           }
         }
+        // Reset input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        fileInputRef.current?.removeEventListener('change', handleFileChange);
       };
 
-      inputElement.click();
+      fileInputRef.current.addEventListener('change', handleFileChange);
+      fileInputRef.current.click();
     });
   };
 
@@ -375,8 +313,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   useEffect(() => {
-      setChatsVideo(videoCallUser);
-  }, [videoCallUser]);
+      setChatsVideo(videoCallUsers);
+  }, [videoCallUsers]);
 
 
   return (
@@ -400,7 +338,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 <>
                   <div className="flex gap-4 items-center" style={{ color: primaryColor }}>
                     {getSender(user, selectedChat.users).length > 7 && window.innerWidth < 550 ? (
-                      <Avatar className="h-8 w-8" style={{ border: `1px solid ${primaryColor}` }}>
+                      <Avatar className="h-8 w-8 border" style={{ borderColor: primaryColor }}>
                         <AvatarImage src={getSenderFull(user, selectedChat.users).pic} alt={getSender(user, selectedChat.users)} />
                         <AvatarFallback>{getSender(user, selectedChat.users)?.charAt(0)?.toUpperCase()}</AvatarFallback>
                       </Avatar>
@@ -426,33 +364,39 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 variant="ghost"
                 size="icon"
                 aria-label="Start Video Call"
-                onClick={() => {setVideocall(true); selectedChat.isGroupChat ? setIsOneOnOneCall(false) : setIsOneOnOneCall(true); handleVideoCall()}}
+                onClick={() => {setVideoCallActive(true); selectedChat.isGroupChat ? setIsOneOnOneCall(false) : setIsOneOnOneCall(true); handleVideoCall()}}
               >
                 <FaVideo />
               </Button> 
-              {videoCallUser && videoCallUser.map((u,i) => (selectedChat._id == u.selectedChat._id &&
-              <img key={i} src={u.user.pic}  alt="User" style={{ position: "absolute",backgroundColor:"black", borderRadius: "50%", width: "20px",border: `0.5px solid ${primaryColor}`, height: "20px", transform: `translateX(${-70*i}%)`, right: "60px" }} />
+              {videoCallUsers && videoCallUsers.map((u,i) => (selectedChat._id == u.selectedChat._id &&
+              <img 
+                key={i} 
+                src={u.user.pic}  
+                alt="User" 
+                className="absolute bg-black rounded-full w-5 h-5 right-[60px] border-[0.5px]"
+                style={{ 
+                  borderColor: primaryColor, 
+                  transform: `translateX(${-70*i}%)`
+                }} 
+              />
               ))}
           </div>
           <div
             id="msgdabba"
-            className="flex flex-col justify-end p-3 bg-[#020202] w-full h-full rounded-lg overflow-y-hidden"
-            style={{ 
-              border: `2px solid ${primaryColor}`,
-              boxShadow: "0px 0px 10px 5px #10b981"
-            }}
+            className="flex flex-col justify-end p-3 bg-[#020202] w-full h-full rounded-lg overflow-y-hidden border-2 shadow-[0px_0px_10px_5px_#10b981]"
+            style={{ borderColor: primaryColor }}
           >
-            {loading ? (
+            {chatLoading ? (
               <div className="flex justify-center items-center m-auto">
                 <Spinner className="h-10 w-10" style={{ color: primaryColor }} />
               </div>
             ) : (
-              <div style={{ position: "relative", overflowX: "hidden", maxWidth: "100%" }} className="messages">
-                <ScrollableChat msgaaya={msgaaya} setMsgaaya={setMsgaaya} messages={messages} setMessages={setMessages} />
+              <div className="flex flex-col overflow-y-scroll scrollbar-none relative overflow-x-hidden max-w-full">
+                <ScrollableChat messages={messages} />
               </div>
             )}
 
-            <div onKeyDown={sendMessage} className="mt-3">
+            <div onKeyDown={handleSendMessage} className="mt-3">
               <div className="flex items-center mt-5 relative">
                 <Input
                   onClick={() => {
@@ -464,6 +408,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   placeholder="Ai Assistant..."
                   value={aiMessage}
                   readOnly
+                />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,audio/*,application/pdf"
+                  className="hidden"
                 />
                 <Button
                   variant="outline"

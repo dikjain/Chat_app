@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Atomic+Age&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Saira:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Saira:ital,wght@0,100..900;1,100..900&family=Vend+Sans:ital,wght@0,300..700;1,300..700&display=swap');
 
 @tailwind base;
@@ -93,78 +92,11 @@
 }
 
 
-
-.oii{
-    font-weight: bold;
-    color: white;
-    font-size: 50px;
-    padding-left: 5px;
-    padding-right: 5px;
-}
-.oil{
-    font-size: 35px;
-}
-
-/* Smooth trail styling */
-.oii:first-child{
-    text-decoration: line-through #48bb78;
-}
-
-#online{
-    box-shadow: #48bb78 0px 0px 5px 1px;
-    /* border: 1px solid green; */
-}
-
-
-.fa-solid{
-    background-color: #48bb78;
-    color: #48bb78;
-}
-
-.loop{
-    color: white !important;
-}
-
-
-.lefat{
-    border-radius: 0px 99px 99px 99px;
-    
-}
-.raayit{
-    border-radius: 99px 0px 99px 99px;
-    
-}
-
-@media screen and (max-height: 770px) {
-    .oii{
-        font-size: 31px;
-    }
-    #smtxt{
-        font-size: 20px;
-    }
-    #tem{
-        font-size: 1px;
-    }
-
-  }
-@media screen and (max-width: 500px) {
-    .oii{
-        font-size: 25px;
-    }
-    #smtxt{
-        font-size: 20px;
-    }
-    #tem{
-        font-size: 1px;
-    }
-
-  }
-
 @layer base {
   * {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
 }

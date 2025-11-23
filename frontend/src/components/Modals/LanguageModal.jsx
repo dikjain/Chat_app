@@ -9,12 +9,13 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { toast } from "sonner";
-import { ChatState } from '@/context/Chatprovider';
-import axios from 'axios';
+import { useAuthStore, useThemeStore } from '@/stores';
+import { updateUserLanguage } from "@/api";
 
 function LanguageModal({children}) {
-  const { user, setUser, primaryColor } = ChatState();
+  const user = useAuthStore((state) => state.user);
+  const updateUser = useAuthStore((state) => state.updateUser);
+  const primaryColor = useThemeStore((state) => state.primaryColor);
   const [isOpen, setIsOpen] = useState(false);
   const languages = ['Hindi', 'English', 'Spanish', 'French', 'German', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Bengali'];
   const [selectedLanguage, setSelectedLanguage] = useState(null);
@@ -29,29 +30,16 @@ function LanguageModal({children}) {
   }, [user.TranslateLanguage]);
 
   const handleLanguageChange = async () => {
-    setIsLoading(true); // Start loading
-    if(user.TranslateLanguage !== selectedLanguage){
-      try {
-        const config = {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-          },
-        };
-        await axios.post("/api/user/updatelanguage", {
-          UserId: user._id,
-          language: selectedLanguage,
-        }, config);
-        setUser({ ...user, TranslateLanguage: selectedLanguage });
+    setIsLoading(true);
+    try {
+      if(user.TranslateLanguage !== selectedLanguage){
+        await updateUserLanguage(user._id, selectedLanguage);
+        updateUser({ TranslateLanguage: selectedLanguage }); // Zustand handles sessionStorage sync automatically
         setIsOpen(false);
-        localStorage.setItem("userInfo", JSON.stringify({ ...user, TranslateLanguage: selectedLanguage }))
-      } catch (err) {
-        toast.error("Error Occured!", {
-          description: err.response.data.message,
-        });
       }
+    }finally {
+      setIsLoading(false);
     }
-    setIsLoading(false); // Stop loading
   }
 
   return (

@@ -5,8 +5,7 @@ export default function QuoteSection() {
   return (
     <section className="mx-auto flex items-center justify-center w-fit py-32">
       <div 
-        style={{boxShadow : "inset 0px 2px 4px rgba(255,255,255,0.6)"}}
-        className="w-full h-[200px] relative overflow-hidden py-6 px-16 rounded-xl bg-gradient-to-b from-green-400 to-green-700 flex items-center justify-center"
+        className="w-full h-[200px] relative overflow-hidden py-6 px-16 rounded-xl bg-gradient-to-b from-green-400 to-green-700 flex items-center justify-center shadow-[inset_0px_2px_4px_rgba(255,255,255,0.6)]"
       >
         <div className="absolute inset-0">
           <Noise

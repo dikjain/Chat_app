@@ -13,16 +13,7 @@ const LogoSection = () => {
         ease: "easeOut",
         duration: 0.1,
       }}
-      className="flex items-center justify-center"
-      style={{
-        width: "100%",
-        height: "200px",
-        position: "absolute",
-        top: 24,
-        left: 0,
-        right: 0,
-        bottom: 0,
-      }}
+      className="flex items-center justify-center w-full h-[200px] absolute top-6 left-0 right-0 bottom-0"
     >
       <PixelBlast
         variant="circle"
@@ -46,8 +37,7 @@ const LogoSection = () => {
           damping: 30,
           duration: 0.4,
         }}
-        style={{ boxShadow: "inset 0px 0px 4px  1px rgba(0,0,0,0.2)" }}
-        className="flex items-center justify-center absolute bg-stone-100 p-1 rounded-md"
+        className="flex items-center justify-center absolute bg-stone-100 p-1 rounded-md shadow-[inset_0px_2px_4px_rgba(0,0,0,0.3)]"
       >
         <motion.div
           initial={{ scale: 1.2 }}
@@ -56,8 +46,7 @@ const LogoSection = () => {
           transition={{
             delay: 0.6,
           }}
-          style={{ boxShadow: "0px 0px 4px 1px rgba(0,0,0,0.2)" }}
-          className="bg-white border border-stone-100 flex items-center justify-center px-8 gap-1 rounded-sm"
+          className="bg-white border border-stone-100 flex items-center justify-center px-8 gap-1 rounded-sm shadow-[0px_2px_4px_rgba(0,0,0,0.3)]"
         >
           <img src={logo} alt="logo" className="w-10 h-10" />
           <h1 className=" text-neutral-500 text-2xl font-medium font-saira pr-2">

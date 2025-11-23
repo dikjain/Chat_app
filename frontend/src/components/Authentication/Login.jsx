@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ChatState } from "@/context/Chatprovider";
-import { login } from "@/api/auth";
+import useAuth from "@/hooks/useAuth";
 import useToast from "@/hooks/useToast";
 import ToastContainer from "@/components/UI/ToastContainer";
 import Input from "./Input";
@@ -9,59 +7,19 @@ import Button from "./Button";
 import { motion } from "framer-motion";
 
 const Login = ({ onSwitchToSignup }) => {
-  const { setUser } = ChatState();
-  const navigate = useNavigate();
+  const { handleLogin, loading } = useAuth();
   const { toast, toasts, removeToast } = useToast();
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const submitHandler = async () => {
-    setLoading(true);
-    
-    if (!email || !password) {
-      toast({
-        title: "Please Fill all the Fields",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const data = await login(email, password);
-      toast({
-        title: "Login Successful",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      localStorage.setItem("userInfo", JSON.stringify(data));
-      setUser(data);
-      navigate("/chats");
-    } catch (error) {
-      toast({
-        title: "Error Occurred!",
-        description: error.response?.data?.message || error.message || "Unknown error",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-    } finally {
-      setLoading(false);
-    }
+      await handleLogin(email, password, toast);
   };
 
   return (
     <>
       <motion.div 
-      
         className="flex flex-col gap-4 w-full h-full"
         initial={{ x: -100, opacity: 0 , filter: "blur(10px)"}}
         animate={{ x: 0, opacity: 1 , filter: "blur(0px)"}}
@@ -70,7 +28,7 @@ const Login = ({ onSwitchToSignup }) => {
           type: "spring", 
           stiffness: 300, 
           damping: 30,
-          duration: 0.4
+          duration: 0.4,
         }}
       >
         <Input

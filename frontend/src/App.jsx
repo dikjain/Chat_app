@@ -1,11 +1,24 @@
 import React, { useEffect } from 'react'
-import { Routes,Route } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import AuthPage from '@/pages/AuthPage'
 import ChatPage from '@/pages/ChatPage'
 import VideoCall from '@/pages/VideoCall'
-import { ChatState } from '@/context/Chatprovider'
-import { config, validateConfig } from '@/constants/config'
+import { validateConfig } from '@/constants/config'
 import LandingPage from '@/pages/LandingPage'
+import { useAuthStore } from '@/stores'
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const user = useAuthStore((state) => state.user);
+  const location = useLocation();
+
+  if (!user) {
+    return <Navigate to="/auth" state={{ from: location }} replace />;
+  }
+
+  return children;
+};
+
 function App() {
   useEffect(() => {
     validateConfig();
@@ -16,8 +29,22 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage/>}/>
         <Route path="/auth" element={<AuthPage/>}/>
-        <Route path="/chats" element={<ChatPage/>}/>
-        <Route path="/videocall/:id" element={<VideoCall/>}/>
+        <Route 
+          path="/chats" 
+          element={
+            <ProtectedRoute>
+              <ChatPage/>
+            </ProtectedRoute>
+          }
+        />
+        <Route 
+          path="/videocall/:id" 
+          element={
+            <ProtectedRoute>
+              <VideoCall/>
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   )

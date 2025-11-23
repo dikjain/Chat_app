@@ -1,5 +1,4 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { ChatState } from "@/context/Chatprovider";
 
 const UserListItem = ({ user, handleFunction }) => {
   return (

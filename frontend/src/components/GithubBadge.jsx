@@ -25,12 +25,10 @@ export default function GithubBadge() {
     <motion.div 
     onMouseEnter={() => setIsHovered(true)}
     onMouseLeave={() => setIsHovered(false)}
-    style={{boxShadow : "inset 0px 1px 2px rgba(0,0,0,0.2)"}}
-    className="bg-gray-200 rounded-full p-1  flex items-center  font-serif cursor-default ">
+    className="bg-gray-200 rounded-full p-1 flex items-center font-serif cursor-default shadow-[inset_0px_1px_2px_rgba(0,0,0,0.2)]">
        <span className="text-sm font-inter px-2 absolute text-neutral-600  ">We're Proudly </span> 
       <div
-    style={{boxShadow : " 0px 1px 2px rgba(0,0,0,0.2)"}}
-    className={`px-2 flex gap-2 p-1 bg-white rounded-full relative z-10 items-center justify-center  ${isHovered ? "ml-[110px]" : "ml-0"} transition-all duration-300`}>
+    className={`px-2 flex gap-2 p-1 bg-white rounded-full relative z-10 items-center justify-center shadow-[0px_1px_2px_rgba(0,0,0,0.2)] ${isHovered ? "ml-[110px]" : "ml-0"} transition-all duration-300`}>
         <FaGithub className="text-2xl" />
         <span className="text-xs text-neutral-600  font-inter uppercase font-semibold">open source</span>
       </div>

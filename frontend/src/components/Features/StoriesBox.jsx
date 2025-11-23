@@ -33,7 +33,7 @@ const StoriesBox = ({ className = "" }) => {
       </div>
 
       {/* Add your custom stories preview content here */}
-      <div style={{transform: 'translateX(-20%)'}} className="h-64 w-64 absolute -bottom-8 p-2   bg-white rounded-lg overflow-hidden rounded-br-none border border-neutral-200 shadow-md">
+      <div className="h-64 w-64 absolute -bottom-8 p-2 bg-white rounded-lg overflow-hidden rounded-br-none border border-neutral-200 shadow-md -translate-x-[20%]">
         <div className="size-full relative  bg-neutral-100 border border-neutral-200   rounded-md overflow-hidden">
             <div className="w-full h-6 border-b border-neutral-200 flex items-center justify-between px-2 gap-1">
               {Array.from({ length: 7 }).map((_, index) => {

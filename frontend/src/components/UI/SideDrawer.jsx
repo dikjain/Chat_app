@@ -18,8 +18,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Spinner } from "@/components/ui/spinner";
 import { Bell, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useMemo, useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
+import { searchUsers, accessChat } from "@/api";
 import { toast } from "sonner";
 import ChatLoading from "@/components/Chat/ChatLoading";
 import ProfileModal from "@/components/Modals/ProfileModal";
@@ -27,12 +27,11 @@ import NotificationBadge from "react-notification-badge";
 import { Effect } from "react-notification-badge";
 import { getSender } from "@/utils/chatLogics";
 import UserListItem from "@/components/UI/UserListItem";
-import { ChatState } from "@/context/Chatprovider";
+import { useAuthStore, useChatStore, useNotificationStore, useThemeStore } from "@/stores";
 import { FaSearch } from "react-icons/fa";
 import StatusModal from "@/components/Modals/StatusModal";
-import io from "socket.io-client";
 import LanguageModal from "@/components/Modals/LanguageModal";
-import { config as appConfig } from "@/constants/config";
+import { useSocket } from "@/hooks";
 
 
 function SideDrawer() {
@@ -42,20 +41,18 @@ function SideDrawer() {
   const [loadingChat, setLoadingChat] = useState(false);
   const [showColorInputs, setShowColorInputs] = useState(false);
   
-  const {
-    setSelectedChat,
-    user,
-    setUser,
-    notification,
-    setNotification,
-    chats,
-    setChats,
-    primaryColor,
-    setPrimaryColor
-  } = ChatState();
+  const user = useAuthStore((state) => state.user);
+  const clearUser = useAuthStore((state) => state.clearUser);
+  const setSelectedChat = useChatStore((state) => state.setSelectedChat);
+  const addChat = useChatStore((state) => state.addChat);
+  const notifications = useNotificationStore((state) => state.notifications);
+  const removeNotification = useNotificationStore((state) => state.removeNotification);
+  const primaryColor = useThemeStore((state) => state.primaryColor);
+  const setPrimaryColor = useThemeStore((state) => state.setPrimaryColor);
   
-  const ENDPOINT = appConfig.SOCKET_URL;
-  const Socket = useMemo(() => io(ENDPOINT), [ENDPOINT]);
+
+
+  const { socket, emit } = useSocket();
   
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
@@ -67,9 +64,9 @@ function SideDrawer() {
   }, [isOpen]);
 
   const logoutHandler = () => {
-    Socket.emit("userDisconnected", user);
-    localStorage.removeItem("userInfo");
-    navigate("/"); // Replaced history.push with navigate
+    emit("userDisconnected", user);
+    clearUser();
+    navigate("/");
   };
 
 
@@ -81,52 +78,30 @@ function SideDrawer() {
 
     try {
       setLoading(true);
-
-      const requestConfig = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-
-      const { data } = await axios.get(`/api/user?search=${search}`, requestConfig);
-
-      setLoading(false);
+      const data = await searchUsers(search);
       setSearchResult(data);
-    } catch (error) {
-      toast.error("Error Occured!", {
-        description: "Failed to Load the Search Results",
-      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const accessChat = async (userId) => {
-
+  const handleAccessChat = async (userId) => {
     try {
       setLoadingChat(true);
-      const requestConfig = {
-        headers: {
-          "Content-type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-      const { data } = await axios.post(`/api/chat`, { userId }, requestConfig);
-
-      if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
+      const data = await accessChat(userId);
+      addChat(data); // Use Zustand action
       setSelectedChat(data);
-      setLoadingChat(false);
       setIsOpen(false);
-    } catch (error) {
-      toast.error("Error fetching the chat", {
-        description: error.message,
-      });
+    } finally {
+      setLoadingChat(false);
     }
   };
 
   return (
     <TooltipProvider>
       <div
-        className="flex justify-between items-center bg-black text-[#10b981] w-full px-[10px] py-[5px]"
-        style={{ border: `${primaryColor} solid 3px` }}
+        className="flex justify-between items-center bg-black text-[#10b981] w-full px-[10px] py-[5px] border-[3px]"
+        style={{ borderColor: primaryColor }}
       >
         <Tooltip>
           <TooltipTrigger asChild>
@@ -141,19 +116,19 @@ function SideDrawer() {
             Search Users to chat
           </TooltipContent>
         </Tooltip>
-        <p className="oip text-2xl font-['Atomic_Age']" style={{ color: primaryColor }}>
+        <p className="text-2xl font-['Atomic_Age']" style={{ color: primaryColor }}>
           A{" "}
-          <span className="oii oil" style={{borderBottom: `${primaryColor} solid 2px`,textDecoration: `line-through ${primaryColor}`}}>
+          <span className="font-bold text-white text-5xl px-[5px] border-b-2" style={{borderBottomColor: primaryColor, textDecoration: `line-through ${primaryColor}`}}>
             Basic
           </span>{" "}
-          <span className="oii oil" style={{borderBottom: `${primaryColor} solid 2px`}}>Chat</span> App
+          <span className="font-bold text-white text-[35px] px-[5px] border-b-2" style={{borderBottomColor: primaryColor}}>Chat</span> App
         </p>
         <div className="flex gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="p-1">
                 <NotificationBadge
-                  count={notification.length}
+                  count={notifications.length}
                   effect={Effect.SCALE}
                 />
                 <Bell
@@ -163,15 +138,15 @@ function SideDrawer() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-black text-[#10b981] z-[1000] pl-2">
-              {!notification.length && (
+              {!notifications.length && (
                 <p className="text-[#10b981] px-2 py-1.5">No New Messages</p>
               )}
-              {notification.slice(-10).map((notif) => (
+              {notifications.slice(-10).map((notif) => (
                 <DropdownMenuItem
                   key={notif._id}
                   onClick={() => {
                     setSelectedChat(notif.chat);
-                    setNotification(notification.filter((n) => n !== notif));
+                    removeNotification(notif._id);
                   }}
                   className="bg-black z-[1000]"
                   style={{ color: primaryColor }}
@@ -186,7 +161,7 @@ function SideDrawer() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="bg-black text-[#10b981]">
-                <Avatar className="h-8 w-8" style={{ border: `2px solid ${primaryColor}` }}>
+                <Avatar className="h-8 w-8 border-2" style={{ borderColor: primaryColor }}>
                   <AvatarImage src={user.pic} alt={user.name} />
                   <AvatarFallback>{user.name?.charAt(0)?.toUpperCase()}</AvatarFallback>
                 </Avatar>
@@ -197,7 +172,7 @@ function SideDrawer() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-black text-[#10b981] z-[9999]">
-              <ProfileModal user={user} setUser={setUser}>
+              <ProfileModal profileUser={user}>
                 <DropdownMenuItem className="bg-black z-[1000]" style={{ color: "#10b981" }}>
                   My Profile
                 </DropdownMenuItem>
@@ -294,7 +269,7 @@ function SideDrawer() {
                 <UserListItem
                   key={user._id}
                   user={user}
-                  handleFunction={() => accessChat(user._id)}
+                  handleFunction={() => handleAccessChat(user._id)}
                 />
               ))
             )}

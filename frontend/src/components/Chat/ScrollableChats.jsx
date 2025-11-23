@@ -3,52 +3,32 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import ScrollableFeed from "react-scrollable-feed";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from "@/utils/chatLogics";
-import { ChatState } from "@/context/Chatprovider";
-import "@/styles/scroll.css";
-import gsap from "gsap";
+import { useAuthStore, useChatStore, useThemeStore } from "@/stores";
 import { toast } from "sonner";
-import axios from "axios"; // Import axios
 import { motion } from "framer-motion"; // Import framer-motion
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { config as appConfig } from "@/constants/config";
+import { useChat } from "@/hooks";
 
 
-const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
+const ScrollableChat = ({ messages }) => {
   const [renderCount, setRenderCount] = useState(0);
   const [speakVisible, setSpeakVisible] = useState(null); // State to control which message has the "Speak" button
   const [boling, setboling] = useState(false); // State to control which message has the "Speak" button
+  const [speakingMessageIndex, setSpeakingMessageIndex] = useState(null); // Track which message is being spoken
 
-  const { user , setChats , selectedChat , primaryColor } = ChatState();
-  const messageRef = useRef(null);
-  const messageRef2 = useRef(null);
-  const [msggya , setMsggya] = useState(false)
+  const user = useAuthStore((state) => state.user);
+  const selectedChat = useChatStore((state) => state.selectedChat);
+  const primaryColor = useThemeStore((state) => state.primaryColor);
   const [d , setd] = useState(false)  
   const [curmsglen , setcurmsglen] = useState(0)
 
-  const fetchChats = async () => {
-    try {
-      const requestConfig = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-
-      const { data } = await axios.get("/api/chat", requestConfig);
-      setChats(data);
-    } catch (error) {
-      toast.error("Error Occured!", {
-        description: "Failed to Fetch the chats",
-      });
-    }
-  };
+  // Custom hooks - single source of truth
+  const { deleteMessage: deleteMessageHook, fetchChats } = useChat();
 
   const speakText = useCallback((text, i) => {   
     setboling(true);
-    document.querySelectorAll(".allmsg").forEach(el => {
-      el.style.opacity = "0.5";
-    });
-    document.querySelectorAll(".allmsg")[i].style.opacity = "1";
+    setSpeakingMessageIndex(i);
     if ("speechSynthesis" in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "hi-IN";
@@ -57,21 +37,11 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
       utterance.pitch = 1.2; // Slightly higher pitch for better engagement
       utterance.onend = () => {
         setboling(false);
-        document.querySelectorAll(".allmsg").forEach(el => {
-          el.style.opacity = "1";
-        });
-      utterance.addEventListener('end', () => {
-        setboling(false);
-        document.querySelectorAll(".allmsg").forEach(el => {
-          el.style.opacity = "1";
-        });
-      });
+        setSpeakingMessageIndex(null);
       };
       setTimeout(() => {
         setboling(false);
-        document.querySelectorAll(".allmsg").forEach(el => {
-          el.style.opacity = "1";
-        });
+        setSpeakingMessageIndex(null);
       }, 7500);
       
       speechSynthesis.cancel();
@@ -90,30 +60,16 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
     if(vismsg[index].sender._id === user._id){
       if(info.offset.x > 30 && speakVisible){
         setSpeakVisible(null);
-        document.querySelectorAll(".allmsg").forEach(el => {
-          el.style.opacity = "1";
-        });
       }
       if (info.offset.x < -30) {
         setSpeakVisible(index);
-        document.querySelectorAll(".allmsg").forEach(el => {
-          el.style.opacity = "0.5";
-        });
-        document.querySelectorAll(".allmsg")[index].style.opacity = "1";
     } 
     }else {
       if(info.offset.x < -30 && speakVisible){
         setSpeakVisible(null);
-        document.querySelectorAll(".allmsg").forEach(el => {
-          el.style.opacity = "1";
-        });
       }
       if(info.offset.x > 30) {
         setSpeakVisible(index);
-        document.querySelectorAll(".allmsg").forEach(el => {
-          el.style.opacity = "0.5";
-        });
-        document.querySelectorAll(".allmsg")[index].style.opacity = "1";
       }
     }
   };
@@ -121,16 +77,9 @@ const ScrollableChat = ({ msgaaya, setMsgaaya, messages, setMessages }) => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (speakVisible !== null) {
-        const allMessages = document.querySelectorAll(".allmsg");
-        const clickedInside = Array.from(allMessages).some((el, index) => {
-          return el.contains(event.target) && index === speakVisible;
-        });
-
-        if (!clickedInside) {
+        const clickedElement = event.target.closest(".allmsg");
+        if (!clickedElement) {
           setSpeakVisible(null);
-          allMessages.forEach(el => {
-            el.style.opacity = "1";
-          });
         }
       }
     };
@@ -169,63 +118,21 @@ useEffect(()=>{
 
 
 
-  useEffect(() => {
-    if (messages.length > 0 && msggya) {
-      const prevmsg = messages[messages.length - vismsg.length];
-      setTimeout(()=>{
-      gsap.fromTo(
-        `.messagee${prevmsg._id}`,
-        { x: prevmsg.sender._id === user._id ? "200%" : "-200%", scale: 0.1, duration: 0.01, opacity:0 },
-        { x: "0", scale: 1 , opacity:1 , duration:0.8, ease: "elastic.out(1, 0.7)", onComplete: () => gsap.set(`.messagee${prevmsg._id}`, { clearProps: "transform" }) }
-      );
-      setMsggya(false);
-      },20)
-
-    }
-  }, [messages, msggya, user._id]);
-  useEffect(() => {
-    if (messages.length > 0 && msgaaya) {
-      const newestMessage = messages[messages.length - 1];
-      setTimeout(()=>{
-      gsap.fromTo(
-        `.messagee${newestMessage._id}`,
-        { x: newestMessage.sender._id === user._id ? "200%" : "-200%", scale: 0.1, duration: 0.01, opacity:0 },
-        { x: "0", scale: 1 , opacity:1 , duration:0.8, ease: "elastic.out(1, 0.7)", onComplete: () => gsap.set(`.messagee${newestMessage._id}`, { clearProps: "transform" }) }
-      );
-      setMsgaaya(false);
-      },1)
-
-    }
-  }, [messages, msgaaya, user._id]);
 
   
 
   const deleteMessage = useCallback(async (messageId) => {
-    try{      
-      const requestConfig = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-
-      const deleteMessagePromise = axios.post(`/api/Message/delete`, { messageId }, requestConfig);
-      const changeLatestMessagePromise = axios.post(`/api/message/ChangeLatestMessage`, { chatId: selectedChat._id, latestMessage: messageId === messages[messages.length-1]._id ? (messages[messages.length-2] ? messages[messages.length-2]._id : null) : messages[messages.length-1]._id }, requestConfig);
-      await Promise.all([deleteMessagePromise, changeLatestMessagePromise]);
-      setMessages(prevMessages => prevMessages.filter(message => message._id !== messageId));
-      setMsggya(true)
-      fetchChats();
-      toast.success("Message deleted successfully");
-      document.querySelectorAll(".allmsg").forEach(el=>{
-        el.style.opacity = "1";
-      });
-      setSpeakVisible(null)
-    }catch(error){
+    if (!selectedChat) return;
+    
+    try {
+      await deleteMessageHook(messageId, selectedChat._id);
+      setSpeakVisible(null);
+    } catch (error) {
       toast.error("Failed to delete message", {
         description: error?.response?.data?.message || error.message,
       });
     }
-  }, [user.token, selectedChat._id, messages, fetchChats]);
+  }, [selectedChat, deleteMessageHook]);
 
 
 
@@ -272,10 +179,23 @@ useEffect(()=>{
   return (
     <TooltipProvider>
       <ScrollableFeed>
-      { messages.length -qq > 0 ? <button style={{width:"50%",padding:"3px 0px",transform:"translateX(50%)", borderRadius:"999px" , backgroundColor:primaryColor,alignSelf:"center",justifySelf:"center" , color:"white" }} onClick={()=> {messages.length -qq > 10 ?setqq((l)=>l+10) : setqq(messages.length);setd(true)}}>load more</button> : null}
+      { messages.length -qq > 0 ? (
+        <button 
+          className="w-1/2 py-[3px] translate-x-1/2 rounded-full self-center text-white"
+          style={{ backgroundColor: primaryColor }}
+          onClick={()=> {messages.length -qq > 10 ?setqq((l)=>l+10) : setqq(messages.length);setd(true)}}
+        >
+          load more
+        </button>
+      ) : null}
         {vismsg &&
           vismsg.map((m, i) => (
-            <div className="allmsg" style={{ display: "flex", position: "relative"}} key={m._id}>
+            <div 
+              className={`allmsg flex relative transition-opacity ${
+                speakingMessageIndex !== null && speakingMessageIndex !== i ? "opacity-50" : "opacity-100"
+              } ${speakVisible !== null && speakVisible !== i ? "opacity-50" : ""}`} 
+              key={m._id}
+            >
               {isSameSender(vismsg, m, i, user._id)&& (
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -297,131 +217,58 @@ useEffect(()=>{
               dragConstraints={{ left: 0, right: 0 }}
               onDragEnd={(event, info) => handleDragEnd(event, info, i)}
               id={`messagee${m.sender._id === user._id ? "R" : "L"}`}
-              className={`messagee${m._id}`}
-              onClick={()=>HandleTranslate(i,m.content)}
+              className={`messagee${m._id} ${m.sender._id === user._id ? "ml-auto" : "ml-0"} mt-[10px] mb-[10px] rounded-[20px] px-[15px] py-2 max-w-[75%] relative z-[50] flex items-center justify-center flex-col break-words whitespace-pre-wrap bg-black font-['DynaPuff']`}
               style={{
-                opacity:0,
-                transition:"none",
-                backgroundColor: `${m.sender._id === user._id ? "#000" : "#000"}`,
-                marginLeft: `${m.sender._id === user._id ? "auto" : "0px"}`,
-                // marginLeft: isSameSenderMargin(messages, m, i, user._id),
-                marginTop: 10,
-                marginBottom:10,
-                borderRadius: "20px",
-                padding: "8px 15px",
-                maxWidth: "75%",
-                position: "relative",
-                zIndex:"50",
-                color:`${m.sender._id === user._id ? primaryColor : "#fff"}`,
-                border:`${m.sender._id === user._id ? "1px solid #fff" : `1px solid ${primaryColor}`}`,
-                display:"flex",
-                fontFamily:"'DynaPuff', sans-serif",
-                alignItems:"center",
-                justifyContent:"center",
-                flexDirection:"column",
-                wordWrap: "break-word",
-                whiteSpace: "pre-wrap",
-                textWrap: "wrap",
-                wordBreak: "break-word",  
-                overflowWrap: "break-word",
+                opacity: 0,
+                transition: "none",
+                color: m.sender._id === user._id ? primaryColor : "#fff",
+                border: m.sender._id === user._id ? "1px solid #fff" : `1px solid ${primaryColor}`,
               }}
+              onClick={()=>HandleTranslate(i,m.content)}
               >
-              {selectedChat.isGroupChat && <span style={{fontWeight:"bold", color:primaryColor}}>{m.sender._id === user._id ? "" : m.sender.name + " : "}</span>} 
+              {selectedChat.isGroupChat && <span className="font-bold" style={{color:primaryColor}}>{m.sender._id === user._id ? "" : m.sender.name + " : "}</span>} 
               {m.content ? (
                 m.type === "location" ? (
-                  <a href={m.content} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline", color: "blue", fontFamily:"sans-serif,Roboto, Arial" }}>{m.content}</a>
+                  <a href={m.content} target="_blank" rel="noopener noreferrer" className="underline text-blue-500 font-sans">{m.content}</a>
                 ) : (
                   m.content
                 )
               ) : (
                 <div 
-                onClick={() => window.open(m.file, "_blank")}
-                style={{
-                  height: "150px",
-                  width: "150px",
-                  backgroundColor: "#f0f0f0",
-                  display: "flex",
-                  alignItems: "end",
-                  justifyContent: "center",
-                  borderRadius: "10px",
-                  backgroundImage: `url(${m.file})`,
-                  opacity: 0.8,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  cursor: "pointer"
-                }}
-              >
-                {/* Lazy loaded thumbnail */}
-                <img
-                  src={m.file}
-                  alt="File thumbnail"
-                  loading="lazy"
-                  style={{
-                    display: "block",
-                    height: "100%",
-                    width: "100%",
-                    objectFit: "cover",
-                    borderRadius: "10px"
-                  }}
-                />
+                  onClick={() => window.open(m.file, "_blank")}
+                  className="h-[150px] w-[150px] bg-gray-100 flex items-end justify-center rounded-[10px] opacity-80 bg-cover bg-center cursor-pointer"
+                  style={{ backgroundImage: `url(${m.file})` }}
+                >
+                  <img
+                    src={m.file}
+                    alt="File thumbnail"
+                    loading="lazy"
+                    className="block h-full w-full object-cover rounded-[10px]"
+                  />
                 </div>
               )}
-              {m.file && <p style={{ fontSize:"10px",maxWidth:"150px" ,textAlign:"center",fontWeight:"semibold",color:`${m.sender._id === user._id ? primaryColor : "#fff"}`}}>{m.file.split("/").pop()}</p>}
+              {m.file && (
+                <p className="text-[10px] max-w-[150px] text-center font-semibold" style={{color: m.sender._id === user._id ? primaryColor : "#fff"}}>
+                  {m.file.split("/").pop()}
+                </p>
+              )}
               <span
-              style={{
-                fontFamily:" 'Atomic Age', sans-serif,Roboto, Arial",
-                left:`${m.sender._id === user._id ? "" : "50%"}`,
-                right:`${m.sender._id === user._id ? "50%" : ""}`,
-                position: "absolute",
-                zIndex:"100",
-                backgroundColor:"#10b981",
-                color:"white",
-              }}
-              className={`yotem ${m.sender._id === user._id ? "raayit" : "lefat" }`}
-              >{formatTime(m.createdAt).slice(0, 9) === todayIST?`${Number(formatTime(m.createdAt).slice(13,15)) >9 ?  formatTime(m.createdAt).slice(13,17) + formatTime(m.createdAt).slice(20,24) : formatTime(m.createdAt).slice(13,17) + formatTime(m.createdAt).slice(20,24)}`: `${Number(formatTime(m.createdAt).slice(11,14)) >9 ? formatTime(m.createdAt).slice(0,9) +" -"+   formatTime(m.createdAt).slice(11,17) + formatTime(m.createdAt).slice(20,23) :formatTime(m.createdAt).slice(0,11) +  formatTime(m.createdAt).slice(11,16) + formatTime(m.createdAt).slice(19,24)}`}
-               </span>
+              className={`text-[8px] p-[5px] whitespace-nowrap min-w-fit w-fit -bottom-5 opacity-45 md:text-[8px] md:p-[2px] md:opacity-52 sm:text-[6px] sm:p-[2px] sm:-bottom-[10px] sm:opacity-65 ${m.sender._id === user._id ? "right-0 rounded-tl-[99px] rounded-tr-none rounded-br-[99px] rounded-bl-[99px]" : "left-1/2 -translate-x-1/2 rounded-tl-none rounded-tr-[99px] rounded-br-[99px] rounded-bl-[99px]"} absolute z-[100] bg-[#10b981] text-white font-['Atomic_Age']`}
+              >
+                {formatTime(m.createdAt).slice(0, 9) === todayIST?`${Number(formatTime(m.createdAt).slice(13,15)) >9 ?  formatTime(m.createdAt).slice(13,17) + formatTime(m.createdAt).slice(20,24) : formatTime(m.createdAt).slice(13,17) + formatTime(m.createdAt).slice(20,24)}`: `${Number(formatTime(m.createdAt).slice(11,14)) >9 ? formatTime(m.createdAt).slice(0,9) +" -"+   formatTime(m.createdAt).slice(11,17) + formatTime(m.createdAt).slice(20,23) :formatTime(m.createdAt).slice(0,11) +  formatTime(m.createdAt).slice(11,16) + formatTime(m.createdAt).slice(19,24)}`}
+              </span>
               {m.content && speakVisible === i && !boling && (
                 <span
-                ref={messageRef}
                   onClick={() => speakText(m.content,i)}
-                  onMouseEnter={() => {messageRef.current.style.backgroundColor = "#10b981";}}
-                  onMouseLeave={() => {messageRef.current.style.backgroundColor = "grey";}}
-
-                  style={{
-                    position: "absolute",
-                    left: `${m.sender._id === user._id ? "-50px" : ""}`,
-                    right: `${m.sender._id === user._id ? "" : "-50px"}`,
-                    top: "30px",
-                    backgroundColor: "grey",
-                    color: "white",
-                    borderRadius: "5px",
-                    padding: "2px 5px",
-                    cursor: "pointer",
-                    fontSize: "12px",
-                    zIndex:"100",
-                  }}
+                  className={`absolute top-[30px] ${m.sender._id === user._id ? "left-[-50px]" : "right-[-50px]"} bg-gray-500 hover:bg-[#10b981] text-white rounded px-[5px] py-[2px] cursor-pointer text-xs z-[100] transition-colors`}
                 >
                   Speak
                 </span>
               )}
               {speakVisible === i && m.sender._id === user._id && !boling && (
                 <span
-                ref={messageRef2}
                   onClick={() => deleteMessage(m._id)}
-                  onMouseEnter={() => {messageRef2.current.style.backgroundColor = "red";}}
-                  onMouseLeave={() => {messageRef2.current.style.backgroundColor = "grey";}}
-                  style={{
-                    position: "absolute",
-                    left: `${m.sender._id === user._id ? "-92px" : ""}`,
-                    right: `${m.sender._id === user._id ? "" : "-92px"}`,
-                    top: "0px",
-                    backgroundColor: "grey",
-                    color: "white",
-                    borderRadius: "5px",
-                    padding: "2px 5px",
-                    cursor: "pointer",
-                    fontSize: "12px"
-                  }}
+                  className={`absolute ${m.sender._id === user._id ? "left-[-92px]" : "right-[-92px]"} top-0 bg-gray-500 hover:bg-red-500 text-white rounded px-[5px] py-[2px] cursor-pointer text-xs transition-colors`}
                 >
                   Delete For All
                 </span>

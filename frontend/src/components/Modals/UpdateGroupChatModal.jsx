@@ -10,9 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
-import axios from "axios";
+import { searchUsers, renameGroupChat, addUserToGroup, removeUserFromGroup } from "@/api";
 import { useState } from "react";
-import { ChatState } from "@/context/Chatprovider";
+import { useAuthStore, useChatStore, useThemeStore } from "@/stores";
 import UserBadgeItem from "@/components/UI/UserBadgeItem";
 import UserListItem from "@/components/UI/UserListItem";
 
@@ -24,7 +24,10 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   const [loading, setLoading] = useState(false);
   const [renameloading, setRenameLoading] = useState(false);
 
-  const { selectedChat, setSelectedChat, user, primaryColor } = ChatState();
+  const user = useAuthStore((state) => state.user);
+  const selectedChat = useChatStore((state) => state.selectedChat);
+  const setSelectedChat = useChatStore((state) => state.setSelectedChat);
+  const updateChat = useChatStore((state) => state.updateChat);
 
   const handleSearch = async (query) => {
     setSearch(query);
@@ -34,18 +37,11 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
 
     try {
       setLoading(true);
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
+      const data = await searchUsers(search);
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
-      toast.error("Error Occured!", {
-        description: "Failed to Load the Search Results",
-      });
+      // Error handling is done by interceptor
       setLoading(false);
     }
   };
@@ -55,27 +51,13 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
 
     try {
       setRenameLoading(true);
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-      const { data } = await axios.put(
-        `/api/chat/rename`,
-        {
-          chatId: selectedChat._id,
-          chatName: groupChatName,
-        },
-        config
-      );
-
+      const data = await renameGroupChat(selectedChat._id, groupChatName);
+      updateChat(selectedChat._id, data);
       setSelectedChat(data);
       setFetchAgain(!fetchAgain);
       setRenameLoading(false);
     } catch (error) {
-      toast.error("Error Occured!", {
-        description: error.response.data.message,
-      });
+      // Error handling is done by interceptor
       setRenameLoading(false);
     }
     setGroupChatName("");
@@ -94,27 +76,13 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
 
     try {
       setLoading(true);
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-      const { data } = await axios.put(
-        `/api/chat/groupadd`,
-        {
-          chatId: selectedChat._id,
-          userId: user1._id,
-        },
-        config
-      );
-
+      const data = await addUserToGroup(selectedChat._id, user1._id);
+      updateChat(selectedChat._id, data);
       setSelectedChat(data);
       setFetchAgain(!fetchAgain);
       setLoading(false);
     } catch (error) {
-      toast.error("Error Occured!", {
-        description: error.response.data.message,
-      });
+      // Error handling is done by interceptor
       setLoading(false);
     }
     setGroupChatName("");
@@ -128,28 +96,13 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
 
     try {
       setLoading(true);
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-      const { data } = await axios.put(
-        `/api/chat/groupremove`,
-        {
-          chatId: selectedChat._id,
-          userId: user1._id,
-        },
-        config
-      );
-
+      const data = await removeUserFromGroup(selectedChat._id, user1._id);
       user1._id === user._id ? setSelectedChat() : setSelectedChat(data);
       setFetchAgain(!fetchAgain);
       fetchMessages();
       setLoading(false);
     } catch (error) {
-      toast.error("Error Occured!", {
-        description: error.response.data.message,
-      });
+      // Error handling is done by interceptor
       setLoading(false);
     }
     setGroupChatName("");
@@ -182,8 +135,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
             <div className="flex w-full mb-3">
               <Input
                 placeholder="Chat Name"
-                className="bg-black border-[#10b981] placeholder:text-gray-500"
-                style={{ color: "#10b981" }}
+                className="bg-black border-[#10b981] placeholder:text-gray-500 text-[#10b981]"
                 value={groupChatName}
                 onChange={(e) => setGroupChatName(e.target.value)}
               />
@@ -199,8 +151,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
             <div className="w-full mb-1">
               <Input
                 placeholder="Add User to group"
-                className="bg-black border-[#10b981] placeholder:text-gray-500"
-                style={{ color: "#10b981" }}
+                className="bg-black border-[#10b981] placeholder:text-gray-500 text-[#10b981]"
                 onChange={(e) => handleSearch(e.target.value)}
               />
             </div>

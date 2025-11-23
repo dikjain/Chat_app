@@ -9,9 +9,9 @@ import {
   import { Button } from "@/components/ui/button";
   import { Input } from "@/components/ui/input";
   import { toast } from "sonner";
-  import axios from "axios";
+  import { searchUsers, createGroupChat } from "@/api";
   import { useState } from "react";
-  import { ChatState } from "@/context/Chatprovider";
+  import { useAuthStore, useChatStore, useThemeStore } from "@/stores";
   import UserBadgeItem from "@/components/UI/UserBadgeItem";
   import UserListItem from "@/components/UI/UserListItem";
   
@@ -23,7 +23,10 @@ import {
     const [searchResult, setSearchResult] = useState([]);
     const [loading, setLoading] = useState(false);
   
-    const { user, chats, setChats, primaryColor } = ChatState();
+    const user = useAuthStore((state) => state.user);
+    const chats = useChatStore((state) => state.chats);
+    const addChat = useChatStore((state) => state.addChat);
+    const primaryColor = useThemeStore((state) => state.primaryColor);
   
     const handleGroup = (userToAdd) => {
       if (selectedUsers.includes(userToAdd)) {
@@ -42,18 +45,12 @@ import {
   
       try {
         setLoading(true);
-        const config = {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        };
-        const { data } = await axios.get(`/api/user?search=${search}`, config);
+        const data = await searchUsers(search);
         setLoading(false);
         setSearchResult(data);
       } catch (error) {
-        toast.error("Error Occured!", {
-          description: "Failed to Load the Search Results",
-        });
+        // Error handling is done by interceptor
+        setLoading(false);
       }
     };
   
@@ -68,26 +65,12 @@ import {
       }
   
       try {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        };
-        const { data } = await axios.post(
-          `/api/chat/group`,
-          {
-            name: groupChatName,
-            users: JSON.stringify(selectedUsers.map((u) => u._id)),
-          },
-          config
-        );
-        setChats([data, ...chats]);
+        const data = await createGroupChat(groupChatName, selectedUsers);
+        addChat(data);
         setIsOpen(false);
         toast.success("New Group Chat Created!");
       } catch (error) {
-        toast.error("Failed to Create the Chat!", {
-          description: error.response.data,
-        });
+        // Error handling is done by interceptor
       }
     };
   
@@ -97,7 +80,7 @@ import {
           <DialogTrigger asChild onClick={() => setIsOpen(true)}>
             {children}
           </DialogTrigger>
-          <DialogContent className="bg-black text-[#10b981] max-w-lg" style={{ border: `1px solid ${primaryColor}` }}>
+          <DialogContent className="bg-black text-[#10b981] max-w-lg border" style={{ borderColor: primaryColor }}>
             <DialogHeader>
               <DialogTitle className="text-[35px] font-['Work_sans'] flex justify-center text-[#10b981]">
                 Create Group Chat
@@ -107,16 +90,14 @@ import {
               <div className="w-full mb-3">
                 <Input
                   placeholder="Chat Name"
-                  className="bg-black border-[#10b981] placeholder:text-gray-500"
-                  style={{ color: "#10b981" }}
+                  className="bg-black border-[#10b981] placeholder:text-gray-500 text-[#10b981]"
                   onChange={(e) => setGroupChatName(e.target.value)}
                 />
               </div>
               <div className="w-full mb-1">
                 <Input
                   placeholder="Add Users eg: abc123, ad"
-                  className="bg-black border-[#10b981] placeholder:text-gray-500"
-                  style={{ color: "#10b981" }}
+                  className="bg-black border-[#10b981] placeholder:text-gray-500 text-[#10b981]"
                   onChange={(e) => handleSearch(e.target.value)}
                 />
               </div>

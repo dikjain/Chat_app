@@ -10,10 +10,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
-import { useState } from "react";
-import { ChatState } from "@/context/Chatprovider";
-import axios from 'axios';
-import '@/styles/swiper.css';
+import { useState, useRef } from "react";
+import { useAuthStore, useThemeStore } from "@/stores";
+import { createStatus, fetchStatus } from "@/api";
 import useCloudinaryUpload from "@/hooks/useCloudinaryUpload";
 
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -23,7 +22,8 @@ import { EffectCards } from 'swiper/modules';
 import ViewStatusModal from './ViewStatusModal';
 
 function StatusModal({children}) {
-  const { user, primaryColor } = ChatState();
+  const user = useAuthStore((state) => state.user);
+  const primaryColor = useThemeStore((state) => state.primaryColor);
   const [status, setStatus] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { uploadImage } = useCloudinaryUpload();
@@ -33,24 +33,30 @@ function StatusModal({children}) {
  
 
 
+  const fileInputRef = useRef(null);
+
   const takeImage = async () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = async (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const imgUrl = await uploadImage(file);
-        if (imgUrl) {
-          setStatusContent((prev) => ({
-            ...prev,
-            imageUrl: imgUrl,
-          }));
-        }
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const imgUrl = await uploadImage(file);
+      if (imgUrl) {
+        setStatusContent((prev) => ({
+          ...prev,
+          imageUrl: imgUrl,
+        }));
       }
-    };
-    input.click();
-  }
+    }
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
   const CreateStatus = async () => {
 
     if(statusContent.text === "" && statusContent.imageUrl === ""){
@@ -64,37 +70,23 @@ function StatusModal({children}) {
     }
     setIsLoading(true);
     try {
-      const requestConfig = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-      await axios.post("/api/status", {
-        id: user._id,
-        content: statusContent.text,
-        mediaUrl: statusContent.imageUrl,
-      }, requestConfig);
+      await createStatus(user._id, statusContent.text, statusContent.imageUrl);
       setStatusContent({ text: "", imageUrl: "" });
       // Fetch the updated status
-      fetchStatus({id: user._id});
+      handleFetchStatus(user._id);
       setIsLoading(false);
     } catch (err) {
-      console.log(err);
-      toast.error("Error Occured!");
+      // Error handling is done by interceptor
       setIsLoading(false);
     }
   }
 
-  const fetchStatus = async ({id}) => {
+  const handleFetchStatus = async (id) => {
     try {
-
-      const { data } = await axios.post("/api/status/fetch",{
-        id: id
-      });
+      const data = await fetchStatus(id);
       setStatus(data);
     } catch (err) {
-      console.log(err);
+      // Error handling is done by interceptor
     }
   }
 
@@ -110,17 +102,24 @@ function StatusModal({children}) {
           </DialogHeader>
           <div className="flex flex-col md:flex-row w-full h-full">
             {/* Left side: Display current status */}
-            <ViewStatusModal setStatus={setStatus} currUser={user} fetchStatus={fetchStatus} status={status.status} user={user}/>
+            <ViewStatusModal setStatus={setStatus} currUser={user} fetchStatus={handleFetchStatus} status={status.status} user={user}/>
 
             {/* Right side: Add new status */}
             <div className="flex-1 ml-0 md:ml-2">
               <h3 className="text-xl font-semibold mb-4" style={{ color: primaryColor }}>Add New Status</h3>
               <div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
                 <p style={{ color: primaryColor }}>Upload an image</p>
                 <div 
                   onClick={takeImage} 
-                  className="flex justify-center items-center p-2 rounded-md cursor-pointer"
-                  style={{ backgroundColor: primaryColor, height: "30vh", color: "black" }}
+                  className="flex justify-center items-center p-2 rounded-md cursor-pointer h-[30vh] text-black"
+                  style={{ backgroundColor: primaryColor }}
                 >
                     {statusContent.imageUrl ? (
                       <img src={statusContent.imageUrl} className="object-cover h-full" alt="Status Image" />
@@ -131,8 +130,7 @@ function StatusModal({children}) {
               </div>
               <textarea
                 placeholder="What's on your mind?"
-                className="w-full mt-3 p-2 bg-black border border-[#10b981] rounded-md placeholder:text-gray-500 resize-none"
-                style={{ color: "#10b981", maxHeight: "100px" }}
+                className="w-full mt-3 p-2 bg-black border border-[#10b981] rounded-md placeholder:text-gray-500 resize-none text-[#10b981] max-h-[100px]"
                 value={statusContent.text}
                 onChange={(e) => setStatusContent((prev) => ({ ...prev, text: e.target.value }))}
               />

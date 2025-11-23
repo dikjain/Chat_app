@@ -59,8 +59,7 @@ const RealTimeMessagingBox = ({ className = "" }) => {
         {/* Chat messages area */}
         <div
           ref={messagesContainerRef}
-          className="p-3 space-y-2 h-32 bg-gray-50 overflow-y-auto"
-          style={{ scrollBehavior: "smooth" }}
+          className="p-3 space-y-2 h-32 bg-gray-50 overflow-y-auto scroll-smooth"
         >
           {messages.map((message) => (
             <div

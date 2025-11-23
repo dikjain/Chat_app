@@ -25,19 +25,15 @@ const MultilingualIcon = () => (
 const WordBox = React.forwardRef(({ children, className = "", translateX = 0 }, ref) => (
   <span
     ref={ref}
-    style={{ 
-      boxShadow: "inset 0 1px 2px 0 rgba(0, 0, 0, 0.3)",
-      transform: `translateX(${translateX}px)`
-    }}
-    className={`bg-black/10 text-neutral-500 rounded-lg overflow-hidden p-1 flex items-center justify-center relative w-fit ${className}`}
+    className={`bg-black/10 text-neutral-500 rounded-lg overflow-hidden p-1 flex items-center justify-center relative w-fit shadow-[inset_0_1px_2px_0_rgba(0,0,0,0.3)] ${className}`}
+    style={{ transform: `translateX(${translateX}px)` }}
   >
     <span
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
     transition={{ duration: 0.3 }}
-      style={{ boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.3)" }}
-      className="bg-white px-2 z-10 flex items-center justify-center py-0.5 relative rounded-md font-medium font-saira text-xs text-neutral-500"
+      className="bg-white px-2 z-10 flex items-center justify-center py-0.5 relative rounded-md font-medium font-saira text-xs text-neutral-500 shadow-[0_1px_2px_0_rgba(0,0,0,0.3)]"
     >
       {children}
     </span>

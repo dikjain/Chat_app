@@ -1,17 +1,14 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChatState } from "@/context/Chatprovider";
+import useAuth from "@/hooks/useAuth";
 import useCloudinaryUpload from "@/hooks/useCloudinaryUpload";
-import { signup } from "@/api/auth";
 import useToast from "@/hooks/useToast";
 import ToastContainer from "@/components/UI/ToastContainer";
 import Input from "./Input";
 import Button from "./Button";
 
 const Signup = ({ onSwitchToLogin }) => {
-  const { setUser } = ChatState();
-  const navigate = useNavigate();
+  const { handleSignup, loading } = useAuth();
   const { toast, toasts, removeToast } = useToast();
   const { uploadImage, isUploading } = useCloudinaryUpload(toast);
 
@@ -21,75 +18,14 @@ const Signup = ({ onSwitchToLogin }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [pic, setPic] = useState("");
 
-  const validateForm = () => {
-    if (!name || !email || !password || !confirmPassword) {
-      toast({
-        title: "Please Fill all the Fields",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      return false;
-    }
-    if (password.length < 8) {
-      toast({
-        title: "Password must be at least 8 characters long",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      return false;
-    }
-    const validDomains = ["@gmail.com", "@yahoo.com", "@outlook.com"];
-    if (!validDomains.some(domain => email.endsWith(domain))) {
-      toast({
-        title: "Invalid Email",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      return false;
-    }
-    if (password !== confirmPassword) {
-      toast({
-        title: "Passwords Do Not Match",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      return false;
-    }
-    return true;
-  };
-
   const submitHandler = async () => {
-    if (!validateForm()) return;
-
     try {
-      const data = await signup(name, email, password, pic);
-      toast({
-        title: "Registration Successful",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      localStorage.setItem("userInfo", JSON.stringify(data));
-      setUser(data);
-      navigate("/chats");
+      await handleSignup(
+        { name, email, password, confirmPassword, pic },
+        toast
+      );
     } catch (error) {
-      toast({
-        title: "Error Occurred!",
-        description: error.response?.data?.message || error.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
+      // Error is already handled in useAuth hook
     }
   };
 
@@ -156,7 +92,7 @@ const Signup = ({ onSwitchToLogin }) => {
         />
 
         <div className="w-full">
-          <label htmlFor="pic" className="block text-gray-400 mb-1 text-sm font-medium">
+          <label htmlFor="pic" className="block text-gray-500 mb-1 text-sm font-medium font-inter">
             Upload your Picture
           </label>
           <input
@@ -164,7 +100,7 @@ const Signup = ({ onSwitchToLogin }) => {
             type="file"
             accept="image/*"
             onChange={handleFileChange}
-            className="shadow-[inset_0px_1px_1] w-full px-3 py-2 text-neutral-500 bg-neutral-100 rounded-lg outline-none focus:outline-none focus-visible:outline-none active:outline-none focus:ring-0 focus-visible:ring-0 border border-neutral-200/70 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-neutral-200 file:text-neutral-600 hover:file:bg-neutral-300 file:cursor-pointer file:transition-colors"
+            className="shadow-[inset_0px_1px_1] font-inter text-sm w-full px-3 py-2 text-neutral-400 bg-neutral-100 rounded-lg outline-none focus:outline-none focus-visible:outline-none active:outline-none focus:ring-0 focus-visible:ring-0 border border-neutral-200/70 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-neutral-200 file:text-neutral-600 hover:file:bg-neutral-300 file:cursor-pointer file:transition-colors"
           />
         </div>
 
@@ -173,8 +109,8 @@ const Signup = ({ onSwitchToLogin }) => {
         <div className="flex gap-2">
           <Button
             onClick={submitHandler}
-            loading={isUploading}
-            loadingText="Uploading..."
+            loading={loading || isUploading}
+            loadingText={isUploading ? "Uploading..." : "Signing up..."}
             variant="primary"
             className="flex-1"
           >

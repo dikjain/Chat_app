@@ -25,12 +25,11 @@ const VideoCallIcon = () => (
 const VideoPreview = ({translateX, translateY, translateZ,rotateY,rotateX,scale}) => {
   return (
     <div 
+      className="h-48 w-64 absolute bottom-6 group left-1/2 bg-white rounded-lg overflow-hidden border border-neutral-200 shadow-md transition-transform duration-300 ease-out [transform-style:preserve-3d]"
       style={{
-        transform: `translateX(${translateX}) translateY(${translateY}) translateZ(${translateZ}) rotateY(${rotateY}) rotateX(${rotateX}) scale(${scale})`,
-        transition: 'transform 0.3s ease-out',
-        transformStyle: 'preserve-3d'
+        transform: `translateX(${translateX}) translateY(${translateY}) translateZ(${translateZ}) rotateY(${rotateY}) rotateX(${rotateX}) scale(${scale})`
       }}
-      className="h-48 w-64  absolute bottom-6 left-1/2 bg-white rounded-lg overflow-hidden border border-neutral-200 shadow-md ">
+    >
       <div className="h-6  border-b border-neutral-200  flex bg-gray-100 items-center px-3 justify-center">
         <div className="size-3 rounded bg-neutral-400  flex items-center justify-center">
           <div className=" size-full scale-50 rounded-full bg-neutral-200"/>
@@ -79,13 +78,9 @@ const VideoPreview = ({translateX, translateY, translateZ,rotateY,rotateX,scale}
 };
 
 const VideoCallBox = ({ className = "" }) => {
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
     <div
       className={`bg-neutral-50 border relative border-neutral-300 gap-6 rounded-lg px-4 py-6 ${className}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       style={{ perspective: '1000px' }}
     >
       {/* <div className="absolute top-0 left-0 w-full h-full  rounded-lg">
@@ -114,4 +109,3 @@ const VideoCallBox = ({ className = "" }) => {
 };
 
 export default VideoCallBox;
-
