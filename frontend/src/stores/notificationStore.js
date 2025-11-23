@@ -1,8 +1,5 @@
 import { create } from "zustand";
 
-/**
- * Notification Store - Manages notification state
- */
 export const useNotificationStore = create((set, get) => ({
   // State
   notifications: [],

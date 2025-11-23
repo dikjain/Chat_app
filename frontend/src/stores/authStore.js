@@ -1,10 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-/**
- * Auth Store - Manages user authentication state
- * Automatically persists to sessionStorage via Zustand persist middleware
- */
 export const useAuthStore = create(
   persist(
     (set, get) => ({

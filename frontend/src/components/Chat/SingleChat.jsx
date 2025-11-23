@@ -3,63 +3,35 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Spinner } from "@/components/ui/spinner";
 import { getSender, getSenderFull } from "@/utils/chatLogics";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
-import { toast } from "sonner";
 import ProfileModal from "@/components/Modals/ProfileModal";
 import ScrollableChat from "./ScrollableChats";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { FiFile } from "react-icons/fi"; // Importing file icon from react-icons
-import { MdLocationOn, MdMic } from "react-icons/md"; // Importing location and mic icons from react-icons
+import { FiFile } from "react-icons/fi";
+import { MdLocationOn, MdMic } from "react-icons/md";
 
 import UpdateGroupChatModal from "@/components/Modals/UpdateGroupChatModal";
 import { useAuthStore, useChatStore, useNotificationStore, useThemeStore } from "@/stores";
-import { useChat, useSocket } from "@/hooks";
-import { config as appConfig } from "@/constants/config";
+import { 
+  useChat, 
+  useSocket, 
+  useAIAssistant, 
+  useSpeechRecognition, 
+  useLocation,
+  useFileUpload,
+  useMessageSender,
+  useMessageNotifications
+} from "@/hooks";
 
 import Notification from "@/assets/notification.mp3";
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
-  // Custom hooks - single source of truth
-  const { 
-    fetchMessages, 
-    sendMessage: sendMessageHook, 
-    sendFile,
-    fetchChats,
-    loading: chatLoading
-  } = useChat();
-  const { socket, on, off, emit, isConnected } = useSocket();
-  
-  // Local UI state
-  const [newMessage, setNewMessage] = useState("");
-  const [isListening, setIsListening] = useState(false);
-  const [sent, setsent] = useState(false);
-  const inputRef = useRef(null);
-  const [aiMessage, setAIMessage] = useState("");
-  const [aiTyping, setAITyping] = useState(false);
-  
   // Store references
-  const selectedChatCompareRef = useRef(null);
+  const inputRef = useRef(null);
+  const sound = useRef(new Audio(Notification));
+  const lastFetchedChatId = useRef(null);
 
-  //api
-  const generateContents = async (prompt) => {
-    try {
-      setAITyping(true);
-      const genAI = new GoogleGenerativeAI(appConfig.GOOGLE_AI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      const result = await model.generateContent(
-        "Please complete the following message along with the user's input naturally as if it were sent by the user. Ensure the response feels like a continuation of the user's input and match the language used. Only provide the completed message without any additional text. Here's the message: " +
-          prompt
-      );
-      setAIMessage(result.response.text());
-      setAITyping(false);
-    } catch (error) {
-      setAITyping(false);
-    }
-  };
-
-  //api
-  const sound = new Audio(Notification);
+  // Store state
   const user = useAuthStore((state) => state.user);
   const selectedChat = useChatStore((state) => state.selectedChat);
   const setSelectedChat = useChatStore((state) => state.setSelectedChat);
@@ -68,201 +40,104 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const notifications = useNotificationStore((state) => state.notifications);
   const primaryColor = useThemeStore((state) => state.primaryColor);
 
+  // Core hooks
+  const { 
+    fetchMessages, 
+    sendMessage: sendMessageHook, 
+    sendFile,
+    fetchChats,
+    loading: chatLoading
+  } = useChat();
+  const { socket, isConnected } = useSocket();
+  
+  // Feature hooks
+  const { handleTyping, aiMessage, clearMessage: clearAIMessage } = useAIAssistant({ debounceMs: 500 });
+  const { 
+    isListening, 
+    transcript, 
+    toggleListening, 
+    clearTranscript 
+  } = useSpeechRecognition();
+  const { sendLocation: getLocation } = useLocation();
+  
+  // Message sending hook
+  const { handleSendMessage, resetSent } = useMessageSender(
+    sendMessageHook,
+    clearAIMessage,
+    clearTranscript
+  );
+
+  // File upload hook
+  const handleFileSelect = async (file) => {
+    if (!selectedChat) throw new Error("No chat selected");
+    return await sendFile(file, selectedChat._id);
+  };
+  const { handleFileUpload, fileInputRef } = useFileUpload(handleFileSelect);
+
+  // Local UI state
+  const [newMessage, setNewMessage] = useState("");
+
   // Fetch messages when chat changes
   useEffect(() => {
-    if (selectedChat) {
-      fetchMessages(selectedChat._id);
-      selectedChatCompareRef.current = selectedChat;
+    const chatId = selectedChat?._id;
+    if (chatId && chatId !== lastFetchedChatId.current) {
+      lastFetchedChatId.current = chatId;
+      fetchMessages(chatId);
     }
-  }, [selectedChat, fetchMessages]);
+  }, [selectedChat?._id, fetchMessages]);
 
-  const handleSendMessage = useCallback(async (event) => {
-    if (event.key === "Enter" && newMessage && !sent && selectedChat) {
-      setAIMessage("");
-      setsent(true);
+  // Handle location sending
+  const handleSendLocation = async () => {
+    if (!selectedChat) return;
+    
+    const locationUrl = await getLocation();
+    if (locationUrl) {
       try {
-        const messageContent = newMessage;
-        setNewMessage("");
-        await sendMessageHook(messageContent, selectedChat._id);
-        setsent(false);
+        await sendMessageHook(locationUrl, selectedChat._id, "location");
       } catch (error) {
         // Error handling is done by interceptor
-        setsent(false);
       }
-    } else if (event.key === "Enter" && sent) {
-      toast.error("Error Occured!", {
-        description: "Wait before sending another message",
-      });
-    }
-  }, [sent, selectedChat, newMessage, sendMessageHook]);
-
-
-  const sendLocation = async () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const { latitude, longitude } = position.coords;
-        const locationMessage = `https://www.google.com/maps?q=${latitude},${longitude}`;
-        if (selectedChat) {
-          try {
-            await sendMessageHook(locationMessage, selectedChat._id, "location");
-          } catch (error) {
-            // Error handling is done by interceptor
-          }
-        }
-      });
-    } else {
-      toast.error("Geolocation Not Supported", {
-        description: "Your browser does not support geolocation.",
-      });
     }
   };
 
+  // Message notifications hook
+  useMessageNotifications({
+    selectedChat,
+    notifications,
+    fetchChats,
+    setFetchAgain,
+    sound: sound.current,
+  });
 
-  // Real-time message handling - handled by useChat hook
-  // This effect handles additional UI updates (sound, fetchAgain)
+  // Sync transcript with newMessage when listening
   useEffect(() => {
-    if (!socket || !isConnected) return;
-
-    const handleMessageReceived = (newMessageRecieved) => {
-      const chatId = newMessageRecieved.chat._id;
-      
-      // If message is for different chat, play sound and refresh
-      if (!selectedChatCompareRef.current || selectedChatCompareRef.current._id !== chatId) {
-        if (!notifications.find(n => n._id === newMessageRecieved._id)) {
-          setFetchAgain((prevFetchAgain) => !prevFetchAgain);
-          fetchChats();
-          sound.play();
-        }
-      } else {
-        // Message is for current chat - UI update handled by useChat
-        fetchChats();
-      }
-    };
-
-    on("message received", handleMessageReceived);
-
-    return () => {
-      off("message received");
-    };
-  }, [socket, isConnected, notifications, on, off, fetchChats]);
-
-  const typingHandler =  useCallback((e) => {
-    if (e.target.value.length == 0) {
-      setAIMessage("");
-    }
-    if (!aiTyping) {
-      generateContents(e.target.value);
-    }
-    setNewMessage(e.target.value);
-  },[aiTyping])
-
-  const toggleSpeechRecognition = () => {
-    if (!("webkitSpeechRecognition" in window)) {
-      toast.error("Speech Recognition Not Supported", {
-        description: "Your browser does not support speech recognition.",
-      });
-      return;
-    }
-
-    if (isListening) {
-      stopSpeechRecognition();
-    } else {
-      startSpeechRecognition();
-    }
-  };
-
-  const startSpeechRecognition = () => {
-    const recognition = new webkitSpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = "en-US";
-
-    recognition.onresult = (event) => {
-      let interimTranscript = "";
-      let finalTranscript = "";
-
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          finalTranscript += transcript + " ";
-        } else {
-          interimTranscript += transcript;
-        }
-      }
-
-      const currentTranscript = finalTranscript + interimTranscript;
-
-      // Fix: append only the new transcript to newMessage
-      const updatedMessage = newMessage + currentTranscript;
-      setNewMessage(updatedMessage.trim());
-
+    if (isListening && transcript) {
+      setNewMessage(transcript);
       // Ensure caret moves with the text
       if (inputRef.current) {
-        inputRef.current.scrollLeft = inputRef.current.scrollWidth;
+        setTimeout(() => {
+          inputRef.current.scrollLeft = inputRef.current.scrollWidth;
+        }, 0);
       }
-    };
-
-    recognition.onerror = (event) => {
-      console.error("Error occurred in recognition:", event.error);
-      if (event.error === "aborted") {
-        setIsListening(false);
-      } else {
-        toast.error("Speech Recognition Error", {
-          description: `An error occurred: ${event.error}`,
-        });
-      }
-    };
-
-    recognition.onend = () => {
-      if (isListening) {
-        recognition.start();
-      } else {
-        setIsListening(false);
-      }
-    };
-
-    recognition.start();
-    setIsListening(true);
-    window.recognition = recognition;
-  };
-
-  const stopSpeechRecognition = () => {
-    setIsListening(false);
-    if (window.recognition) {
-      window.recognition.stop();
     }
+  }, [transcript, isListening]);
+
+  // Typing handler with debounced AI
+  const typingHandler = (e) => {
+    const value = e.target.value;
+    setNewMessage(value);
+    handleTyping(value); // This handles debounced AI generation
   };
 
-  const fileInputRef = useRef(null);
-
-  const handleFileUpload = async (e) => {
-    return new Promise((resolve, reject) => {
-      if (!fileInputRef.current) {
-        reject(new Error("File input not available"));
-        return;
+  // Send message handler
+  const onKeyDown = (event) => {
+    if (selectedChat) {
+      handleSendMessage(event, newMessage, selectedChat._id);
+      if (event.key === "Enter" && newMessage.trim()) {
+        setNewMessage("");
+        resetSent();
       }
-      
-      const handleFileChange = async (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          try {
-            const data = await sendFile(file, selectedChat._id);
-            resolve(data);
-            setsent(false);
-          } catch (error) {
-            reject(error.message);
-          }
-        }
-        // Reset input
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
-        fileInputRef.current?.removeEventListener('change', handleFileChange);
-      };
-
-      fileInputRef.current.addEventListener('change', handleFileChange);
-      fileInputRef.current.click();
-    });
+    }
   };
 
 
@@ -326,12 +201,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               </div>
             )}
 
-            <div onKeyDown={handleSendMessage} className="mt-3">
+            <div onKeyDown={onKeyDown} className="mt-3">
               <div className="flex items-center mt-5 relative">
                 <Input
                   onClick={() => {
                     setNewMessage(aiMessage);
-                    setAIMessage("");
+                    clearAIMessage();
                   }}
                   className="absolute -top-[70%] z-50 bg-black cursor-pointer h-fit"
                   style={{ color: primaryColor }}
@@ -369,7 +244,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   className="h-10 p-0 m-0 ml-2"
                   style={{ backgroundColor: isListening ? "red" : primaryColor }}
                   aria-label="Toggle Speech Recognition"
-                  onClick={toggleSpeechRecognition}
+                  onClick={toggleListening}
                 >
                   <MdMic />
                 </Button>
@@ -379,7 +254,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   className="h-10 p-0 m-0 ml-2"
                   style={{ backgroundColor: primaryColor }}
                   aria-label="Send Location"
-                  onClick={sendLocation}
+                  onClick={handleSendLocation}
                 >
                   <MdLocationOn />
                 </Button>

@@ -21,9 +21,24 @@ const updateUser = expressAsyncHandler(async (req, res) => {
 
 
 const updatelanguage = expressAsyncHandler(async (req, res) => {
-    const { language , UserId } = req.body;
-    const updatedUser = await User.findByIdAndUpdate(UserId, { TranslateLanguage: language }, { new: true });
-    res.json(updatedUser.TranslateLanguage);
+    const { language, UserId } = req.body;
+    
+    if (!language || !UserId) {
+        return res.status(400).json({ success: false, message: "Language and UserId are required" });
+    }
+    
+    try {
+        const updatedUser = await User.findByIdAndUpdate(UserId, { TranslateLanguage: language }, { new: true });
+        
+        if (!updatedUser) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+        
+        res.json(updatedUser.TranslateLanguage);
+    } catch (error) {
+        console.error(`[${new Date().toISOString()}] ERROR: Update language failed:`, error.message);
+        return res.status(400).json({ success: false, message: "Failed to update language" });
+    }
 });
 
 const registeruser = expressAsyncHandler (async (req,res) => {

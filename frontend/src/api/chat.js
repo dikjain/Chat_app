@@ -1,10 +1,5 @@
 import apiClient from "./client";
 
-/**
- * Chat API Service
- * Handles all chat-related API calls
- */
-
 // Get all chats for the current user
 export const getAllChats = async () => {
   const { data } = await apiClient.get("/api/chat");

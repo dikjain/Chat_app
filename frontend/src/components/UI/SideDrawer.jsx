@@ -19,8 +19,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Bell, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { searchUsers, accessChat } from "@/api";
-import { toast } from "sonner";
+import { accessChat } from "@/api";
 import ChatLoading from "@/components/Chat/ChatLoading";
 import ProfileModal from "@/components/Modals/ProfileModal";
 import NotificationBadge from "react-notification-badge";
@@ -31,13 +30,11 @@ import { useAuthStore, useChatStore, useNotificationStore, useThemeStore } from 
 import { FaSearch } from "react-icons/fa";
 import StatusModal from "@/components/Modals/StatusModal";
 import LanguageModal from "@/components/Modals/LanguageModal";
-import { useSocket } from "@/hooks";
+import { useSocket, useUserSearch } from "@/hooks";
 
 
 function SideDrawer() {
   const [search, setSearch] = useState("");
-  const [searchResult, setSearchResult] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
   const [showColorInputs, setShowColorInputs] = useState(false);
   
@@ -50,9 +47,8 @@ function SideDrawer() {
   const primaryColor = useThemeStore((state) => state.primaryColor);
   const setPrimaryColor = useThemeStore((state) => state.setPrimaryColor);
   
-
-
   const { socket, emit } = useSocket();
+  const { searchUsers, searchResult, loading } = useUserSearch();
   
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
@@ -69,20 +65,8 @@ function SideDrawer() {
     navigate("/");
   };
 
-
   const handleSearch = async () => {
-    if (!search) {
-      toast.warning("Please Enter something in search");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const data = await searchUsers(search);
-      setSearchResult(data);
-    } finally {
-      setLoading(false);
-    }
+    await searchUsers(search);
   };
 
   const handleAccessChat = async (userId) => {

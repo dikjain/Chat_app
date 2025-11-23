@@ -1,9 +1,5 @@
 import ErrorBoundary from "./ErrorBoundary";
 
-/**
- * Chat-specific error boundary
- * Catches errors in chat-related components
- */
 const ChatErrorBoundary = ({ children }) => {
   return (
     <ErrorBoundary

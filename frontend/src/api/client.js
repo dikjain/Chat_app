@@ -60,7 +60,7 @@ apiClient.interceptors.response.use(
           description: "Please login again",
         });
         if (window.location.pathname !== "/") {
-          window.location.href = "/";
+          window.location.replace("/");
         }
         break;
       case 403:

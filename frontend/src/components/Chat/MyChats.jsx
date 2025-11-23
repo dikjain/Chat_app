@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getSender } from "@/utils/chatLogics";
 import ChatLoading from "./ChatLoading";
 import GroupChatModal from "@/components/Modals/GroupChatModal";
@@ -70,10 +70,18 @@ const MyChats = ({ fetchAgain }) => {
   
 
   
+  const lastFetchRef = useRef(null);
+  
   useEffect(() => {
     setLoggedUser(user);
-    fetchChats();
-  }, [fetchAgain]);
+    
+    // Only fetch if fetchAgain changed or user changed
+    const fetchKey = `${fetchAgain}-${user?._id}`;
+    if (lastFetchRef.current !== fetchKey) {
+      lastFetchRef.current = fetchKey;
+      fetchChats();
+    }
+  }, [fetchAgain, user?._id, fetchChats]);
 
 
 
@@ -113,7 +121,7 @@ const MyChats = ({ fetchAgain }) => {
               onClick={() => setSelectedChat(chat)}
               key={chat._id}
               >
-                {!chat.isGroupChat && chat.users[0] && chat.users[1] && (chat.users[0]._id == user._id ? onlinepeople.includes(chat.users[1]._id) :onlinepeople.includes(chat.users[0]._id)) && (
+                {!chat.isGroupChat && chat.users[0] && chat.users[1] && (chat.users[0]._id === user._id ? onlinepeople.includes(chat.users[1]._id) : onlinepeople.includes(chat.users[0]._id)) && (
                   <div className="absolute right-[5%] top-[40%] w-[10px] h-[10px] rounded-full bg-[#10b981] shadow-[#48bb78_0px_0px_5px_1px]"></div>
                 )}
                 <p className="font-medium" style={{ color: selectedChat ? (selectedChat._id === chat._id ? "white" : "black") : "black" }}>

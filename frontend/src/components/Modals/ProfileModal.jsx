@@ -5,6 +5,7 @@ import {
   DialogHeader,
   DialogFooter,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -119,6 +120,9 @@ const ProfileModal = ({ children, profileUser }) => {
                 </div>
               )}
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              User profile information and settings
+            </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center justify-between">
             {isUploading ? (
@@ -178,6 +182,9 @@ const ProfileModal = ({ children, profileUser }) => {
       {isViewStatusModal && (
         <Dialog open={isViewStatusModal} onOpenChange={handleCloseModal}>
           <DialogContent className="bg-black border-2 rounded-[10px] max-w-4xl" style={{ color: primaryColor, borderColor: primaryColor }}>
+            <DialogDescription className="sr-only">
+              View user status updates
+            </DialogDescription>
             <ViewStatusModal
               currUser={user}
               isOpen={isViewStatusModal}

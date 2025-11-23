@@ -1,13 +1,5 @@
 import { useState, useCallback } from "react";
 
-/**
- * Custom hook for API calls with loading and error states
- * Provides standardized API call pattern with built-in state management
- * 
- * @param {Function} apiFunction - The API function to call
- * @param {Object} options - Configuration options
- * @returns {Object} { execute, loading, error, data, reset }
- */
 export const useApi = (apiFunction, options = {}) => {
   const { 
     onSuccess, 
@@ -20,11 +12,6 @@ export const useApi = (apiFunction, options = {}) => {
   const [error, setError] = useState(null);
   const [data, setData] = useState(initialData);
 
-  /**
-   * Execute the API call
-   * @param {...any} args - Arguments to pass to the API function
-   * @returns {Promise} The API call result
-   */
   const execute = useCallback(async (...args) => {
     setLoading(true);
     setError(null);
@@ -51,9 +38,6 @@ export const useApi = (apiFunction, options = {}) => {
     }
   }, [apiFunction, onSuccess, onError]);
 
-  /**
-   * Reset all states
-   */
   const reset = useCallback(() => {
     setLoading(false);
     setError(null);
@@ -69,10 +53,6 @@ export const useApi = (apiFunction, options = {}) => {
   };
 };
 
-/**
- * Hook for multiple API calls
- * Useful when you need to manage multiple related API calls
- */
 export const useApiMultiple = (apiFunctions) => {
   const [loading, setLoading] = useState({});
   const [errors, setErrors] = useState({});

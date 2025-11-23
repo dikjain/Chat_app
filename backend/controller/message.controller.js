@@ -51,11 +51,18 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
 });
 
 const sendFileMessage = expressAsyncHandler(async (req, res) => {
+  if (!req.fileMessage) {
+    return res.status(400).json({ success: false, message: "File upload failed" });
+  }
   
   const { chatId, sender, filename, filepath, size, type, timestamp } = req.fileMessage;
 
   if (!filepath || !chatId) {
     return res.status(400).json({ success: false, message: "Filepath and chatId are required" });
+  }
+  
+  if (!sender) {
+    return res.status(400).json({ success: false, message: "Sender information is required" });
   }
   const newMessage = {
     sender: sender,

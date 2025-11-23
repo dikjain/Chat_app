@@ -42,6 +42,10 @@ export const useChat = () => {
       
       return messages;
     } catch (error) {
+      console.error("Failed to fetch messages:", error);
+      toast.error("Failed to load messages", {
+        description: error?.message || "Please try again",
+      });
       return [];
     }
   }, [fetchMessagesApi, setMessages, emit, isConnected]);
@@ -62,6 +66,10 @@ export const useChat = () => {
       
       return message;
     } catch (error) {
+      console.error("Failed to send message:", error);
+      toast.error("Failed to send message", {
+        description: error?.message || "Please try again",
+      });
       return null;
     }
   }, [sendMessageApi, emit, isConnected, addMessage, fetchChatsApi]);
@@ -86,6 +94,10 @@ export const useChat = () => {
       
       return message;
     } catch (error) {
+      console.error("Failed to send file:", error);
+      toast.error("Failed to send file", {
+        description: error?.message || "Please try again",
+      });
       return null;
     }
   }, [uploadFileApi, emit, isConnected, addMessage, fetchChatsApi]);
@@ -112,6 +124,10 @@ export const useChat = () => {
       
       toast.success("Message deleted successfully");
     } catch (error) {
+      console.error("Failed to delete message:", error);
+      toast.error("Failed to delete message", {
+        description: error?.message || "Please try again",
+      });
     }
   }, [removeMessage, fetchChatsApi, messages]);
 
@@ -121,6 +137,8 @@ export const useChat = () => {
       setChats(chatsData);
       return chatsData;
     } catch (error) {
+      console.error("Failed to fetch chats:", error);
+      // Don't show toast for fetchChats as it's called frequently
       return [];
     }
   }, [fetchChatsApi, setChats]);

@@ -1,6 +1,7 @@
 import React from "react";
 import RealTimeMessagingBox from "@/components/Features/RealTimeMessagingBox";
 import AudioCallBox from "@/components/Features/AudioCallBox";
+import VideoCallBox from "@/components/Features/VideoCallBox";
 import StoriesBox from "@/components/Features/StoriesBox";
 import LiveLocationBox from "@/components/Features/LiveLocationBox";
 import MultilingualBox from "@/components/Features/MultilingualBox";
@@ -13,9 +14,11 @@ export default function FeaturesSection() {
         {/* First row - 4 equal boxes */}
         <RealTimeMessagingBox />
         <AudioCallBox />
+        <VideoCallBox />
         <StoriesBox />
-        <LiveLocationBox />
 
+        {/* Second row */}
+        <LiveLocationBox />
         <TransferBox />
         <MultilingualBox />
       </div>

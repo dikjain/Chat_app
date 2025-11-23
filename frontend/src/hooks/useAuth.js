@@ -3,13 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores";
 import { login, signup } from "@/api/auth";
 
-const SESSION_STORAGE_KEY = "userInfo";
-const STORAGE = sessionStorage;
-
-/**
- * Custom hook for authentication operations
- * Handles login, signup, session management, and error handling
- */
 const useAuth = () => {
   const setUser = useAuthStore((state) => state.setUser);
   const navigate = useNavigate();
@@ -17,10 +10,6 @@ const useAuth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  /**
-   * Safely stores user session in sessionStorage
-   * @param {Object} userData - User data to store
-   */
   const storeSession = useCallback((userData) => {
     try {
       if (!userData) {
@@ -34,10 +23,6 @@ const useAuth = () => {
     }
   }, [setUser]);
 
-  /**
-   * Retrieves user session from sessionStorage
-   * @returns {Object|null} User data or null
-   */
   const getSession = useCallback(() => {
     try {
       // Get from Zustand store (which syncs with sessionStorage)
@@ -48,9 +33,6 @@ const useAuth = () => {
     }
   }, []);
 
-  /**
-   * Clears user session from sessionStorage
-   */
   const clearSession = useCallback(() => {
     try {
       // Zustand persist middleware handles sessionStorage cleanup
@@ -60,23 +42,11 @@ const useAuth = () => {
     }
   }, []);
 
-  /**
-   * Validates email format and domain
-   * @param {string} email - Email to validate
-   * @returns {boolean} True if valid
-   */
   const validateEmail = useCallback((email) => {
     const validDomains = ["@gmail.com", "@yahoo.com", "@outlook.com"];
     return validDomains.some(domain => email.endsWith(domain));
   }, []);
 
-  /**
-   * Handles user login
-   * @param {string} email - User email
-   * @param {string} password - User password
-   * @param {Function} toast - Toast notification function
-   * @returns {Promise<Object>} User data on success
-   */
   const handleLogin = useCallback(async (email, password, toast) => {
     setLoading(true);
     setError(null);
@@ -134,12 +104,6 @@ const useAuth = () => {
     }
   }, [navigate, storeSession]);
 
-  /**
-   * Validates signup form data
-   * @param {Object} formData - Form data to validate
-   * @param {Function} toast - Toast notification function
-   * @returns {boolean} True if valid
-   */
   const validateSignup = useCallback((formData, toast) => {
     const { name, email, password, confirmPassword } = formData;
 
@@ -191,12 +155,6 @@ const useAuth = () => {
     return true;
   }, [validateEmail]);
 
-  /**
-   * Handles user signup
-   * @param {Object} formData - Signup form data
-   * @param {Function} toast - Toast notification function
-   * @returns {Promise<Object>} User data on success
-   */
   const handleSignup = useCallback(async (formData, toast) => {
     setLoading(true);
     setError(null);

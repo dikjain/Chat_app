@@ -1,9 +1,5 @@
 import { create } from "zustand";
 
-/**
- * Chat Store - Manages chat-related state
- * No persistence needed (fetched from server)
- */
 export const useChatStore = create((set, get) => ({
   // State
   chats: [],
