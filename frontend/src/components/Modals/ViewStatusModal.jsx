@@ -4,10 +4,8 @@ import { toast } from "sonner";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCards } from 'swiper/modules';
 import { deleteStatus, fetchStatus as fetchStatusAPI } from "@/api";
-import { useThemeStore } from "@/stores";
 
 function ViewStatusModal({ fetchStatus, user, status, currUser }) {
-  const primaryColor = useThemeStore((state) => state.primaryColor);
   const [currentStatus, setCurrentStatus] = useState([]);
 
   const handleDeleteStatus = async (id) => {
@@ -49,11 +47,11 @@ function ViewStatusModal({ fetchStatus, user, status, currUser }) {
     <>
       <div className="flex-1 flex items-center justify-center mr-0 md:mr-2 mb-2 md:mb-0" id='swipercont'>
         <div className="w-full">
-          <div className="flex items-center mb-4" style={{ color: primaryColor }}>
+          <div className="flex items-center mb-4" style={{ color: "#10b981" }}>
             <img 
               src={user.pic} 
               className="w-9 h-9 rounded-full mr-2 border" 
-              style={{ borderColor: primaryColor }}
+              style={{ borderColor: "#10b981" }}
               alt={user.name}
             />
             <h3 className="text-xl font-semibold">
@@ -62,7 +60,7 @@ function ViewStatusModal({ fetchStatus, user, status, currUser }) {
           </div>
           <div className="flex items-center justify-center rounded-md relative h-[50vh]">
             {currentStatus && currentStatus.length === 0 && (
-              <p className="absolute text-lg mt-4" style={{ color: primaryColor }}>No status found</p>
+              <p className="absolute text-lg mt-4" style={{ color: "#10b981" }}>No status found</p>
             )}
             {currentStatus && <Swiper
               effect={'cards'}

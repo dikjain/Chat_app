@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 import PixelBlast from "@/components/Authentication/PixelBlast";
 
 const VideoCallIcon = () => (
@@ -108,3 +108,5 @@ const VideoCallBox = ({ className = "" }) => {
   );
 };
 
+
+export default VideoCallBox;

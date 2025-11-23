@@ -12,7 +12,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { searchUsers, renameGroupChat, addUserToGroup, removeUserFromGroup } from "@/api";
 import { useState } from "react";
-import { useAuthStore, useChatStore, useThemeStore } from "@/stores";
+import { useAuthStore, useChatStore } from "@/stores";
 import UserBadgeItem from "@/components/UI/UserBadgeItem";
 import UserListItem from "@/components/UI/UserListItem";
 

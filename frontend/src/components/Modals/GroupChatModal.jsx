@@ -11,7 +11,7 @@ import {
   import { toast } from "sonner";
   import { searchUsers, createGroupChat } from "@/api";
   import { useState } from "react";
-  import { useAuthStore, useChatStore, useThemeStore } from "@/stores";
+  import { useAuthStore, useChatStore } from "@/stores";
   import UserBadgeItem from "@/components/UI/UserBadgeItem";
   import UserListItem from "@/components/UI/UserListItem";
   
@@ -26,7 +26,6 @@ import {
     const user = useAuthStore((state) => state.user);
     const chats = useChatStore((state) => state.chats);
     const addChat = useChatStore((state) => state.addChat);
-    const primaryColor = useThemeStore((state) => state.primaryColor);
   
     const handleGroup = (userToAdd) => {
       if (selectedUsers.includes(userToAdd)) {
@@ -80,7 +79,7 @@ import {
           <DialogTrigger asChild onClick={() => setIsOpen(true)}>
             {children}
           </DialogTrigger>
-          <DialogContent className="bg-black text-[#10b981] max-w-lg border" style={{ borderColor: primaryColor }}>
+          <DialogContent className="bg-black text-[#10b981] max-w-lg border" style={{ borderColor: "#10b981" }}>
             <DialogHeader>
               <DialogTitle className="text-[35px] font-['Work_sans'] flex justify-center text-[#10b981]">
                 Create Group Chat

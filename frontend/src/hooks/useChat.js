@@ -13,7 +13,7 @@ import { useChatStore, useNotificationStore } from "@/stores";
 import { toast } from "sonner";
 
 export const useChat = () => {
-  const { socket, on, off, emit, isConnected } = useSocket();
+  const { socket, on, off, isConnected, emitJoinChat, emitNewMessage } = useSocket();
   
   const selectedChat = useChatStore((state) => state.selectedChat);
   const setSelectedChat = useChatStore((state) => state.setSelectedChat);
@@ -37,7 +37,7 @@ export const useChat = () => {
       setMessages(chatId, messages);
       
       if (isConnected) {
-        emit("join chat", chatId);
+        emitJoinChat(chatId);
       }
       
       return messages;
@@ -48,7 +48,7 @@ export const useChat = () => {
       });
       return [];
     }
-  }, [fetchMessagesApi, setMessages, emit, isConnected]);
+  }, [fetchMessagesApi, setMessages, emitJoinChat, isConnected]);
 
   const sendMessage = useCallback(async (content, chatId, type = "text") => {
     if (!content || !chatId) return null;
@@ -57,7 +57,7 @@ export const useChat = () => {
       const message = await sendMessageApi.execute(content, chatId, type);
       
       if (isConnected) {
-        emit("new message", message);
+        emitNewMessage(message);
       }
       
       addMessage(chatId, message);
@@ -72,7 +72,7 @@ export const useChat = () => {
       });
       return null;
     }
-  }, [sendMessageApi, emit, isConnected, addMessage, fetchChatsApi]);
+  }, [sendMessageApi, emitNewMessage, isConnected, addMessage, fetchChatsApi]);
 
   const sendFile = useCallback(async (file, chatId) => {
     if (!file || !chatId) return null;
@@ -85,7 +85,7 @@ export const useChat = () => {
       const message = await uploadFileApi.execute(formData);
       
       if (isConnected) {
-        emit("new message", message);
+        emitNewMessage(message);
       }
       
       addMessage(chatId, message);
@@ -100,7 +100,7 @@ export const useChat = () => {
       });
       return null;
     }
-  }, [uploadFileApi, emit, isConnected, addMessage, fetchChatsApi]);
+  }, [uploadFileApi, emitNewMessage, isConnected, addMessage, fetchChatsApi]);
 
   const messages = useChatStore((state) => state.messages);
 
@@ -177,6 +177,5 @@ export const useChat = () => {
     
     socket,
     isConnected,
-    emit,
   };
 };

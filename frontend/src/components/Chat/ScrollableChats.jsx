@@ -3,7 +3,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import ScrollableFeed from "react-scrollable-feed";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from "@/utils/chatLogics";
-import { useAuthStore, useChatStore, useThemeStore } from "@/stores";
+import { useAuthStore, useChatStore } from "@/stores";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useChat, useTranslation, useTextToSpeech } from "@/hooks";
@@ -24,7 +24,6 @@ const ScrollableChat = ({ messages }) => {
 
   const user = useAuthStore((state) => state.user);
   const selectedChat = useChatStore((state) => state.selectedChat);
-  const primaryColor = useThemeStore((state) => state.primaryColor);
 
   // Custom hooks - single source of truth
   const { deleteMessage: deleteMessageHook, fetchChats } = useChat();
@@ -35,7 +34,7 @@ const ScrollableChat = ({ messages }) => {
   const todayIST = useMemo(() => getTodayIST(), []);
 
   const handleDragEnd = useCallback((event, info, index) => {
-    if (!visibleMessages || !visibleMessages[index]) return;
+    if (!visibleMessages || !visibleMessages[index] || !visibleMessages[index].sender) return;
     
     if (visibleMessages[index].sender._id === user._id) {
       if (info.offset.x > 30 && speakVisible) {
@@ -159,7 +158,7 @@ const ScrollableChat = ({ messages }) => {
       {messages.length - visibleMessageCount > 0 ? (
         <button 
           className="w-1/2 py-[3px] translate-x-1/2 rounded-full self-center text-white"
-          style={{ backgroundColor: primaryColor }}
+          style={{ backgroundColor: "#10b981" }}
           onClick={() => {
             messages.length - visibleMessageCount > LOAD_MORE_INCREMENT
               ? setVisibleMessageCount(prev => prev + LOAD_MORE_INCREMENT)
@@ -177,19 +176,19 @@ const ScrollableChat = ({ messages }) => {
               } ${speakVisible !== null && speakVisible !== i ? "opacity-50" : ""}`} 
               key={m._id}
             >
-              {isSameSender(visibleMessages, m, i, user._id) && (
+              {isSameSender(visibleMessages, m, i, user._id) && m.sender && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Avatar
                     className={`messagee${m._id} mt-[7px] mr-1 h-8 w-8 cursor-pointer`}
-                    id={`messagee${m.sender._id === user._id ? "R" : "L"}`}
+                    id={`messagee${m.sender?._id === user._id ? "R" : "L"}`}
                     >
-                      <AvatarImage src={m.sender.pic} alt={m.sender.name} />
-                      <AvatarFallback>{m.sender.name?.charAt(0)?.toUpperCase()}</AvatarFallback>
+                      <AvatarImage src={m.sender?.pic} alt={m.sender?.name} />
+                      <AvatarFallback>{m.sender?.name?.charAt(0)?.toUpperCase()}</AvatarFallback>
                     </Avatar>
                   </TooltipTrigger>
                   <TooltipContent side="bottom" align="start">
-                    {m.sender.name}
+                    {m.sender?.name}
                   </TooltipContent>
                 </Tooltip>
               )}
@@ -197,16 +196,16 @@ const ScrollableChat = ({ messages }) => {
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
               onDragEnd={(event, info) => handleDragEnd(event, info, i)}
-              id={`messagee${m.sender._id === user._id ? "R" : "L"}`}
-              className={`messagee${m._id} ${m.sender._id === user._id ? "ml-auto" : "ml-0"} mt-[10px] mb-[10px] rounded-[20px] px-[15px] py-2 max-w-[75%] relative z-[50] flex items-center justify-center flex-col break-words whitespace-pre-wrap bg-black font-['DynaPuff']`}
+              id={`messagee${m.sender?._id === user._id ? "R" : "L"}`}
+              className={`messagee${m._id} ${m.sender?._id === user._id ? "ml-auto" : "ml-0"} mt-[10px] mb-[10px] rounded-[20px] px-[15px] py-2 max-w-[75%] relative z-[50] flex items-center justify-center flex-col break-words whitespace-pre-wrap bg-black font-['DynaPuff']`}
               style={{
                 transition: "none",
-                color: m.sender._id === user._id ? primaryColor : "#fff",
-                border: m.sender._id === user._id ? "1px solid #fff" : `1px solid ${primaryColor}`,
+                color: m.sender?._id === user._id ? "#10b981" : "#fff",
+                border: m.sender?._id === user._id ? "1px solid #fff" : "1px solid #10b981",
               }}
               onClick={() => handleTranslate(i, m.content)}
               >
-              {selectedChat.isGroupChat && <span className="font-bold" style={{color:primaryColor}}>{m.sender._id === user._id ? "" : m.sender.name + " : "}</span>} 
+              {selectedChat?.isGroupChat && <span className="font-bold" style={{color:"#10b981"}}>{m.sender?._id === user._id ? "" : m.sender?.name + " : "}</span>} 
               {m.content ? (
                 m.type === "location" ? (
                   <a href={m.content} target="_blank" rel="noopener noreferrer" className="underline text-blue-500 font-sans">{m.content}</a>
@@ -233,27 +232,27 @@ const ScrollableChat = ({ messages }) => {
                 </div>
               )}
               {m.file && (
-                <p className="text-[10px] max-w-[150px] text-center font-semibold" style={{color: m.sender._id === user._id ? primaryColor : "#fff"}}>
+                <p className="text-[10px] max-w-[150px] text-center font-semibold" style={{color: m.sender?._id === user._id ? "#10b981" : "#fff"}}>
                   {m.file.split("/").pop()}
                 </p>
               )}
               <span
-              className={`text-[8px] p-[5px] whitespace-nowrap min-w-fit w-fit -bottom-5 opacity-45 md:text-[8px] md:p-[2px] md:opacity-52 sm:text-[6px] sm:p-[2px] sm:-bottom-[10px] sm:opacity-65 ${m.sender._id === user._id ? "right-0 rounded-tl-[99px] rounded-tr-none rounded-br-[99px] rounded-bl-[99px]" : "left-1/2 -translate-x-1/2 rounded-tl-none rounded-tr-[99px] rounded-br-[99px] rounded-bl-[99px]"} absolute z-[100] bg-[#10b981] text-white font-['Atomic_Age']`}
+              className={`text-[8px] p-[5px] whitespace-nowrap min-w-fit w-fit -bottom-5 opacity-45 md:text-[8px] md:p-[2px] md:opacity-52 sm:text-[6px] sm:p-[2px] sm:-bottom-[10px] sm:opacity-65 ${m.sender?._id === user._id ? "right-0 rounded-tl-[99px] rounded-tr-none rounded-br-[99px] rounded-bl-[99px]" : "left-1/2 -translate-x-1/2 rounded-tl-none rounded-tr-[99px] rounded-br-[99px] rounded-bl-[99px]"} absolute z-[100] bg-[#10b981] text-white font-['Atomic_Age']`}
               >
                 {getFormattedTime(m.createdAt)}
               </span>
               {m.content && speakVisible === i && !isSpeaking && (
                 <span
                   onClick={() => speak(m.content, i)}
-                  className={`absolute top-[30px] ${m.sender._id === user._id ? "left-[-50px]" : "right-[-50px]"} bg-gray-500 hover:bg-[#10b981] text-white rounded px-[5px] py-[2px] cursor-pointer text-xs z-[100] transition-colors`}
+                  className={`absolute top-[30px] ${m.sender?._id === user._id ? "left-[-50px]" : "right-[-50px]"} bg-gray-500 hover:bg-[#10b981] text-white rounded px-[5px] py-[2px] cursor-pointer text-xs z-[100] transition-colors`}
                 >
                   Speak
                 </span>
               )}
-              {speakVisible === i && m.sender._id === user._id && !isSpeaking && (
+              {speakVisible === i && m.sender?._id === user._id && !isSpeaking && (
                 <span
                   onClick={() => deleteMessage(m._id)}
-                  className={`absolute ${m.sender._id === user._id ? "left-[-92px]" : "right-[-92px]"} top-0 bg-gray-500 hover:bg-red-500 text-white rounded px-[5px] py-[2px] cursor-pointer text-xs transition-colors`}
+                  className={`absolute ${m.sender?._id === user._id ? "left-[-92px]" : "right-[-92px]"} top-0 bg-gray-500 hover:bg-red-500 text-white rounded px-[5px] py-[2px] cursor-pointer text-xs transition-colors`}
                 >
                   Delete For All
                 </span>

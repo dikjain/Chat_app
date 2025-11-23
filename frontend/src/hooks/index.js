@@ -13,4 +13,5 @@ export { default as useUserSearch } from "./useUserSearch";
 export { default as useFileUpload } from "./useFileUpload";
 export { default as useMessageSender } from "./useMessageSender";
 export { default as useMessageNotifications } from "./useMessageNotifications";
+export { default as useMessageInput } from "./useMessageInput";
 

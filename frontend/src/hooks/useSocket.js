@@ -5,7 +5,7 @@ import { useAuthStore } from "@/stores";
 
 let globalSocket = null;
 const globalListeners = new Map();
-let coreListenersSetup = false; // Track if core listeners are already set up
+let coreListenersSetup = false;
 
 export const useSocket = () => {
   const user = useAuthStore((state) => state.user);
@@ -21,7 +21,6 @@ export const useSocket = () => {
         reconnectionAttempts: 5,
       });
 
-      // Setup core listeners only once
       if (!coreListenersSetup) {
         globalSocket.on("connect", () => {
           if (user) {
@@ -29,7 +28,6 @@ export const useSocket = () => {
           }
         });
 
-        // Handle connection status - only log once per connection
         globalSocket.on("connected", () => {
           console.log("Socket connected");
         });
@@ -100,6 +98,42 @@ export const useSocket = () => {
     }
   }, []);
 
+  const emitSetup = useCallback(() => {
+    if (user && globalSocket && globalSocket.connected) {
+      globalSocket.emit("setup", user);
+    }
+  }, [user]);
+
+  const emitJoinChat = useCallback((chatId) => {
+    if (globalSocket && globalSocket.connected && chatId) {
+      globalSocket.emit("join chat", chatId);
+    }
+  }, []);
+
+  const emitNewMessage = useCallback((message) => {
+    if (globalSocket && globalSocket.connected && message) {
+      globalSocket.emit("new message", message);
+    }
+  }, []);
+
+  const emitUserDisconnected = useCallback(() => {
+    if (user && globalSocket && globalSocket.connected) {
+      globalSocket.emit("userDisconnected", user);
+    }
+  }, [user]);
+
+  const emitUserReconnected = useCallback(() => {
+    if (user && globalSocket && globalSocket.connected) {
+      globalSocket.emit("userReconnected", user);
+    }
+  }, [user]);
+
+  const reconnect = useCallback(() => {
+    if (globalSocket && !globalSocket.connected) {
+      globalSocket.connect();
+    }
+  }, []);
+
   const isConnected = globalSocket?.connected ?? false;
 
   return {
@@ -109,5 +143,11 @@ export const useSocket = () => {
     emit,
     isConnected,
     disconnect,
+    reconnect,
+    emitSetup,
+    emitJoinChat,
+    emitNewMessage,
+    emitUserDisconnected,
+    emitUserReconnected,
   };
 };

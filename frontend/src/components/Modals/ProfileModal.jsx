@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { fetchStatus, updateUser  } from "@/api";
-import { useAuthStore, useThemeStore } from "@/stores";
+import { useAuthStore } from "@/stores";
 import { useState, useRef } from "react";
 import ViewStatusModal from "./ViewStatusModal";
 import useCloudinaryUpload from "@/hooks/useCloudinaryUpload";
@@ -25,7 +25,6 @@ const ProfileModal = ({ children, profileUser }) => {
 
   const user = useAuthStore((state) => state.user);
   const updateUser = useAuthStore((state) => state.updateUser);
-  const primaryColor = useThemeStore((state) => state.primaryColor);
   if (!profileUser) profileUser = user;
 
   const [isOpen, setIsOpen] = useState(false);
@@ -103,7 +102,7 @@ const ProfileModal = ({ children, profileUser }) => {
           </DialogTrigger>
         )}
         <DialogContent className="h-[410px] bg-[#18191a] max-w-lg">
-          <DialogHeader className="relative text-4xl font-['Roboto'] flex justify-center" style={{ color: primaryColor }}>
+          <DialogHeader className="relative text-4xl font-['Roboto'] flex justify-center" style={{ color: "#10b981" }}>
             <DialogTitle className="text-4xl">
               {!isNaam && profileUser && profileUser.name.toUpperCase()}
               {isNaam && (
@@ -112,7 +111,7 @@ const ProfileModal = ({ children, profileUser }) => {
                     type="text"
                     placeholder="name"
                     className="bg-black text-xl font-bold mx-[10px] w-[50%] h-10 z-[1000]"
-                    style={{ color: primaryColor }}
+                    style={{ color: "#10b981" }}
                     value={naam}
                     onChange={(e) => setNaam(e.target.value)}
                   />
@@ -126,16 +125,16 @@ const ProfileModal = ({ children, profileUser }) => {
           </DialogHeader>
           <div className="flex flex-col items-center justify-between">
             {isUploading ? (
-              <Spinner className="h-12 w-12" style={{ color: primaryColor }} />
+              <Spinner className="h-12 w-12" style={{ color: "#10b981" }} />
             ) : (
               <img
                 className="transition-all duration-300 rounded-full w-[150px] h-[150px]"
-                style={{ border: `4px solid ${primaryColor}` }}
+                style={{ border: "4px solid #10b981" }}
                 src={profileUser && profileUser.pic}
                 alt={profileUser && profileUser.name}
               />
             )}
-            <p className="text-[28px] md:text-[30px]" style={{ color: primaryColor }}>
+            <p className="text-[28px] md:text-[30px]" style={{ color: "#10b981" }}>
               {profileUser && `Email: ${profileUser.email}`}
             </p>
           </div>
@@ -151,14 +150,14 @@ const ProfileModal = ({ children, profileUser }) => {
                 />
                 <Button
                   className="my-1 text-[15px] rounded-[10px] font-bold"
-                  style={{ backgroundColor: primaryColor, color: "white" }}
+                  style={{ backgroundColor: "#10b981", color: "white" }}
                   onClick={changePic}
                 >
                   Change Picture
                 </Button>
                 <Button
                   className="my-1 text-[15px] rounded-[10px] font-bold"
-                  style={{ backgroundColor: primaryColor, color: "white" }}
+                  style={{ backgroundColor: "#10b981", color: "white" }}
                   onClick={handleUpdate}
                 >
                   Edit Name
@@ -168,7 +167,7 @@ const ProfileModal = ({ children, profileUser }) => {
             {profileUser && user._id !== profileUser._id && (
               <Button
                 className="my-1 text-[15px] rounded-[10px] font-bold"
-                style={{ backgroundColor: primaryColor, color: "white" }}
+                style={{ backgroundColor: "#10b981", color: "white" }}
                 onClick={handleViewStatus}
               >
                 View Status
@@ -181,7 +180,7 @@ const ProfileModal = ({ children, profileUser }) => {
       {/* Conditionally render ViewStatusModal content based on state */}
       {isViewStatusModal && (
         <Dialog open={isViewStatusModal} onOpenChange={handleCloseModal}>
-          <DialogContent className="bg-black border-2 rounded-[10px] max-w-4xl" style={{ color: primaryColor, borderColor: primaryColor }}>
+          <DialogContent className="bg-black border-2 rounded-[10px] max-w-4xl" style={{ color: "#10b981", borderColor: "#10b981" }}>
             <DialogDescription className="sr-only">
               View user status updates
             </DialogDescription>

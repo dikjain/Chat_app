@@ -23,7 +23,7 @@ const useAIAssistant = (options = {}) => {
     try {
       setAITyping(true);
       const genAI = new GoogleGenerativeAI(appConfig.GOOGLE_AI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
       
       const result = await model.generateContent(
         "Please complete the following message along with the user's input naturally as if it were sent by the user. Ensure the response feels like a continuation of the user's input and match the language used. Only provide the completed message without any additional text. Here's the message: " +

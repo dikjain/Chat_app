@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { useState, useRef } from "react";
-import { useAuthStore, useThemeStore } from "@/stores";
+import { useAuthStore } from "@/stores";
 import { createStatus, fetchStatus } from "@/api";
 import useCloudinaryUpload from "@/hooks/useCloudinaryUpload";
 
@@ -23,7 +23,6 @@ import ViewStatusModal from './ViewStatusModal';
 
 function StatusModal({children}) {
   const user = useAuthStore((state) => state.user);
-  const primaryColor = useThemeStore((state) => state.primaryColor);
   const [status, setStatus] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { uploadImage } = useCloudinaryUpload();
@@ -106,7 +105,7 @@ function StatusModal({children}) {
 
             {/* Right side: Add new status */}
             <div className="flex-1 ml-0 md:ml-2">
-              <h3 className="text-xl font-semibold mb-4" style={{ color: primaryColor }}>Add New Status</h3>
+              <h3 className="text-xl font-semibold mb-4" style={{ color: "#10b981" }}>Add New Status</h3>
               <div>
                 <input
                   ref={fileInputRef}
@@ -115,11 +114,11 @@ function StatusModal({children}) {
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                <p style={{ color: primaryColor }}>Upload an image</p>
+                <p style={{ color: "#10b981" }}>Upload an image</p>
                 <div 
                   onClick={takeImage} 
                   className="flex justify-center items-center p-2 rounded-md cursor-pointer h-[30vh] text-black"
-                  style={{ backgroundColor: primaryColor }}
+                  style={{ backgroundColor: "#10b981" }}
                 >
                     {statusContent.imageUrl ? (
                       <img src={statusContent.imageUrl} className="object-cover h-full" alt="Status Image" />

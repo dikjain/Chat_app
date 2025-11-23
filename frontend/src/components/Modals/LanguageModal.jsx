@@ -9,13 +9,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { useAuthStore, useThemeStore } from '@/stores';
+import { useAuthStore } from '@/stores';
 import { updateUserLanguage } from "@/api";
 
 function LanguageModal({children}) {
   const user = useAuthStore((state) => state.user);
   const updateUser = useAuthStore((state) => state.updateUser);
-  const primaryColor = useThemeStore((state) => state.primaryColor);
   const [isOpen, setIsOpen] = useState(false);
   const languages = ['Hindi', 'English', 'Spanish', 'French', 'German', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Bengali'];
   const [selectedLanguage, setSelectedLanguage] = useState(null);
@@ -55,7 +54,7 @@ function LanguageModal({children}) {
         <div className="flex flex-col items-center justify-center">
           <select 
             className="w-full mt-2 mb-2 font-['Orbitron'] text-black rounded-md px-3 py-2"
-            style={{ backgroundColor: primaryColor }}
+            style={{ backgroundColor: "#10b981" }}
             value={selectedLanguage || ""} 
             onChange={(e) => setSelectedLanguage(e.target.value)}
           >
@@ -69,7 +68,7 @@ function LanguageModal({children}) {
         <DialogFooter className="flex justify-between">
           <Button 
             className="mr-3" 
-            style={{ backgroundColor: primaryColor, color: "white" }}
+            style={{ backgroundColor: "#10b981", color: "white" }}
             onClick={handleLanguageChange}
             disabled={isLoading}
           >
