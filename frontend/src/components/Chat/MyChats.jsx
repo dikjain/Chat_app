@@ -4,9 +4,8 @@ import { getSender } from "@/utils/chatLogics";
 import ChatLoading from "./ChatLoading";
 import GroupChatModal from "@/components/Modals/GroupChatModal";
 import { Button } from "@/components/ui/button";
-import { useAuthStore, useChatStore, useVideoCallStore, useThemeStore } from "@/stores";
+import { useAuthStore, useChatStore, useThemeStore } from "@/stores";
 import { useSocket, useChat } from "@/hooks";
-import { FaVideo } from "react-icons/fa";
 
 
 
@@ -21,7 +20,6 @@ const MyChats = ({ fetchAgain }) => {
   const user = useAuthStore((state) => state.user);
   const selectedChat = useChatStore((state) => state.selectedChat);
   const setSelectedChat = useChatStore((state) => state.setSelectedChat);
-  const chatsVideo = useVideoCallStore((state) => state.chatsVideo);
   const primaryColor = useThemeStore((state) => state.primaryColor);
 
   useEffect(() => {
@@ -133,10 +131,6 @@ const MyChats = ({ fetchAgain }) => {
                         : chat.latestMessage.content)
                       : "File"}
                   </p>
-                )}
-
-                {chatsVideo.some(videouser => videouser.selectedChat._id === chat._id) && (
-                  <FaVideo className="absolute right-10 top-1/2 -translate-y-1/2 text-[#10b981]" />
                 )}
               </div>
             ))

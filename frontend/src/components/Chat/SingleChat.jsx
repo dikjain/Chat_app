@@ -10,12 +10,10 @@ import ProfileModal from "@/components/Modals/ProfileModal";
 import ScrollableChat from "./ScrollableChats";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FiFile } from "react-icons/fi"; // Importing file icon from react-icons
-import { FaVideo } from "react-icons/fa"; // Importing video icon from react-icons
-import { useNavigate } from "react-router-dom"; // Importing useNavigate from react-router-dom
 import { MdLocationOn, MdMic } from "react-icons/md"; // Importing location and mic icons from react-icons
 
 import UpdateGroupChatModal from "@/components/Modals/UpdateGroupChatModal";
-import { useAuthStore, useChatStore, useNotificationStore, useVideoCallStore, useThemeStore } from "@/stores";
+import { useAuthStore, useChatStore, useNotificationStore, useThemeStore } from "@/stores";
 import { useChat, useSocket } from "@/hooks";
 import { config as appConfig } from "@/constants/config";
 
@@ -39,7 +37,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const inputRef = useRef(null);
   const [aiMessage, setAIMessage] = useState("");
   const [aiTyping, setAITyping] = useState(false);
-  const navigate = useNavigate();
   
   // Store references
   const selectedChatCompareRef = useRef(null);
@@ -69,11 +66,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const getMessages = useChatStore((state) => state.getMessages);
   const messages = selectedChat ? getMessages(selectedChat._id) : [];
   const notifications = useNotificationStore((state) => state.notifications);
-  const setVideoCallActive = useVideoCallStore((state) => state.setVideoCallActive);
-  const setIsOneOnOneCall = useVideoCallStore((state) => state.setIsOneOnOneCall);
-  const videoCallUsers = useVideoCallStore((state) => state.videoCallUsers);
-  const setVideoCallUsers = useVideoCallStore((state) => state.setVideoCallUsers);
-  const setChatsVideo = useVideoCallStore((state) => state.setChatsVideo);
   const primaryColor = useThemeStore((state) => state.primaryColor);
 
   // Fetch messages when chat changes
@@ -125,41 +117,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
-  // Video call socket events - using shared socket instance
-  useEffect(() => {
-    if (!socket || !isConnected) return;
-
-    emit('get_video_users');
-
-    const handleVideoCallUsers = (newMessageReceived) => {
-      if (newMessageReceived.length > 0) {
-        const updatedVideoCallUsers = newMessageReceived.filter(
-          users => users.user._id !== user._id
-        );
-        setVideoCallUsers(updatedVideoCallUsers.length > 0 ? updatedVideoCallUsers : []);
-      }
-    };
-
-    const handleJoin = (newMessageReceived) => {
-      const Revisedmsg = newMessageReceived.filter(users => users.user._id !== user._id);
-      setVideoCallUsers(Revisedmsg);
-    };
-    
-    const handleLeave = (newMessageReceived) => {
-      const Revisedmsg = newMessageReceived.filter(users => users.user._id !== user._id);
-      setVideoCallUsers(Revisedmsg.length > 0 ? Revisedmsg : []);
-    };
-
-    on('videoCallUsers', handleVideoCallUsers);
-    on('video_user_joined', handleJoin);
-    on('video_user_left', handleLeave);
-
-    return () => {
-      off('videoCallUsers');
-      off('video_user_joined');
-      off('video_user_left');
-    };
-  }, [socket, isConnected, user, on, off, emit, setVideoCallUsers]);
 
   // Real-time message handling - handled by useChat hook
   // This effect handles additional UI updates (sound, fetchAgain)
@@ -308,13 +265,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     });
   };
 
-  const handleVideoCall = () => {
-    navigate(`/videocall/${selectedChat._id}`);
-  };
-
-  useEffect(() => {
-      setChatsVideo(videoCallUsers);
-  }, [videoCallUsers]);
 
 
   return (
@@ -359,26 +309,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     />
                   </div>
                 </>
-              ))}
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Start Video Call"
-                onClick={() => {setVideoCallActive(true); selectedChat.isGroupChat ? setIsOneOnOneCall(false) : setIsOneOnOneCall(true); handleVideoCall()}}
-              >
-                <FaVideo />
-              </Button> 
-              {videoCallUsers && videoCallUsers.map((u,i) => (selectedChat._id == u.selectedChat._id &&
-              <img 
-                key={i} 
-                src={u.user.pic}  
-                alt="User" 
-                className="absolute bg-black rounded-full w-5 h-5 right-[60px] border-[0.5px]"
-                style={{ 
-                  borderColor: primaryColor, 
-                  transform: `translateX(${-70*i}%)`
-                }} 
-              />
               ))}
           </div>
           <div

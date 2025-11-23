@@ -18,10 +18,6 @@ export const config = {
   CLOUDINARY_CLOUD_NAME: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_UPLOAD_PRESET: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
   
-  // ZEGOCLOUD Video Call Configuration
-  ZEGO_APP_ID: parseInt(import.meta.env.VITE_ZEGO_APP_ID) || 0,
-  ZEGO_SERVER_SECRET: import.meta.env.VITE_ZEGO_SERVER_SECRET,
-  
   // App Configuration
   APP_NAME: import.meta.env.VITE_APP_NAME || 'Chat App',
   APP_VERSION: import.meta.env.VITE_APP_VERSION || '1.0.0',
@@ -35,9 +31,7 @@ export const validateConfig = () => {
   const requiredVars = [
     'GOOGLE_AI_API_KEY',
     'CLOUDINARY_CLOUD_NAME', 
-    'CLOUDINARY_UPLOAD_PRESET',
-    'ZEGO_APP_ID',
-    'ZEGO_SERVER_SECRET'
+    'CLOUDINARY_UPLOAD_PRESET'
   ];
   
   const missing = requiredVars.filter(key => !config[key]);
@@ -56,7 +50,6 @@ export const validateConfig = () => {
 if (config.DEV_MODE && config.ENABLE_LOGGING) {
   console.log('App Configuration:', {
     ...config,
-    GOOGLE_AI_API_KEY: config.GOOGLE_AI_API_KEY ? '***' : 'NOT SET',
-    ZEGO_SERVER_SECRET: config.ZEGO_SERVER_SECRET ? '***' : 'NOT SET'
+    GOOGLE_AI_API_KEY: config.GOOGLE_AI_API_KEY ? '***' : 'NOT SET'
   });
 }

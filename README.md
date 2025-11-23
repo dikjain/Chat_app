@@ -1,5 +1,5 @@
 Not a Basic Chat App
-Welcome to Not a Basic Chat App, an advanced chat application offering real-time messaging, audio/video calling, status updates, and much more. Built with cutting-edge technologies, this app redefines communication.
+Welcome to Not a Basic Chat App, an advanced chat application offering real-time messaging, status updates, and much more. Built with cutting-edge technologies, this app redefines communication.
 
 i've used ai in this project just to write the complete readme.md as i don't know how to write it and also i have used it to fix issues that i wan't able to fix
 
@@ -7,9 +7,6 @@ Features
 🎯 Core Functionalities
 Real-Time Messaging:
 Powered by Socket.IO, enabling instant communication in group or one-on-one chats.
-
-Audio/Video Calling:
-High-quality calls with ZEGOCLOUD, ensuring low latency and seamless experience.
 
 24-Hour Status Updates:
 Share what’s on your mind or your day with disappearing updates.
@@ -35,9 +32,6 @@ Showcases interactive design elements and sleek UI.
 
 
 Real-Time Messaging
-
-
-Video/Audio Calling
 
 
 Status Updates

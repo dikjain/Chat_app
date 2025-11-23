@@ -2,7 +2,6 @@ import React, { useEffect } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import AuthPage from '@/pages/AuthPage'
 import ChatPage from '@/pages/ChatPage'
-import VideoCall from '@/pages/VideoCall'
 import { validateConfig } from '@/constants/config'
 import LandingPage from '@/pages/LandingPage'
 import { useAuthStore } from '@/stores'
@@ -34,14 +33,6 @@ function App() {
           element={
             <ProtectedRoute>
               <ChatPage/>
-            </ProtectedRoute>
-          }
-        />
-        <Route 
-          path="/videocall/:id" 
-          element={
-            <ProtectedRoute>
-              <VideoCall/>
             </ProtectedRoute>
           }
         />
