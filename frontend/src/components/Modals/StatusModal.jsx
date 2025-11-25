@@ -95,9 +95,9 @@ function StatusModal({children}) {
         <DialogTrigger asChild onClick={() => setIsOpen(true)}>
           {children}
         </DialogTrigger>
-        <DialogContent className="bg-black text-[#10b981] overflow-hidden max-w-[95vw] h-[95vh]">
+        <DialogContent className="bg-white border-neutral-200 overflow-hidden max-w-[95vw] h-[95vh]">
           <DialogHeader>
-            <DialogTitle>Update Your Status</DialogTitle>
+            <DialogTitle className="text-2xl font-medium text-neutral-800">Update Your Status</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col md:flex-row w-full h-full">
             {/* Left side: Display current status */}
@@ -105,7 +105,7 @@ function StatusModal({children}) {
 
             {/* Right side: Add new status */}
             <div className="flex-1 ml-0 md:ml-2">
-              <h3 className="text-xl font-semibold mb-4" style={{ color: "#10b981" }}>Add New Status</h3>
+              <h3 className="text-xl font-semibold mb-4 text-neutral-800">Add New Status</h3>
               <div>
                 <input
                   ref={fileInputRef}
@@ -114,14 +114,13 @@ function StatusModal({children}) {
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                <p style={{ color: "#10b981" }}>Upload an image</p>
+                <p className="text-sm text-neutral-600 mb-2">Upload an image</p>
                 <div 
                   onClick={takeImage} 
-                  className="flex justify-center items-center p-2 rounded-md cursor-pointer h-[30vh] text-black"
-                  style={{ backgroundColor: "#10b981" }}
+                  className="flex justify-center items-center p-2 rounded-md cursor-pointer h-[30vh] bg-green-600 hover:bg-green-700 text-white transition-colors"
                 >
                     {statusContent.imageUrl ? (
-                      <img src={statusContent.imageUrl} className="object-cover h-full" alt="Status Image" />
+                      <img src={statusContent.imageUrl} className="object-cover h-full rounded" alt="Status Image" />
                     ) : (
                       <p>No image uploaded</p>
                     )}
@@ -129,11 +128,11 @@ function StatusModal({children}) {
               </div>
               <textarea
                 placeholder="What's on your mind?"
-                className="w-full mt-3 p-2 bg-black border border-[#10b981] rounded-md placeholder:text-gray-500 resize-none text-[#10b981] max-h-[100px]"
+                className="w-full mt-3 p-2 bg-white border border-neutral-300 rounded-md placeholder:text-neutral-400 resize-none text-neutral-800 max-h-[100px]"
                 value={statusContent.text}
                 onChange={(e) => setStatusContent((prev) => ({ ...prev, text: e.target.value }))}
               />
-              <Button className="bg-green-600 hover:bg-green-700 mt-3" onClick={CreateStatus} disabled={isLoading}>
+              <Button className="bg-green-600 hover:bg-green-700 text-white mt-3" onClick={CreateStatus} disabled={isLoading}>
                 {isLoading ? <Spinner className="mr-2 h-4 w-4" /> : null}
                 Add
               </Button>
@@ -141,7 +140,7 @@ function StatusModal({children}) {
           </div>
 
           <DialogFooter>
-            <Button className="bg-green-600 hover:bg-green-700 mr-3" onClick={() => setIsOpen(false)}>
+            <Button className="bg-neutral-200 hover:bg-neutral-300 text-neutral-800" onClick={() => setIsOpen(false)}>
               Close
             </Button>
           </DialogFooter>

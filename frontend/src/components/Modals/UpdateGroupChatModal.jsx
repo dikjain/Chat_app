@@ -6,7 +6,6 @@ import {
   DialogFooter,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
@@ -32,16 +31,17 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   const handleSearch = async (query) => {
     setSearch(query);
     if (!query) {
+      setSearchResult([]);
       return;
     }
 
     try {
       setLoading(true);
-      const data = await searchUsers(search);
-      setLoading(false);
+      const data = await searchUsers(query);
       setSearchResult(data);
     } catch (error) {
       // Error handling is done by interceptor
+    } finally {
       setLoading(false);
     }
   };
@@ -110,68 +110,86 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
 
   return (
     <>
-      <Button variant="ghost" size="icon" className="flex" onClick={() => setIsOpen(true)}>
+      <button
+        onClick={() => setIsOpen(true)}
+        className="p-2 hover:bg-neutral-100 rounded-md transition-colors"
+        aria-label="View Group Details"
+      >
         <Eye className="h-4 w-4" />
-      </Button>
+      </button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="bg-black text-[#10b981] max-w-lg">
+        <DialogContent className="bg-white border-stone-200 max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-[35px] font-['Work_sans'] flex justify-center text-[#10b981]">
+            <DialogTitle className="text-xl font-medium text-center text-neutral-800">
               {selectedChat.chatName}
             </DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col items-center">
-            <div className="w-full flex flex-wrap pb-3">
-              {selectedChat.users.map((u) => (
-                <UserBadgeItem
-                  key={u._id}
-                  user={u}
-                  admin={selectedChat.groupAdmin}
-                  handleFunction={() => handleRemove(u)}
-                />
-              ))}
-            </div>
-            <div className="flex w-full mb-3">
+          
+          <div className="space-y-3">
+            {selectedChat.users.length > 0 && (
+              <div className="flex flex-wrap items-center justify-center gap-1 p-2 bg-stone-50 rounded-md border border-stone-200">
+                {selectedChat.users.map((u) => (
+                  <UserBadgeItem
+                    key={u._id}
+                    user={u}
+                    admin={selectedChat.groupAdmin}
+                    handleFunction={() => handleRemove(u)}
+                  />
+                ))}
+              </div>
+            )}
+
+            <div className="flex gap-2">
               <Input
                 placeholder="Chat Name"
-                className="bg-black border-[#10b981] placeholder:text-gray-500 text-[#10b981]"
                 value={groupChatName}
                 onChange={(e) => setGroupChatName(e.target.value)}
+                className="bg-white border-stone-200 placeholder:text-stone-400 text-neutral-800 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:border-stone-300"
               />
-              <Button
-                className="ml-1 bg-green-600 hover:bg-green-700"
+              <button
                 onClick={handleRename}
-                disabled={renameloading}
+                disabled={!groupChatName?.trim() || renameloading}
+                className="px-4 py-2 bg-black text-white rounded-md text-sm font-medium transition-colors hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed outline-none focus:outline-none focus-visible:outline-none focus:ring-0 whitespace-nowrap"
               >
-                {renameloading ? <Spinner className="mr-2 h-4 w-4" /> : null}
+                {renameloading ? <Spinner className="mr-2 h-4 w-4 inline" /> : null}
                 Update
-              </Button>
-            </div>
-            <div className="w-full mb-1">
-              <Input
-                placeholder="Add User to group"
-                className="bg-black border-[#10b981] placeholder:text-gray-500 text-[#10b981]"
-                onChange={(e) => handleSearch(e.target.value)}
-              />
+              </button>
             </div>
 
-            {loading ? (
-              <Spinner className="h-8 w-8" style={{ color: "#10b981" }} />
-            ) : (
-              searchResult?.map((user) => (
-                <UserListItem
-                  key={user._id}
-                  user={user}
-                  handleFunction={() => handleAddUser(user)}
-                />
-              ))
-            )}
+            <Input
+              placeholder="Add User to group"
+              value={search}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="bg-white border-stone-200 placeholder:text-stone-400 text-neutral-800 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:border-stone-300"
+            />
+
+            <div className="max-h-48 overflow-y-auto">
+              {loading ? (
+                <div className="flex justify-center py-4 text-stone-500 text-sm">
+                  Loading...
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {searchResult?.slice(0, 4).map((user) => (
+                    <UserListItem
+                      key={user._id}
+                      user={user}
+                      handleFunction={() => handleAddUser(user)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
+
           <DialogFooter>
-            <Button onClick={() => handleRemove(user)} className="bg-red-600 hover:bg-red-700">
+            <button
+              onClick={() => handleRemove(user)}
+              className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium transition-colors hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed outline-none focus:outline-none focus-visible:outline-none focus:ring-0"
+            >
               Leave Group
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

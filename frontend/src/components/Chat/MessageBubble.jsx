@@ -24,7 +24,7 @@ const MessageBubble = ({
       id={`messagee${isCurrentUser ? "R" : "L"}`}
       className={`messagee${message._id} ${
         isCurrentUser ? "ml-auto" : "ml-0"
-      } rounded-2xl  px-4 py-1 max-w-[75%] border  ${isCurrentUser ? "text-neutral-500  border-neutral-200" : "text-black border-neutral-100"}  relative z-[50] flex items-center justify-center flex-col break-words whitespace-pre-wrap bg-white shadow-md `}
+      } rounded-2xl  ${message.file ? "px-1" : "px-4"} py-1 max-w-[75%] border  ${isCurrentUser ? "text-neutral-500  border-neutral-200" : "text-black border-neutral-300"}  relative z-[50] flex items-center justify-center flex-col break-words whitespace-pre-wrap bg-white shadow-md `}
       onClick={() => onTranslate(index, message.content)}
     >
       <MessageContent 

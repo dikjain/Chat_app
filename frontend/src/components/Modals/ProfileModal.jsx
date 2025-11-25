@@ -1,4 +1,4 @@
-import { Eye } from "lucide-react";
+import { Eye, Pencil } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,9 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
-import { fetchStatus, updateUser  } from "@/api";
+import { fetchStatus, updateUser, updateUserLanguage } from "@/api";
 import { useAuthStore } from "@/stores";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import ViewStatusModal from "./ViewStatusModal";
 import useCloudinaryUpload from "@/hooks/useCloudinaryUpload";
 
@@ -29,27 +29,52 @@ const ProfileModal = ({ children, profileUser }) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const { uploadImage, isUploading } = useCloudinaryUpload();
+  
+  // Language selection state (merged from LanguageModal)
+  const languages = ['Hindi', 'English', 'Spanish', 'French', 'German', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Bengali'];
+  const [selectedLanguage, setSelectedLanguage] = useState(null);
+  const [isLoadingLanguage, setIsLoadingLanguage] = useState(false);
 
-  const handleUpdate = () => {
+  useEffect(() => {
+    if(user.TranslateLanguage){
+      setSelectedLanguage(user.TranslateLanguage);
+    } else {
+      setSelectedLanguage("English");
+    }
+  }, [user.TranslateLanguage]);
+
+  const handleNameEdit = () => {
     setNaam(user.name);
-    setisNaam((prev) => !prev);
+    setisNaam(true);
   };
 
   const handleNameChange = async () => {
     setisNaam(false);
-    setNaam(user.name);
-      const data = await updateUser(user._id, naam, user.pic);
-      if (data) {
-        updateUser({ name: naam }); // Zustand handles sessionStorage sync automatically
-        toast.success("Name Updated!");
-      }
+    const data = await updateUser(user._id, naam, user.pic);
+    if (data) {
+      updateUser({ name: naam });
+      toast.success("Name Updated!");
+    }
   };
 
   const fileInputRef = useRef(null);
 
-  const changePic = async () => {
+  const handleImageEdit = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
+    }
+  };
+
+  const handleLanguageChange = async () => {
+    setIsLoadingLanguage(true);
+    try {
+      if(user.TranslateLanguage !== selectedLanguage){
+        await updateUserLanguage(user._id, selectedLanguage);
+        updateUser({ TranslateLanguage: selectedLanguage });
+        toast.success("Language Updated!");
+      }
+    } finally {
+      setIsLoadingLanguage(false);
     }
   };
 
@@ -101,21 +126,38 @@ const ProfileModal = ({ children, profileUser }) => {
             </Button>
           </DialogTrigger>
         )}
-        <DialogContent className="h-[410px] bg-[#18191a] max-w-lg">
-          <DialogHeader className="relative text-4xl font-['Roboto'] flex justify-center" style={{ color: "#10b981" }}>
-            <DialogTitle className="text-4xl">
-              {!isNaam && profileUser && profileUser.name.toUpperCase()}
+        <DialogContent className="bg-neutral-200 border-neutral-200 max-w-lg z-[1001]">
+          <DialogHeader className="relative flex justify-center">
+            <DialogTitle className="text-2xl font-medium text-neutral-800 flex items-center gap-2">
+              {!isNaam && profileUser && (
+                <>
+                  {profileUser.name.toUpperCase()}
+                  {user._id === profileUser._id && (
+                    <button
+                      onClick={handleNameEdit}
+                      className="p-1 hover:bg-neutral-100 rounded-full transition-colors"
+                      aria-label="Edit name"
+                    >
+                      <Pencil className="w-4 h-4 text-green-600" />
+                    </button>
+                  )}
+                </>
+              )}
               {isNaam && (
                 <div className="flex items-center gap-2">
                   <Input
                     type="text"
                     placeholder="name"
-                    className="bg-black text-xl font-bold mx-[10px] w-[50%] h-10 z-[1000]"
-                    style={{ color: "#10b981" }}
+                    className="bg-white border-neutral-300 text-neutral-800 text-lg w-[60%] h-9"
                     value={naam}
                     onChange={(e) => setNaam(e.target.value)}
                   />
-                  <Button onClick={handleNameChange}>Done</Button>
+                  <Button 
+                    onClick={handleNameChange}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Done
+                  </Button>
                 </div>
               )}
             </DialogTitle>
@@ -123,64 +165,86 @@ const ProfileModal = ({ children, profileUser }) => {
               User profile information and settings
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col items-center justify-between">
-            {isUploading ? (
-              <Spinner className="h-12 w-12" style={{ color: "#10b981" }} />
-            ) : (
-              <img
-                className="transition-all duration-300 rounded-full w-[150px] h-[150px]"
-                style={{ border: "4px solid #10b981" }}
-                src={profileUser && profileUser.pic}
-                alt={profileUser && profileUser.name}
-              />
-            )}
-            <p className="text-[28px] md:text-[30px]" style={{ color: "#10b981" }}>
+          <div className="flex flex-col items-center gap-4 py-4">
+            <div className="relative">
+              {isUploading ? (
+                <Spinner className="h-12 w-12 text-green-600" />
+              ) : (
+                <>
+                  <img
+                  onClick={handleImageEdit}
+                    className="transition-all duration-300 rounded-full w-[150px] h-[150px] border-4 border-green-600"
+                    src={profileUser && profileUser.pic}
+                    alt={profileUser && profileUser.name}
+                  />
+                  {user._id === profileUser._id && (
+                    <button
+                      onClick={handleImageEdit}
+                      className="absolute bottom-0 right-0 p-2 bg-green-600 hover:bg-green-700 rounded-full text-white shadow-lg transition-colors"
+                      aria-label="Edit profile picture"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+            <p className="text-lg text-neutral-600">
               {profileUser && `Email: ${profileUser.email}`}
             </p>
-          </div>
-          <DialogFooter className="w-full flex justify-between">
-            {profileUser && user._id === profileUser._id && (
-              <>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-                <Button
-                  className="my-1 text-[15px] rounded-[10px] font-bold"
-                  style={{ backgroundColor: "#10b981", color: "white" }}
-                  onClick={changePic}
-                >
-                  Change Picture
-                </Button>
-                <Button
-                  className="my-1 text-[15px] rounded-[10px] font-bold"
-                  style={{ backgroundColor: "#10b981", color: "white" }}
-                  onClick={handleUpdate}
-                >
-                  Edit Name
-                </Button>
-              </>
+            {user._id === profileUser._id && (
+              <div className="w-full mt-2">
+                <label className="text-sm font-medium text-neutral-700 mb-2 block">Translation Language</label>
+                <div className="flex items-center gap-2">
+                  <select 
+                    className="flex-1 border border-neutral-300 rounded-md px-3 py-2 text-neutral-800 bg-white"
+                    value={selectedLanguage || ""} 
+                    onChange={(e) => setSelectedLanguage(e.target.value)}
+                  >
+                    {languages.map((language) => (
+                      <option key={language} value={language}>{language}</option>
+                    ))}
+                  </select>
+                  <Button 
+                    onClick={handleLanguageChange}
+                    disabled={isLoadingLanguage || user.TranslateLanguage === selectedLanguage}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    {isLoadingLanguage ? <Spinner className="h-4 w-4" /> : "Update"}
+                  </Button>
+                </div>
+              </div>
             )}
+          </div>
+          <DialogFooter className="w-full flex justify-end gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
             {profileUser && user._id !== profileUser._id && (
               <Button
-                className="my-1 text-[15px] rounded-[10px] font-bold"
-                style={{ backgroundColor: "#10b981", color: "white" }}
+                className="bg-green-600 hover:bg-green-700 text-white"
                 onClick={handleViewStatus}
               >
                 View Status
               </Button>
             )}
-            <Button onClick={handleCloseModal}>Close</Button>
+            <Button 
+              onClick={handleCloseModal}
+              className="bg-neutral-200 hover:bg-neutral-300 text-neutral-800"
+            >
+              Close
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
       {/* Conditionally render ViewStatusModal content based on state */}
       {isViewStatusModal && (
         <Dialog open={isViewStatusModal} onOpenChange={handleCloseModal}>
-          <DialogContent className="bg-black border-2 rounded-[10px] max-w-4xl" style={{ color: "#10b981", borderColor: "#10b981" }}>
+          <DialogContent className="bg-white border-neutral-200 max-w-4xl z-[1001]">
             <DialogDescription className="sr-only">
               View user status updates
             </DialogDescription>

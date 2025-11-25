@@ -117,11 +117,33 @@ const useMessageInput = (selectedChat, sendMessage, sendFile) => {
       return;
     }
 
-    if (selectedChat) {
-      handleSendMessage(event, newMessage, selectedChat._id);
-      if (event.key === "Enter" && newMessage.trim()) {
+    // Handle Enter key
+    if (event.key === "Enter") {
+      // Shift+Enter: Allow newline (don't prevent default)
+      if (event.shiftKey) {
+        return; // Allow default behavior (newline)
+      }
+
+      // Enter alone: Send message and prevent newline
+      if (selectedChat && newMessage.trim()) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // Send the message
+        handleSendMessage(event, newMessage, selectedChat._id);
+        
+        // Clear the message state
         setNewMessage("");
         resetSent();
+        
+        // Also clear the textarea value directly to ensure it's cleared
+        const textarea = getTextarea();
+        if (textarea) {
+          updateTextareaValue(textarea, "");
+        }
+      } else {
+        // If no message or no chat, prevent default to avoid newline
+        event.preventDefault();
       }
     }
   }, [selectedChat, handleSendMessage, newMessage, resetSent, clearAIMessage, typingHandler, getTextarea, updateTextareaValue]);

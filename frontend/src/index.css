@@ -24,6 +24,15 @@
   animation: slide-in 0.3s ease-out;
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
 @layer base {
   :root {
     --border: 0 0% 89.8%;

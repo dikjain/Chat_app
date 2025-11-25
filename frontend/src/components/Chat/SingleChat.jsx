@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Spinner } from "@/components/ui/spinner";
 import { getSender, getSenderFull } from "@/utils/chatLogics";
 import { useEffect, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
@@ -9,6 +8,7 @@ import ScrollableChat from "./ScrollableChats";
 import UpdateGroupChatModal from "@/components/Modals/UpdateGroupChatModal";
 import MessageInput from "./MessageInput";
 import EmptyChatState from "./EmptyChatState";
+import MessageSkeletons from "./MessageSkeleton";
 import { useAuthStore, useChatStore, useNotificationStore } from "@/stores";
 import { useChat, useMessageNotifications } from "@/hooks";
 import Notification from "@/assets/notification.mp3";
@@ -95,8 +95,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           <div
             className="flex flex-col justify-end bg-stone-100 shadow-[inset_0_1px_3px_0_rgba(0,0,0,0.1)]  w-full h-full rounded-lg overflow-y-hidden border-2">
             {chatLoading ? (
-              <div className="flex justify-center items-center m-auto">
-                <Spinner className="h-10 w-10" style={{ color: "#10b981" }} />
+              <div className="flex flex-col overflow-y-scroll scrollbar-none relative overflow-x-hidden bg-gradient-to-b from-transparent to-transparent" 
+                   style={{
+                     backgroundImage: `repeating-linear-gradient(
+                       45deg,
+                       transparent,
+                       transparent 19px,
+                       rgba(0, 0, 0, 0.025) 19px,
+                       rgba(0, 0, 0, 0.025) 20px
+                     )`
+                   }}>
+                <MessageSkeletons />
               </div>
             ) : (
               <div className="flex flex-col  px-3 overflow-y-scroll scrollbar-none relative overflow-x-hidden bg-gradient-to-b from-transparent to-transparent" 

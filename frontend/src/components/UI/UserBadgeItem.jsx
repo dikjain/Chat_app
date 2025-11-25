@@ -6,8 +6,8 @@ const UserBadgeItem = ({ user, handleFunction, admin }) => {
   return (
     <Badge
       className={cn(
-        "px-2 py-1 rounded-lg m-1 mb-2 cursor-pointer",
-        "bg-purple-600 text-white hover:bg-purple-700",
+        "px-2 py-1 rounded-lg  my-1 cursor-pointer",
+        "bg-gradient-to-t from-green-600 to-green-400 text-white hover:bg-gradient-to-t hover:from-green-700 hover:to-green-500",
         "text-xs"
       )}
       onClick={handleFunction}

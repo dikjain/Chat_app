@@ -69,14 +69,13 @@ const MessageContent = ({ message, isCurrentUser, isGroupChat }) => {
               newWindow.opener = null;
             }
           }}
-          className="h-[150px] w-[150px] bg-gray-100 flex items-end justify-center rounded-[10px] opacity-80 bg-cover bg-center cursor-pointer"
-          style={{ backgroundImage: `url(${message.file})` }}
+          className="size-[100px] bg-gray-100 flex items-end justify-center rounded-[10px] opacity-80 bg-cover bg-center cursor-pointer"
         >
           <img
             src={message.file}
             alt="File thumbnail"
             loading="lazy"
-            className="block h-full w-full object-cover rounded-[10px]"
+            className="block size-full object-cover rounded-[10px]"
           />
         </div>
       )}
