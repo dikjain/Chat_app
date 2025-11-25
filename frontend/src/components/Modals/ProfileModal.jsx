@@ -12,9 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
-import { fetchStatus, updateUser, updateUserLanguage } from "@/api";
 import { useAuthStore } from "@/stores";
 import { useState, useRef, useEffect } from "react";
+import { useUpdateUser, useUpdateUserLanguage } from "@/hooks/mutations/useUserMutations";
 import ViewStatusModal from "./ViewStatusModal";
 import useCloudinaryUpload from "@/hooks/useCloudinaryUpload";
 
@@ -24,16 +24,18 @@ const ProfileModal = ({ children, profileUser }) => {
   const [isViewStatusModal, setIsViewStatusModal] = useState(false);
 
   const user = useAuthStore((state) => state.user);
-  const updateUser = useAuthStore((state) => state.updateUser);
+  const updateUserStore = useAuthStore((state) => state.updateUser);
   if (!profileUser) profileUser = user;
 
   const [isOpen, setIsOpen] = useState(false);
   const { uploadImage, isUploading } = useCloudinaryUpload();
   
+  const updateUserMutation = useUpdateUser();
+  const updateUserLanguageMutation = useUpdateUserLanguage();
+  
   // Language selection state (merged from LanguageModal)
   const languages = ['Hindi', 'English', 'Spanish', 'French', 'German', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Bengali'];
   const [selectedLanguage, setSelectedLanguage] = useState(null);
-  const [isLoadingLanguage, setIsLoadingLanguage] = useState(false);
 
   useEffect(() => {
     if(user.TranslateLanguage){
@@ -48,13 +50,16 @@ const ProfileModal = ({ children, profileUser }) => {
     setisNaam(true);
   };
 
-  const handleNameChange = async () => {
+  const handleNameChange = () => {
     setisNaam(false);
-    const data = await updateUser(user._id, naam, user.pic);
-    if (data) {
-      updateUser({ name: naam });
-      toast.success("Name Updated!");
-    }
+    updateUserMutation.mutate(
+      { userId: user._id, name: naam, pic: user.pic },
+      {
+        onSuccess: () => {
+          updateUserStore({ name: naam });
+        },
+      }
+    );
   };
 
   const fileInputRef = useRef(null);
@@ -65,16 +70,16 @@ const ProfileModal = ({ children, profileUser }) => {
     }
   };
 
-  const handleLanguageChange = async () => {
-    setIsLoadingLanguage(true);
-    try {
-      if(user.TranslateLanguage !== selectedLanguage){
-        await updateUserLanguage(user._id, selectedLanguage);
-        updateUser({ TranslateLanguage: selectedLanguage });
-        toast.success("Language Updated!");
-      }
-    } finally {
-      setIsLoadingLanguage(false);
+  const handleLanguageChange = () => {
+    if(user.TranslateLanguage !== selectedLanguage){
+      updateUserLanguageMutation.mutate(
+        { userId: user._id, language: selectedLanguage },
+        {
+          onSuccess: () => {
+            updateUserStore({ TranslateLanguage: selectedLanguage });
+          },
+        }
+      );
     }
   };
 
@@ -83,9 +88,14 @@ const ProfileModal = ({ children, profileUser }) => {
     if (file) {
       const imgUrl = await uploadImage(file);
       if (imgUrl) {
-        await updateUser(user._id, user.name, imgUrl);
-        updateUser({ pic: imgUrl }); // Zustand handles sessionStorage sync automatically
-        toast.success("Profile Picture Updated!");  
+        updateUserMutation.mutate(
+          { userId: user._id, name: user.name, pic: imgUrl },
+          {
+            onSuccess: () => {
+              updateUserStore({ pic: imgUrl });
+            },
+          }
+        );
       }
     }
     // Reset input
@@ -94,21 +104,12 @@ const ProfileModal = ({ children, profileUser }) => {
     }
   };
 
-  const [status, setStatus] = useState([]);
-
-  const handleFetchStatus = async (id) => {
-    const data = await fetchStatus(id);
-    setStatus(data);
-  };
-
   const handleViewStatus = () => {
-    handleFetchStatus(profileUser._id);
-    setIsViewStatusModal(true); // Set to view status modal
+    setIsViewStatusModal(true);
   };
 
   const handleCloseModal = () => {
-    setIsViewStatusModal(false); // Reset state when closing modal
-    setStatus([])
+    setIsViewStatusModal(false);
     setIsOpen(false);
   };
 
@@ -207,10 +208,10 @@ const ProfileModal = ({ children, profileUser }) => {
                   </select>
                   <Button 
                     onClick={handleLanguageChange}
-                    disabled={isLoadingLanguage || user.TranslateLanguage === selectedLanguage}
+                    disabled={updateUserLanguageMutation.isPending || user.TranslateLanguage === selectedLanguage}
                     className="bg-green-600 hover:bg-green-700 text-white"
                   >
-                    {isLoadingLanguage ? <Spinner className="h-4 w-4" /> : "Update"}
+                    {updateUserLanguageMutation.isPending ? <Spinner className="h-4 w-4" /> : "Update"}
                   </Button>
                 </div>
               </div>
@@ -250,11 +251,6 @@ const ProfileModal = ({ children, profileUser }) => {
             </DialogDescription>
             <ViewStatusModal
               currUser={user}
-              isOpen={isViewStatusModal}
-              onClose={handleCloseModal}
-              setStatus={setStatus}
-              fetchStatus={fetchStatus}
-              status={status.status}
               user={profileUser}
             />
           </DialogContent>

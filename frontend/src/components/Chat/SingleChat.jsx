@@ -11,34 +11,25 @@ import EmptyChatState from "./EmptyChatState";
 import MessageSkeletons from "./MessageSkeleton";
 import { useAuthStore, useChatStore, useNotificationStore } from "@/stores";
 import { useChat, useMessageNotifications } from "@/hooks";
+import { useMessages } from "@/hooks/queries";
 import Notification from "@/assets/notification.mp3";
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const sound = useRef(new Audio(Notification));
-  const lastFetchedChatId = useRef(null);
 
   const user = useAuthStore((state) => state.user);
   const selectedChat = useChatStore((state) => state.selectedChat);
   const setSelectedChat = useChatStore((state) => state.setSelectedChat);
-  const getMessages = useChatStore((state) => state.getMessages);
-  const messages = selectedChat ? getMessages(selectedChat._id) : [];
   const notifications = useNotificationStore((state) => state.notifications);
 
+  const { data: messages = [], isLoading: messagesLoading } = useMessages(selectedChat?._id,{enabled: !!selectedChat?._id,}
+  );
+
   const { 
-    fetchMessages, 
     sendMessage: sendMessageHook, 
     sendFile,
     fetchChats,
-    loading: chatLoading
   } = useChat();
-
-  useEffect(() => {
-    const chatId = selectedChat?._id;
-    if (chatId && chatId !== lastFetchedChatId.current) {
-      lastFetchedChatId.current = chatId;
-      fetchMessages(chatId);
-    }
-  }, [selectedChat?._id, fetchMessages]);
 
   useMessageNotifications({
     selectedChat,
@@ -84,7 +75,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   <div className="flex gap-4 items-center" style={{ color: "#10b981" }}>
                     {selectedChat.chatName.toUpperCase()}
                     <UpdateGroupChatModal
-                      fetchMessages={fetchMessages}
                       fetchAgain={fetchAgain}
                       setFetchAgain={setFetchAgain}
                     />
@@ -94,7 +84,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           </div>
           <div
             className="flex flex-col justify-end bg-stone-100 shadow-[inset_0_1px_3px_0_rgba(0,0,0,0.1)]  w-full h-full rounded-lg overflow-y-hidden border-2">
-            {chatLoading ? (
+            {messagesLoading ? (
               <div className="flex flex-col overflow-y-scroll scrollbar-none relative overflow-x-hidden bg-gradient-to-b from-transparent to-transparent" 
                    style={{
                      backgroundImage: `repeating-linear-gradient(
@@ -108,18 +98,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 <MessageSkeletons />
               </div>
             ) : (
-              <div className="flex flex-col  px-3 overflow-y-scroll scrollbar-none relative overflow-x-hidden bg-gradient-to-b from-transparent to-transparent" 
-                   style={{
-                     backgroundImage: `repeating-linear-gradient(
-                       45deg,
-                       transparent,
-                       transparent 19px,
-                       rgba(0, 0, 0, 0.025) 19px,
-                       rgba(0, 0, 0, 0.025) 20px
-                     )`
-                   }}>
                 <ScrollableChat messages={messages} />
-              </div>
             )}
 
             <MessageInput 

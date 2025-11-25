@@ -8,13 +8,13 @@ import {
 } from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { accessChat } from "@/api";
 import ChatLoading from "@/components/Chat/ChatLoading";
 import UserListItem from "@/components/UI/UserListItem";
 import { useAuthStore, useChatStore } from "@/stores";
 import { FaSearch } from "react-icons/fa";
-import { useUserSearch } from "@/hooks";
+import { useUserSearch } from "@/hooks/queries";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useAccessChat } from "@/hooks/mutations/useChatMutations";
 import ButtonWrapper from "./buttonWrapper";
 import NotificationDropdown from "./NotificationDropdown";
 import ProfileDropdown from "./ProfileDropdown";
@@ -23,28 +23,28 @@ import GoButton from "./GoButton";
 
 function SideDrawer() {
   const [search, setSearch] = useState("");
-  const [loadingChat, setLoadingChat] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   
   const setSelectedChat = useChatStore((state) => state.setSelectedChat);
   const addChat = useChatStore((state) => state.addChat);
   
-  const { searchUsers, searchResult, loading } = useUserSearch();
-
-  const handleSearch = async () => {
-    await searchUsers(search);
-  };
-
-  const handleAccessChat = async (userId) => {
-    try {
-      setLoadingChat(true);
-      const data = await accessChat(userId);
-      addChat(data); // Use Zustand action
-      setSelectedChat(data);
-      setIsOpen(false);
-    } finally {
-      setLoadingChat(false);
+  const debouncedSearch = useDebounce(search, 300);
+  const { data: searchResult = [], isLoading: loading } = useUserSearch(
+    debouncedSearch,
+    {
+      enabled: debouncedSearch.trim().length > 0,
     }
+  );
+  const accessChatMutation = useAccessChat();
+
+  const handleAccessChat = (userId) => {
+    accessChatMutation.mutate(userId, {
+      onSuccess: (data) => {
+        addChat(data);
+        setSelectedChat(data);
+        setIsOpen(false);
+      },
+    });
   };
 
   return (
@@ -78,7 +78,7 @@ function SideDrawer() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <GoButton onClick={handleSearch} />
+              <GoButton onClick={() => {}} />
             </div>
             <div className="flex-1 overflow-y-auto scroll-smooth" style={{ scrollBehavior: 'smooth' }}>
               {loading ? (
@@ -94,7 +94,7 @@ function SideDrawer() {
                   ))}
                 </div>
               )}
-              {loadingChat && (
+              {accessChatMutation.isPending && (
                 <div className="ml-auto flex">
                   <Spinner className="h-6 w-6" style={{ color: "#10b981" }} />
                 </div>

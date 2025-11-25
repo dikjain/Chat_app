@@ -1,26 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCards } from 'swiper/modules';
-import { deleteStatus, fetchStatus as fetchStatusAPI } from "@/api";
+import { useStatus } from "@/hooks/queries";
+import { useDeleteStatus } from "@/hooks/mutations/useStatusMutations";
+import 'swiper/css';
+import 'swiper/css/effect-cards';
 
-function ViewStatusModal({ fetchStatus, user, status, currUser }) {
-  const [currentStatus, setCurrentStatus] = useState([]);
+function ViewStatusModal({ user, currUser }) {
+  const { data: currentStatus = [], isLoading } = useStatus(user?._id, {
+    enabled: !!user?._id,
+  });
+  const deleteStatusMutation = useDeleteStatus();
 
   const handleDeleteStatus = async (id) => {
-    try {
-      await deleteStatus(id);
-      toast.success("Status deleted successfully");
-      if (fetchStatus) {
-        fetchStatus(user._id);
-      } else {
-        const statusData = await fetchStatusAPI(user._id);
-        setCurrentStatus(statusData);
-      }
-    } catch (err) {
-      // Error handling is done by interceptor
-    }
+    deleteStatusMutation.mutate({ statusId: id, userId: user._id });
   };
 
   const calculateTimeRemaining = (expiresAt) => {
@@ -31,64 +25,65 @@ function ViewStatusModal({ fetchStatus, user, status, currUser }) {
     return hours > 0 ? `Expires in ${hours}h ${minutes}m` : `Expires in ${minutes}m`;
   };
 
-  useEffect(() => {
-    if (fetchStatus) {
-      fetchStatus(user._id);
-    } else {
-      fetchStatusAPI(user._id).then(setCurrentStatus);
-    }
-  }, [user._id, fetchStatus]);
-
-  useEffect(() => {
-    setCurrentStatus(status);
-  }, [status]);
-
   return (
     <>
-      <div className="flex-1 flex items-center justify-center mr-0 md:mr-2 mb-2 md:mb-0" id='swipercont'>
-        <div className="w-full">
-          <div className="flex items-center mb-4" style={{ color: "#10b981" }}>
-            <img 
-              src={user.pic} 
-              className="w-9 h-9 rounded-full mr-2 border" 
-              style={{ borderColor: "#10b981" }}
-              alt={user.name}
-            />
-            <h3 className="text-xl font-semibold">
-              {user._id === currUser._id ? "Your Status" : `${user.name}'s Status`}
-            </h3>
-          </div>
-          <div className="flex items-center justify-center rounded-md relative h-[50vh]">
-            {currentStatus && currentStatus.length === 0 && (
-              <p className="absolute text-lg mt-4" style={{ color: "#10b981" }}>No status found</p>
-            )}
-            {currentStatus && <Swiper
+      <div className="flex-1 flex flex-col items-center justify-center w-full py-4" id='swipercont'>
+        <div className="flex items-center w-full"  >
+          <img
+            src={user.pic}
+            className="w-9 h-9 rounded-full mr-2 border border-neutral-300"
+            alt={user.name}
+          />
+          <h3 className="text-xl text-neutral-500 font-semibold">
+            {user._id === currUser._id ? "Your Status" : `${user.name}'s Status`}
+          </h3>
+        </div>
+        <div className="flex items-center justify-center rounded-md relative min-h-[400px]">
+          {isLoading ? (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <p className="text-lg" style={{ color: "#10b981" }}>Loading...</p>
+            </div>
+          ) : currentStatus.length === 0 ? (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <p className="text-lg" style={{ color: "#10b981" }}>No status found</p>
+            </div>
+          ) : (
+            <Swiper
               effect={'cards'}
               grabCursor={true}
               modules={[EffectCards]}
-              className="w-[30vw] max-w-[400px] h-[60vh] min-w-[325px] min-h-[500px] xl:h-[50vh] lg:h-[40vh] md:min-w-[250px] md:min-h-[300px] md:h-[90%] sm:h-[30vh] [&_.swiper-slide]:rounded-[10px] [&_.swiper-slide]:text-base sm:[&_.swiper-slide]:text-sm"
+              className="w-full max-w-[300px] mt-4 h-[60vh] min-w-[280px] min-h-[400px] xl:h-[55vh] lg:h-[50vh] md:min-w-[250px] md:min-h-[350px] md:h-[50vh] sm:h-[45vh] sm:min-h-[300px] [&_.swiper-slide]:rounded-[10px] [&_.swiper-slide]:text-base sm:[&_.swiper-slide]:text-sm"
             >
-              {currentStatus.length > 0 && currentStatus.map((item, index) => (
+              {currentStatus.map((item, index) => (
                 <SwiperSlide key={index}>
-                  <div className="bg-[rgba(0,0,0,0.5)] w-full h-full flex justify-end flex-col relative">
-                    <img className="object-contain max-h-full" src={item.mediaUrl} alt="Status" />
-                    <p className="absolute bottom-0 h-fit max-w-full w-full flex justify-center px-3 bg-black opacity-60 text-white">{item.content}</p>
+                  <div className="bg-[rgba(0,0,0,0.5)]  backdrop-blur-sm w-full h-full relative rounded-[10px] overflow-hidden">
+                    <img
+                      className="w-full h-full object-cover"
+                      src={item.mediaUrl}
+                      alt="Status"
+                    />
+                    {item.content && (
+                      <div className="absolute bottom-0 left-0 right-0 w-full px-3 py-2 bg-black/60 backdrop-blur-sm">
+                        <p className="text-white text-center text-sm break-words">{item.content}</p>
+                      </div>
+                    )}
                     {user._id === currUser._id && (
-                      <Button 
-                        className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white text-sm h-8"
+                      <Button
+                        className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 z-10"
                         onClick={() => handleDeleteStatus(item._id)}
+                        disabled={deleteStatusMutation.isPending}
                       >
                         Delete
                       </Button>
                     )}
-                    <Button className="absolute top-2 left-2 text-white bg-[#10b981] text-sm h-8">
+                    <Button className="absolute top-2 left-2 text-white bg-[#10b981] hover:bg-[#059669] text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 z-10">
                       {calculateTimeRemaining(item.expiresAt)}
                     </Button>
                   </div>
                 </SwiperSlide>
               ))}
-            </Swiper>}
-          </div>
+            </Swiper>
+          )}
         </div>
       </div>
     </>

@@ -299,7 +299,7 @@ const Step3ChatDemo = () => {
   );
 
   return (
-    <div ref={containerRef} className="flex flex-col h-full px-2 py-1 relative">
+    <div ref={containerRef} className="flex   flex-col  px-2 py-1 relative">
       {/* Sent Message Display */}
       <AnimatePresence>
         {sentMessage && (
@@ -322,7 +322,7 @@ const Step3ChatDemo = () => {
 
       <div 
         style={{ boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.2)" }} 
-        className="flex flex-col mx-6 items-center mb-1 relative border rounded-lg overflow-hidden mt-auto"
+        className="flex flex-col mx-6 items-center mb-1 relative border rounded-lg overflow-hidden h-full bg-gr-5"
       >
         {/* React Chat Elements Input */}
         <div className="w-full bg-white">

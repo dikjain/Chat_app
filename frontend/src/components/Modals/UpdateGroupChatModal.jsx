@@ -9,61 +9,57 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
-import { searchUsers, renameGroupChat, addUserToGroup, removeUserFromGroup } from "@/api";
 import { useState } from "react";
 import { useAuthStore, useChatStore } from "@/stores";
+import { useUserSearch } from "@/hooks/queries";
+import { useDebounce } from "@/hooks/useDebounce";
+import { 
+  useRenameGroupChat, 
+  useAddUserToGroup, 
+  useRemoveUserFromGroup 
+} from "@/hooks/mutations/useChatMutations";
 import UserBadgeItem from "@/components/UI/UserBadgeItem";
 import UserListItem from "@/components/UI/UserListItem";
 
-const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
+const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [groupChatName, setGroupChatName] = useState();
   const [search, setSearch] = useState("");
-  const [searchResult, setSearchResult] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [renameloading, setRenameLoading] = useState(false);
+
+  const debouncedSearch = useDebounce(search, 300);
+  const { data: searchResult = [], isLoading: searchLoading } = useUserSearch(
+    debouncedSearch,
+    {
+      enabled: debouncedSearch.trim().length > 0,
+    }
+  );
+
+  const renameGroupChatMutation = useRenameGroupChat();
+  const addUserToGroupMutation = useAddUserToGroup();
+  const removeUserFromGroupMutation = useRemoveUserFromGroup();
 
   const user = useAuthStore((state) => state.user);
   const selectedChat = useChatStore((state) => state.selectedChat);
   const setSelectedChat = useChatStore((state) => state.setSelectedChat);
   const updateChat = useChatStore((state) => state.updateChat);
 
-  const handleSearch = async (query) => {
-    setSearch(query);
-    if (!query) {
-      setSearchResult([]);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const data = await searchUsers(query);
-      setSearchResult(data);
-    } catch (error) {
-      // Error handling is done by interceptor
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRename = async () => {
+  const handleRename = () => {
     if (!groupChatName) return;
 
-    try {
-      setRenameLoading(true);
-      const data = await renameGroupChat(selectedChat._id, groupChatName);
-      updateChat(selectedChat._id, data);
-      setSelectedChat(data);
-      setFetchAgain(!fetchAgain);
-      setRenameLoading(false);
-    } catch (error) {
-      // Error handling is done by interceptor
-      setRenameLoading(false);
-    }
-    setGroupChatName("");
+    renameGroupChatMutation.mutate(
+      { chatId: selectedChat._id, chatName: groupChatName },
+      {
+        onSuccess: (data) => {
+          updateChat(selectedChat._id, data);
+          setSelectedChat(data);
+          setFetchAgain(!fetchAgain);
+          setGroupChatName("");
+        },
+      }
+    );
   };
 
-  const handleAddUser = async (user1) => {
+  const handleAddUser = (user1) => {
     if (selectedChat.users.find((u) => u._id === user1._id)) {
       toast.error("User Already in group!");
       return;
@@ -74,38 +70,35 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       return;
     }
 
-    try {
-      setLoading(true);
-      const data = await addUserToGroup(selectedChat._id, user1._id);
-      updateChat(selectedChat._id, data);
-      setSelectedChat(data);
-      setFetchAgain(!fetchAgain);
-      setLoading(false);
-    } catch (error) {
-      // Error handling is done by interceptor
-      setLoading(false);
-    }
-    setGroupChatName("");
+    addUserToGroupMutation.mutate(
+      { chatId: selectedChat._id, userId: user1._id },
+      {
+        onSuccess: (data) => {
+          updateChat(selectedChat._id, data);
+          setSelectedChat(data);
+          setFetchAgain(!fetchAgain);
+          setGroupChatName("");
+        },
+      }
+    );
   };
 
-  const handleRemove = async (user1) => {
+  const handleRemove = (user1) => {
     if (selectedChat.groupAdmin._id !== user._id && user1._id !== user._id) {
       toast.error("Only admins can remove someone!");
       return;
     }
 
-    try {
-      setLoading(true);
-      const data = await removeUserFromGroup(selectedChat._id, user1._id);
-      user1._id === user._id ? setSelectedChat() : setSelectedChat(data);
-      setFetchAgain(!fetchAgain);
-      fetchMessages();
-      setLoading(false);
-    } catch (error) {
-      // Error handling is done by interceptor
-      setLoading(false);
-    }
-    setGroupChatName("");
+    removeUserFromGroupMutation.mutate(
+      { chatId: selectedChat._id, userId: user1._id },
+      {
+        onSuccess: (data) => {
+          user1._id === user._id ? setSelectedChat(null) : setSelectedChat(data);
+          setFetchAgain(!fetchAgain);
+          setGroupChatName("");
+        },
+      }
+    );
   };
 
   return (
@@ -149,10 +142,10 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
               />
               <button
                 onClick={handleRename}
-                disabled={!groupChatName?.trim() || renameloading}
+                disabled={!groupChatName?.trim() || renameGroupChatMutation.isPending}
                 className="px-4 py-2 bg-black text-white rounded-md text-sm font-medium transition-colors hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed outline-none focus:outline-none focus-visible:outline-none focus:ring-0 whitespace-nowrap"
               >
-                {renameloading ? <Spinner className="mr-2 h-4 w-4 inline" /> : null}
+                {renameGroupChatMutation.isPending ? <Spinner className="mr-2 h-4 w-4 inline" /> : null}
                 Update
               </button>
             </div>
@@ -160,12 +153,12 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
             <Input
               placeholder="Add User to group"
               value={search}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
               className="bg-white border-stone-200 placeholder:text-stone-400 text-neutral-800 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:border-stone-300"
             />
 
             <div className="max-h-48 overflow-y-auto">
-              {loading ? (
+              {searchLoading || addUserToGroupMutation.isPending ? (
                 <div className="flex justify-center py-4 text-stone-500 text-sm">
                   Loading...
                 </div>
@@ -186,9 +179,10 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
           <DialogFooter>
             <button
               onClick={() => handleRemove(user)}
+              disabled={removeUserFromGroupMutation.isPending}
               className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium transition-colors hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed outline-none focus:outline-none focus-visible:outline-none focus:ring-0"
             >
-              Leave Group
+              {removeUserFromGroupMutation.isPending ? 'Leaving...' : 'Leave Group'}
             </button>
           </DialogFooter>
         </DialogContent>

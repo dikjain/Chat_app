@@ -1,23 +1,25 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import ChatLoading from "./ChatLoading";
 import ChatListItem from "./ChatListItem";
 import MyChatsHeader from "./MyChatsHeader";
 import { useAuthStore, useChatStore } from "@/stores";
-import { useSocket, useChat } from "@/hooks";
+import { useSocket } from "@/hooks";
+import { useChats } from "@/hooks/queries";
 
-
-
-const MyChats = ({ fetchAgain }) => {
+const MyChats = () => {
   const { socket, on, off, isConnected, emitUserDisconnected, emitUserReconnected, reconnect } = useSocket();
-  const { fetchChats, chats } = useChat();
+  const { data: chats = [], isLoading } = useChats();
   
-  console.log(chats);
   const [loggedUser, setLoggedUser] = useState();
   const [onlinepeople, setonlinepeople] = useState([]);
 
   const user = useAuthStore((state) => state.user);
   const selectedChat = useChatStore((state) => state.selectedChat);
   const setSelectedChat = useChatStore((state) => state.setSelectedChat);
+
+  useEffect(() => {
+    setLoggedUser(user);
+  }, [user]);
 
   useEffect(() => {
     if (!socket || !isConnected) return;
@@ -51,20 +53,6 @@ const MyChats = ({ fetchAgain }) => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [socket, isConnected, on, off, emitUserDisconnected, emitUserReconnected, reconnect]);
-  
-
-  
-  const lastFetchRef = useRef(null);
-  
-  useEffect(() => {
-    setLoggedUser(user);
-    
-    const fetchKey = `${fetchAgain}-${user?._id}`;
-    if (lastFetchRef.current !== fetchKey) {
-      lastFetchRef.current = fetchKey;
-      fetchChats();
-    }
-  }, [fetchAgain, user?._id, fetchChats]);
 
 
 
@@ -78,20 +66,20 @@ const MyChats = ({ fetchAgain }) => {
       <div
         className="flex pb-32  relative flex-col p-2 gap-2  bg-stone-100 w-full h-full rounded-md overflow-y-scroll border-2 shadow-inner"
       >
-        {chats ? (
-            chats.map((chat) => (
-              <ChatListItem
-                key={chat._id}
-                chat={chat}
-                loggedUser={loggedUser}
-                user={user}
-                selectedChat={selectedChat}
-                onlinepeople={onlinepeople}
-                setSelectedChat={setSelectedChat}
-              />
-            ))
-        ) : (
+        {isLoading ? (
           <ChatLoading />
+        ) : (
+          chats.map((chat) => (
+            <ChatListItem
+              key={chat._id}
+              chat={chat}
+              loggedUser={loggedUser}
+              user={user}
+              selectedChat={selectedChat}
+              onlinepeople={onlinepeople}
+              setSelectedChat={setSelectedChat}
+            />
+          ))
         )}
       </div>
     </div>

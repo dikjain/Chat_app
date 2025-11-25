@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuthStore } from '@/stores';
-import { updateUserLanguage } from "@/api";
+import { useUpdateUserLanguage } from "@/hooks/mutations/useUserMutations";
 
 function LanguageModal({children}) {
   const user = useAuthStore((state) => state.user);
@@ -18,7 +18,8 @@ function LanguageModal({children}) {
   const [isOpen, setIsOpen] = useState(false);
   const languages = ['Hindi', 'English', 'Spanish', 'French', 'German', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Bengali'];
   const [selectedLanguage, setSelectedLanguage] = useState(null);
-  const [isLoading, setIsLoading] = useState(false); // Added state for loading
+
+  const updateUserLanguageMutation = useUpdateUserLanguage();
 
   useEffect(() => {
     if(user.TranslateLanguage){
@@ -28,16 +29,17 @@ function LanguageModal({children}) {
     }
   }, [user.TranslateLanguage]);
 
-  const handleLanguageChange = async () => {
-    setIsLoading(true);
-    try {
-      if(user.TranslateLanguage !== selectedLanguage){
-        await updateUserLanguage(user._id, selectedLanguage);
-        updateUser({ TranslateLanguage: selectedLanguage }); // Zustand handles sessionStorage sync automatically
-        setIsOpen(false);
-      }
-    }finally {
-      setIsLoading(false);
+  const handleLanguageChange = () => {
+    if(user.TranslateLanguage !== selectedLanguage){
+      updateUserLanguageMutation.mutate(
+        { userId: user._id, language: selectedLanguage },
+        {
+          onSuccess: () => {
+            updateUser({ TranslateLanguage: selectedLanguage });
+            setIsOpen(false);
+          },
+        }
+      );
     }
   }
 
@@ -63,16 +65,16 @@ function LanguageModal({children}) {
               <option key={language} value={language}>{language}</option>
             ))}
           </select>
-          {isLoading && <Spinner className="mt-2" />}
+          {updateUserLanguageMutation.isPending && <Spinner className="mt-2" />}
         </div>
         <DialogFooter className="flex justify-between">
           <Button 
             className="mr-3" 
             style={{ backgroundColor: "#10b981", color: "white" }}
             onClick={handleLanguageChange}
-            disabled={isLoading}
+            disabled={updateUserLanguageMutation.isPending}
           >
-            {isLoading ? <Spinner className="mr-2 h-4 w-4" /> : null}
+            {updateUserLanguageMutation.isPending ? <Spinner className="mr-2 h-4 w-4" /> : null}
             Submit
           </Button>
           <Button className="mr-3 bg-red-600 hover:bg-red-700 text-white" onClick={() => setIsOpen(false)}>

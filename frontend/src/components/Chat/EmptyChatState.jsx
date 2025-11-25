@@ -40,7 +40,7 @@ const EmptyChatState = () => {
         >
           <div className={`w-full z-0 h-full scale-75 ease-out group-hover:scale-110 transition-all duration-300 opacity-0 group-hover:opacity-80 translate-y-1/2 absolute bottom-0 left-1/2 ${step.gradient} blur-[64px]`}></div>
           <div className="mb-3 flex-shrink-0 relative z-10">
-            <p className="text-lg font-saira text-neutral-600">
+            <p className="text-lg font-saira font-medium text-neutral-600">
               {step.title}
             </p>
             <p className="text-sm text-neutral-400 ">

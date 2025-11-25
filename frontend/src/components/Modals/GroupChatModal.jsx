@@ -8,9 +8,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { searchUsers, createGroupChat } from "@/api";
 import { useState } from "react";
 import { useChatStore } from "@/stores";
+import { useUserSearch } from "@/hooks/queries";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useCreateGroupChat } from "@/hooks/mutations/useChatMutations";
 import UserBadgeItem from "@/components/UI/UserBadgeItem";
 import UserListItem from "@/components/UI/UserListItem";
 
@@ -19,9 +21,16 @@ const GroupChatModal = ({ children }) => {
   const [groupChatName, setGroupChatName] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [search, setSearch] = useState("");
-  const [searchResult, setSearchResult] = useState([]);
-  const [loading, setLoading] = useState(false);
+  
+  const debouncedSearch = useDebounce(search, 300);
+  const { data: searchResult = [], isLoading: loading } = useUserSearch(
+    debouncedSearch,
+    {
+      enabled: debouncedSearch.trim().length > 0,
+    }
+  );
 
+  const createGroupChatMutation = useCreateGroupChat();
   const addChat = useChatStore((state) => state.addChat);
 
   const handleGroup = (userToAdd) => {
@@ -32,46 +41,28 @@ const GroupChatModal = ({ children }) => {
     setSelectedUsers([...selectedUsers, userToAdd]);
   };
 
-  const handleSearch = async (query) => {
-    setSearch(query);
-    if (!query) {
-      setSearchResult([]);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const data = await searchUsers(query);
-      setSearchResult(data);
-    } catch (error) {
-      // Error handling is done by interceptor
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDelete = (delUser) => {
     setSelectedUsers(selectedUsers.filter((sel) => sel._id !== delUser._id));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!groupChatName.trim() || selectedUsers.length === 0) {
       toast.warning("Please fill all the fields");
       return;
     }
 
-    try {
-      const data = await createGroupChat(groupChatName, selectedUsers);
-      addChat(data);
-      setIsOpen(false);
-      setGroupChatName("");
-      setSelectedUsers([]);
-      setSearch("");
-      setSearchResult([]);
-      toast.success("New Group Chat Created!");
-    } catch (error) {
-      // Error handling is done by interceptor
-    }
+    createGroupChatMutation.mutate(
+      { name: groupChatName, users: selectedUsers },
+      {
+        onSuccess: (data) => {
+          addChat(data);
+          setIsOpen(false);
+          setGroupChatName("");
+          setSelectedUsers([]);
+          setSearch("");
+        },
+      }
+    );
   };
 
   return (
@@ -81,7 +72,7 @@ const GroupChatModal = ({ children }) => {
       </DialogTrigger>
       <DialogContent className="bg-white border-stone-200 max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-xl font-medium text-center text-neutral-800">
+          <DialogTitle className="text-xl font-saira font-semibold text-neutral-600">
             Create Group Chat
           </DialogTitle>
         </DialogHeader>
@@ -97,7 +88,7 @@ const GroupChatModal = ({ children }) => {
           <Input
             placeholder="Search users to add..."
             value={search}
-            onChange={(e) => handleSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             className="bg-white border-stone-200 placeholder:text-stone-400 text-neutral-800 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:border-stone-300"
           />
 
@@ -136,9 +127,9 @@ const GroupChatModal = ({ children }) => {
           <button 
             onClick={handleSubmit} 
             className="px-4 py-2 bg-black text-white rounded-md text-sm font-medium transition-colors hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed outline-none focus:outline-none focus-visible:outline-none focus:ring-0"
-            disabled={!groupChatName.trim() || selectedUsers.length === 0 || loading}
+            disabled={!groupChatName.trim() || selectedUsers.length === 0 || loading || createGroupChatMutation.isPending}
           >
-            Create Chat
+            {createGroupChatMutation.isPending ? 'Creating...' : 'Create Chat'}
           </button>
         </DialogFooter>
       </DialogContent>

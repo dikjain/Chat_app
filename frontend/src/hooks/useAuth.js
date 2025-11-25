@@ -1,14 +1,11 @@
-import { useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback } from "react";
 import { useAuthStore } from "@/stores";
-import { login, signup } from "@/api/auth";
+import { useLogin, useSignup } from "./mutations/useAuthMutations";
 
 const useAuth = () => {
+  const loginMutation = useLogin();
+  const signupMutation = useSignup();
   const setUser = useAuthStore((state) => state.setUser);
-  const navigate = useNavigate();
-  
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const storeSession = useCallback((userData) => {
     try {
@@ -48,13 +45,9 @@ const useAuth = () => {
   }, []);
 
   const handleLogin = useCallback(async (email, password, toast) => {
-    setLoading(true);
-    setError(null);
-
     // Validation
     if (!email || !password) {
       const errorMsg = "Please Fill all the Fields";
-      setError(errorMsg);
       toast({
         title: errorMsg,
         status: "warning",
@@ -62,47 +55,11 @@ const useAuth = () => {
         isClosable: true,
         position: "bottom",
       });
-      setLoading(false);
-      throw new Error(errorMsg);
+      return;
     }
 
-    try {
-      const data = await login(email, password);
-      
-      // Store session
-      storeSession(data);
-      
-      // Show success message
-      toast({
-        title: "Login Successful",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-
-      // Navigate to chats
-      navigate("/chats");
-      
-      return data;
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || "Unknown error occurred";
-      setError(errorMessage);
-      
-      toast({
-        title: "Error Occurred!",
-        description: errorMessage,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate, storeSession]);
+    loginMutation.mutate({ email, password });
+  }, [loginMutation]);
 
   const validateSignup = useCallback((formData, toast) => {
     const { name, email, password, confirmPassword } = formData;
@@ -156,53 +113,14 @@ const useAuth = () => {
   }, [validateEmail]);
 
   const handleSignup = useCallback(async (formData, toast) => {
-    setLoading(true);
-    setError(null);
-
     // Validate form data
     if (!validateSignup(formData, toast)) {
-      setLoading(false);
-      throw new Error("Validation failed");
+      return;
     }
 
-    try {
-      const { name, email, password, pic } = formData;
-      const data = await signup(name, email, password, pic || "");
-      
-      // Store session
-      storeSession(data);
-      
-      // Show success message
-      toast({
-        title: "Registration Successful",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-
-      // Navigate to chats
-      navigate("/chats");
-      
-      return data;
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || "Unknown error occurred";
-      setError(errorMessage);
-      
-      toast({
-        title: "Error Occurred!",
-        description: errorMessage,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate, storeSession, validateSignup]);
+    const { name, email, password, pic } = formData;
+    signupMutation.mutate({ name, email, password, pic: pic || "" });
+  }, [signupMutation, validateSignup]);
 
   return {
     // Actions
@@ -212,9 +130,9 @@ const useAuth = () => {
     getSession,
     clearSession,
     
-    // State
-    loading,
-    error,
+    // State from mutations
+    loading: loginMutation.isPending || signupMutation.isPending,
+    error: loginMutation.error || signupMutation.error,
     
     // Utilities
     validateEmail,

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { config as appConfig } from "@/constants/config";
+import { uploadImage as uploadImageAPI } from "@/api/cloudinary";
 import { toast } from "sonner";
 
 const useCloudinaryUpload = () => {
@@ -21,32 +21,14 @@ const useCloudinaryUpload = () => {
     setImageUrl(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", appConfig.CLOUDINARY_UPLOAD_PRESET);
-      formData.append("cloud_name", appConfig.CLOUDINARY_CLOUD_NAME);
-
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${appConfig.CLOUDINARY_CLOUD_NAME}/image/upload`,
-        {
-          method: "post",
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
-
-      const data = await response.json();
-      const url = data.url.toString();
+      const url = await uploadImageAPI(file);
       setImageUrl(url);
       setIsUploading(false);
       return url;
     } catch (error) {
       console.error("Cloudinary upload error:", error);
       toast.error("Image Upload Failed", {
-        description: "Please try again later",
+        description: error.message || "Please try again later",
       });
       setIsUploading(false);
       return null;

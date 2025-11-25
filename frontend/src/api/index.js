@@ -21,4 +21,8 @@ export {
 
 export { createStatus, fetchStatus, deleteStatus } from "./status";
 
+export { generateContent, generateContentGroq, generateContentGemini } from "./ai";
+
+export { uploadImage } from "./cloudinary";
+
 export { default as apiClient } from "./client";
