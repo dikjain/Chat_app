@@ -10,11 +10,36 @@ import {
 const useMessageInput = (selectedChat, sendMessage, sendFile) => {
   const [newMessage, setNewMessage] = useState("");
   const inputRef = useRef(null);
+  const aiMessageRef = useRef("");
+  
+  // Helper to find textarea element
+  const getTextarea = useCallback(() => {
+    if (!inputRef.current) return null;
+    return inputRef.current.tagName === 'TEXTAREA' || inputRef.current.tagName === 'INPUT'
+      ? inputRef.current
+      : inputRef.current.querySelector('textarea') || inputRef.current.querySelector('input');
+  }, []);
+
+  // Helper to update textarea value using native setter
+  const updateTextareaValue = useCallback((textarea, value) => {
+    if (!textarea || textarea.value === value) return;
+    const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value")?.set ||
+                   Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set;
+    if (setter) {
+      setter.call(textarea, value);
+      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  }, []);
   
   // AI Assistant
   const { handleTyping, aiMessage, clearMessage: clearAIMessage } = useAIAssistant({ 
-    debounceMs: 500 
+    debounceMs: 250 
   });
+  
+  // Keep ref in sync with aiMessage
+  useEffect(() => {
+    aiMessageRef.current = aiMessage || "";
+  }, [aiMessage]);
   
   // Speech Recognition
   const { 
@@ -64,6 +89,34 @@ const useMessageInput = (selectedChat, sendMessage, sendFile) => {
   
   // Send message handler
   const onKeyDown = useCallback((event) => {
+    // Handle Tab key to accept AI suggestion
+    if (event.key === "Tab") {
+      const currentAIMessage = aiMessageRef.current;
+      if (currentAIMessage && currentAIMessage.trim()) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        const textarea = getTextarea();
+        if (textarea) {
+          updateTextareaValue(textarea, currentAIMessage);
+          typingHandler({ target: { value: currentAIMessage } });
+          
+          setTimeout(() => {
+            textarea.focus();
+            const length = currentAIMessage.length;
+            if (textarea.setSelectionRange) {
+              textarea.setSelectionRange(length, length);
+            }
+          }, 10);
+        } else {
+          setNewMessage(currentAIMessage);
+        }
+        
+        clearAIMessage();
+      }
+      return;
+    }
+
     if (selectedChat) {
       handleSendMessage(event, newMessage, selectedChat._id);
       if (event.key === "Enter" && newMessage.trim()) {
@@ -71,7 +124,7 @@ const useMessageInput = (selectedChat, sendMessage, sendFile) => {
         resetSent();
       }
     }
-  }, [selectedChat, handleSendMessage, newMessage, resetSent]);
+  }, [selectedChat, handleSendMessage, newMessage, resetSent, clearAIMessage, typingHandler, getTextarea, updateTextareaValue]);
   
   // Handle AI suggestion click
   const handleAISuggestionClick = useCallback(() => {
@@ -103,6 +156,10 @@ const useMessageInput = (selectedChat, sendMessage, sendFile) => {
     // Refs
     inputRef,
     fileInputRef,
+    
+    // Helpers
+    getTextarea,
+    updateTextareaValue,
     
     // Handlers
     typingHandler,

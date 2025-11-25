@@ -74,7 +74,7 @@ const MyChats = ({ fetchAgain }) => {
     className={`${selectedChat ? "hidden" : "flex"} ring-neutral-300 relative ring-2 md:flex h-full flex-col items-center p-3 bg-white rounded-lg border overflow-hidden`}
     >
       <MyChatsHeader />
-      <div className="bottom-0 w-full h-full absolute bg-white z-[400] pointer-events-none" style={{ mask: 'linear-gradient(to top,white, transparent, transparent, transparent, transparent)' }} />
+      <div className="bottom-0 w-full h-full absolute bg-white z-[40] pointer-events-none" style={{ mask: 'linear-gradient(to top,white, transparent, transparent, transparent, transparent)' }} />
       <div
         className="flex pb-32  relative flex-col p-2 gap-2  bg-stone-100 w-full h-full rounded-md overflow-y-scroll border-2 shadow-inner"
       >

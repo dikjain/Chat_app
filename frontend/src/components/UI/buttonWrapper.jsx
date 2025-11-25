@@ -14,7 +14,7 @@ const ButtonWrapper = React.forwardRef(({ children, className, onClick, scaleDow
               whileTap={{ scale: scaleDown }}
               transition={{ duration: 0.3 }}
               onClick={onClick}
-              className="flex items-center justify-center w-full h-full"
+              className="flex items-center justify-center size-full"
             >
               {children}
             </motion.span>

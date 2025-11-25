@@ -8,16 +8,15 @@ import ProfileModal from "@/components/Modals/ProfileModal";
 import ScrollableChat from "./ScrollableChats";
 import UpdateGroupChatModal from "@/components/Modals/UpdateGroupChatModal";
 import MessageInput from "./MessageInput";
+import EmptyChatState from "./EmptyChatState";
 import { useAuthStore, useChatStore, useNotificationStore } from "@/stores";
 import { useChat, useMessageNotifications } from "@/hooks";
 import Notification from "@/assets/notification.mp3";
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
-  // Store references
   const sound = useRef(new Audio(Notification));
   const lastFetchedChatId = useRef(null);
 
-  // Store state
   const user = useAuthStore((state) => state.user);
   const selectedChat = useChatStore((state) => state.selectedChat);
   const setSelectedChat = useChatStore((state) => state.setSelectedChat);
@@ -25,7 +24,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const messages = selectedChat ? getMessages(selectedChat._id) : [];
   const notifications = useNotificationStore((state) => state.notifications);
 
-  // Core hooks
   const { 
     fetchMessages, 
     sendMessage: sendMessageHook, 
@@ -34,7 +32,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     loading: chatLoading
   } = useChat();
 
-  // Fetch messages when chat changes
   useEffect(() => {
     const chatId = selectedChat?._id;
     if (chatId && chatId !== lastFetchedChatId.current) {
@@ -43,7 +40,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   }, [selectedChat?._id, fetchMessages]);
 
-  // Message notifications hook
   useMessageNotifications({
     selectedChat,
     notifications,
@@ -51,8 +47,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     setFetchAgain,
     sound: sound.current,
   });
-
-
 
   return (
     <>
@@ -73,7 +67,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             {messages &&
               (!selectedChat.isGroupChat ? (
                 <>
-                  <div className="flex gap-4 items-center" style={{ color: "#10b981" }}>
+                  <div className="flex gap-4 items-center " >
                     {getSender(user, selectedChat.users).length > 7 && window.innerWidth < 550 ? (
                       <Avatar className="h-8 w-8 border" style={{ borderColor: "#10b981" }}>
                         <AvatarImage src={getSenderFull(user, selectedChat.users).pic} alt={getSender(user, selectedChat.users)} />
@@ -105,7 +99,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 <Spinner className="h-10 w-10" style={{ color: "#10b981" }} />
               </div>
             ) : (
-              <div className="flex flex-col max-h-[67vh] px-3 overflow-y-scroll scrollbar-none relative overflow-x-hidden ">
+              <div className="flex flex-col  px-3 overflow-y-scroll scrollbar-none relative overflow-x-hidden bg-gradient-to-b from-transparent to-transparent" 
+                   style={{
+                     backgroundImage: `repeating-linear-gradient(
+                       45deg,
+                       transparent,
+                       transparent 19px,
+                       rgba(0, 0, 0, 0.025) 19px,
+                       rgba(0, 0, 0, 0.025) 20px
+                     )`
+                   }}>
                 <ScrollableChat messages={messages} />
               </div>
             )}
@@ -118,12 +121,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           </div>
         </>
       ) : (
-        // to get socket.io on same page
-        <div className="flex items-center justify-center h-full">
-          <p className="text-3xl pb-3 font-['Atomic_Age']" style={{ color: "#10b981" }}>
-            Click on a user to start chatting
-          </p>
-        </div>
+        <EmptyChatState />
       )}
     </>
   );

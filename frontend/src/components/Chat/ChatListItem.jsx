@@ -20,7 +20,7 @@ const ChatListItem = ({ chat, loggedUser, user, selectedChat, onlinepeople, setS
                 key={index}
                 src={pic}
                 alt=""
-                className={`rounded-full object-cover border border-white ${userPics.length > 1 ? 'w-8 h-8' : 'w-10 h-10'}`}
+                className={`rounded-full shadow-[0px_1px_2px_0px_rgba(0,0,0,0.3)] object-cover border border-white ${userPics.length > 1 ? 'w-8 h-8' : 'w-10 h-10'}`}
                 style={userPics.length > 1 && index > 0 ? { marginLeft: '-8px' } : {}}
                 onError={(e) => {
                   e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png';
