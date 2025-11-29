@@ -1,13 +1,45 @@
 const MessageTime = ({ createdAt, formattedTime, isCurrentUser }) => {
+  const getRelativeTime = (timestamp) => {
+    if (!timestamp) return "";
+    
+    const now = new Date();
+    const messageTime = new Date(timestamp);
+    const diffInSeconds = Math.floor((now - messageTime) / 1000);
+    
+    if (diffInSeconds < 60) {
+      return "just now";
+    }
+    
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes} ${diffInMinutes === 1 ? 'min' : 'mins'} ago`;
+    }
+    
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+      return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`;
+    }
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) {
+      return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`;
+    }
+    
+    const diffInWeeks = Math.floor(diffInDays / 7);
+    return `${diffInWeeks} ${diffInWeeks === 1 ? 'week' : 'weeks'} ago`;
+  };
+
+  const relativeTime = getRelativeTime(createdAt);
+
   return (
     <span
-      className={`text-[8px] p-[5px] whitespace-nowrap min-w-fit w-fit -bottom-5 opacity-45 md:text-[8px] md:p-[2px] md:opacity-52 sm:text-[6px] sm:p-[2px] sm:-bottom-[10px] sm:opacity-65 ${
+      className={`text-[9px] md:text-[10px] whitespace-nowrap opacity-60 text-neutral-500 ${
         isCurrentUser 
-          ? "right-0 rounded-tl-[99px] rounded-tr-none rounded-br-[99px] rounded-bl-[99px]" 
-          : "left-1/2 -translate-x-1/2 rounded-tl-none rounded-tr-[99px] rounded-br-[99px] rounded-bl-[99px]"
-      } absolute z-[100] bg-[#10b981] text-white font-['Atomic_Age']`}
+          ? "self-end" 
+          : "self-start"
+      }`}
     >
-      {formattedTime}
+      {relativeTime}
     </span>
   );
 };

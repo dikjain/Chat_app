@@ -31,7 +31,7 @@ const MessageContent = ({ message, isCurrentUser, isGroupChat }) => {
   return (
     <>
       {isGroupChat && !isCurrentUser && (
-        <span className="font-bold" style={{ color: "#10b981" }}>
+        <span className="font-bold text-xs md:text-sm" style={{ color: "#10b981" }}>
           {message.sender?.name + " : "}
         </span>
       )}
@@ -49,17 +49,17 @@ const MessageContent = ({ message, isCurrentUser, isGroupChat }) => {
                     href={message.content} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="underline text-blue-500 font-sans"
+                    className="underline text-blue-500 font-sans text-xs md:text-sm"
                   >
                     {message.content}
                   </a>
-                  <p className="text-xs text-gray-500">Unable to parse coordinates from URL</p>
+                  <p className="text-[10px] md:text-xs text-gray-500">Unable to parse coordinates from URL</p>
                 </div>
               );
             })()}
           </div>
         ) : (
-          message.content
+          <span className="text-xs md:text-sm">{message.content}</span>
         )
       ) : (
         <div 
@@ -81,7 +81,7 @@ const MessageContent = ({ message, isCurrentUser, isGroupChat }) => {
       )}
       {message.file && (
         <p 
-          className="text-[10px] max-w-[150px] text-center font-semibold" 
+          className="text-[8px] md:text-[10px] max-w-[150px] text-center font-semibold" 
           style={{ color: isCurrentUser ? "#10b981" : "#fff" }}
         >
           {message.file.split("/").pop()}

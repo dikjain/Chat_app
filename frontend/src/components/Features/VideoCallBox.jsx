@@ -1,5 +1,5 @@
-
 import PixelBlast from "@/components/Authentication/PixelBlast";
+import FeatureHeader from "./FeatureHeader";
 
 const VideoCallIcon = () => (
   <svg width="18" height="18" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -80,7 +80,7 @@ const VideoPreview = ({translateX, translateY, translateZ,rotateY,rotateX,scale}
 const VideoCallBox = ({ className = "" }) => {
   return (
     <div
-      className={`bg-neutral-50 border relative border-neutral-300 gap-6 rounded-lg px-4 py-6 ${className}`}
+      className={`bg-neutral-50 border relative border-neutral-300 gap-6 rounded-lg px-4 py-4 ${className}`}
       style={{ perspective: '1000px' }}
     >
       {/* <div className="absolute top-0 left-0 w-full h-full  rounded-lg">
@@ -95,10 +95,10 @@ const VideoCallBox = ({ className = "" }) => {
         edgeFade={0.25}
         transparent/>
       </div> */}
-      <div className="flex items-center gap-2">
-        <VideoCallIcon />
-        <h1 className="text-base font-medium text-neutral-700">Video Call</h1>
-      </div>
+      <FeatureHeader 
+        title="Video Call" 
+        description="Face-to-face conversations anywhere" 
+      />
 
       <>
         <VideoPreview translateX={'-24%'} translateY={'10%'} translateZ={'-10px'} rotateY={'-45deg'} rotateX={'10deg'} scale={0.7}/>

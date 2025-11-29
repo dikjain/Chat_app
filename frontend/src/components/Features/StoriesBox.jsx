@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import logo from "@/assets/logo.png";
+import FeatureHeader from "./FeatureHeader";
 
 
 const StoriesIcon = () => (
@@ -23,14 +24,14 @@ const StoriesBox = ({ className = "" }) => {
 
   return (
     <div
-      className={`bg-neutral-50 border relative group border-neutral-300 overflow-hidden gap-6 rounded-lg px-4 py-6 ${className}`}
+      className={`bg-neutral-50 border relative group border-neutral-300 overflow-hidden gap-6 rounded-lg px-4 py-4 ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex items-center gap-2">
-        <StoriesIcon />
-        <h1 className="text-base font-medium text-neutral-700">Stories</h1>
-      </div>
+      <FeatureHeader 
+        title="Stories" 
+        description="Share moments that disappear in 24 hours" 
+      />
 
       {/* Add your custom stories preview content here */}
       <div className="h-64 w-64 absolute -bottom-8 p-2 bg-white rounded-lg overflow-hidden rounded-br-none border border-neutral-200 shadow-md -translate-x-[20%]">

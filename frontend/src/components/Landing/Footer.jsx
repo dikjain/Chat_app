@@ -46,15 +46,15 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-8">
           {/* Logo and Description - Left Side */}
           <div className="md:col-span-1">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-1 mb-4">
               <img 
                 src={logo} 
                 alt="Company Logo" 
                 className="h-8 w-8 object-contain opacity-90 hover:opacity-100 transition-opacity duration-300"
               />
-              <span className="text-lg font-medium font-inter">Chat-ly</span>
+              <span className="text-lg font-semibold italic font-inter text-neutral-600">Chat-ly</span>
             </div>
-            <p className="text-sm text-gray-400 font-inter mb-4">
+            <p className="text-sm text-neutral-400 font-inter mb-4">
               Better way to talk, smarter way to connect.
             </p>
             {/* Social Links */}
@@ -67,7 +67,7 @@ export default function Footer() {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`text-gray-500 ${link.color} transition-all duration-300 transform hover:scale-110`}
+                    className={`text-neutral-400 ${link.color} transition-all duration-300 transform hover:scale-110`}
                     aria-label={link.name}
                   >
                     <Icon className="text-xl" />

@@ -108,7 +108,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
         className="p-2 hover:bg-neutral-100 rounded-md transition-colors"
         aria-label="View Group Details"
       >
-        <Eye className="h-4 w-4" />
+        <Eye className="h-4 w-4 text-neutral-500" />
       </button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>

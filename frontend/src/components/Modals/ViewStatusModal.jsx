@@ -8,10 +8,13 @@ import 'swiper/css';
 import 'swiper/css/effect-cards';
 
 function ViewStatusModal({ user, currUser }) {
-  const { data: currentStatus = [], isLoading } = useStatus(user?._id, {
+  const { data: statusData, isLoading } = useStatus(user?._id, {
     enabled: !!user?._id,
   });
   const deleteStatusMutation = useDeleteStatus();
+  
+  // Ensure currentStatus is always an array
+  const currentStatus = Array.isArray(statusData) ? statusData : [];
 
   const handleDeleteStatus = async (id) => {
     deleteStatusMutation.mutate({ statusId: id, userId: user._id });

@@ -122,8 +122,13 @@ const ProfileModal = ({ children, profileUser }) => {
           </DialogTrigger>
         ) : (
           <DialogTrigger asChild>
-            <Button variant="ghost" size="icon" className="flex">
-              <Eye className="h-4 w-4" />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="flex bg-neutral-100 text-neutral-500 hover:text-neutral-600"
+              aria-label="View user profile"
+            >
+              <Eye className="h-4 w-4 text-neutral-500" />
             </Button>
           </DialogTrigger>
         )}

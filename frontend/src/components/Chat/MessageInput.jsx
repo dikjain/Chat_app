@@ -52,7 +52,7 @@ const MessageInput = ({ selectedChat, sendMessage, sendFile }) => {
   const rightButtons = (
     <button
       onClick={() => onKeyDown({ key: 'Enter' })}
-      className="h-8 w-8 flex bg-neutral-600 shadow-[inset_0_1px_3px_0_rgba(255,255,255,0.8),0_1px_2px_0_rgba(0,0,0,0.3)]  items-center justify-center  rounded-full   transition-colors " 
+      className="px-3 py-1  flex bg-black/70 rounded-md shadow-[inset_-1px_1px_2px_0_rgba(255,255,255,0.6),inset_1px_-1px_2px_0_rgba(0,0,0,0.4),0_1px_2px_0_rgba(0,0,0,0.3)]  items-center justify-center     transition-colors " 
       aria-label="Send Message"
       disabled={!newMessage.trim()}
     >

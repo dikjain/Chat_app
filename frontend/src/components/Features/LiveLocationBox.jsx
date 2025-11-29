@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import FeatureHeader from "./FeatureHeader";
 
 const LiveLocationIcon = () => (
   <svg width="18" height="18" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -20,14 +21,14 @@ const LiveLocationBox = ({ className = "" }) => {
 
   return (
     <div
-      className={`bg-neutral-50 h-full relative overflow-hidden border border-neutral-300  gap-6 rounded-lg px-4 py-6 ${className}`}
+      className={`bg-neutral-50 h-full relative overflow-hidden border border-neutral-300  gap-6 rounded-lg px-4 py-4 ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex items-center gap-2">
-        <LiveLocationIcon />
-        <h1 className="text-base font-medium text-neutral-700">Live Location</h1>
-      </div>
+      <FeatureHeader 
+        title="Live Location" 
+        description="Share your real-time location with friends" 
+      />
 
       <div className="absolute bottom-8 right-4 scale-150">
         <svg xmlns="http://www.w3.org/2000/svg" width="330" height="430" fill="none" viewBox="0 0 330 430" className="w-64 h-80">
@@ -66,7 +67,7 @@ const LiveLocationBox = ({ className = "" }) => {
                   animate={{ y: 205 }}
                   transition={{
                     y: {
-                      duration: 10,
+                      duration: 4,
                       ease: "linear",
                       repeat: Infinity,
                       repeatType: "loop"

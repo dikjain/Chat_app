@@ -12,6 +12,7 @@ const MyChats = () => {
   
   const [loggedUser, setLoggedUser] = useState();
   const [onlinepeople, setonlinepeople] = useState([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   const user = useAuthStore((state) => state.user);
   const selectedChat = useChatStore((state) => state.selectedChat);
@@ -20,6 +21,15 @@ const MyChats = () => {
   useEffect(() => {
     setLoggedUser(user);
   }, [user]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (!socket || !isConnected) return;
@@ -58,7 +68,7 @@ const MyChats = () => {
 
   return (
     <div
-    style={{ flex: '0 1 30%' }}
+    style={{ flex: isMobile ? '1 1 100%' : '0 1 30%' }}
     className={`${selectedChat ? "hidden" : "flex"} ring-neutral-300 relative ring-2 md:flex h-full flex-col items-center p-3 bg-white rounded-lg border overflow-hidden`}
     >
       <MyChatsHeader />

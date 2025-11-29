@@ -2,6 +2,14 @@ import { FiFile } from "react-icons/fi";
 import { MdLocationOn, MdMic } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { MoreVertical } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/UI/dropdown-menu";
 
 const MessageActionBar = ({
   aiMessage,
@@ -14,6 +22,16 @@ const MessageActionBar = ({
 }) => {
   const [displayText, setDisplayText] = useState(aiMessage || "");
   const [isRemoving, setIsRemoving] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (!aiMessage && displayText) {
@@ -31,7 +49,8 @@ const MessageActionBar = ({
   }, [aiMessage, displayText]);
   return (
     <div className="relative py-1 w-full focus:outline-none outline-none bg-white shadow-sm">
-      <div className="absolute left-2 top-1/2 gap-1 -translate-y-1/2 flex items-center z-10">
+      {/* Desktop View - Horizontal Icons */}
+      <div className={`absolute left-2 top-1/2 gap-1 -translate-y-1/2 items-center z-10 ${isMobile ? 'hidden' : 'flex'}`}>
         <button
           className="h-6 w-6 flex items-center justify-center hover:bg-black/5 rounded transition-colors"
           aria-label="Upload File"
@@ -69,7 +88,68 @@ const MessageActionBar = ({
         <div className="w-px h-4 bg-stone-300"></div>
       </div>
 
-      <div className="relative flex items-center ml-28 rounded-md bg pr-4">
+      {/* Mobile View - Three Dots Menu */}
+      <div className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 ${isMobile ? 'flex' : 'hidden'}`}>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className="h-6 w-6 flex items-center justify-center hover:bg-black/5 rounded transition-colors"
+              aria-label="More options"
+            >
+              <MoreVertical className="h-4 w-4 text-[#a3a3a3]" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent 
+            side="top" 
+            align="start"
+            className="bg-white border-neutral-200 shadow-lg min-w-[120px]"
+          >
+            <DropdownMenuItem
+              className="flex items-center gap-2 cursor-pointer hover:bg-neutral-50"
+              onSelect={(e) => {
+                e.preventDefault();
+                handleFileUpload();
+              }}
+            >
+              <FiFile className="h-4 w-4 text-[#a3a3a3]" />
+              <span className="text-sm text-neutral-600">Upload File</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="flex items-center gap-2 cursor-pointer hover:bg-neutral-50"
+              onSelect={(e) => {
+                e.preventDefault();
+                toggleListening();
+              }}
+            >
+              <MdMic
+                className={`h-4 w-4 ${
+                  isListening ? "text-red-500" : "text-[#a3a3a3]"
+                }`}
+              />
+              <span className={`text-sm ${isListening ? "text-red-500" : "text-neutral-600"}`}>
+                {isListening ? "Stop Recording" : "Voice Input"}
+              </span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="flex items-center gap-2 cursor-pointer hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isGettingLocation}
+              onSelect={(e) => {
+                e.preventDefault();
+                if (!isGettingLocation) {
+                  handleSendLocation();
+                }
+              }}
+            >
+              <MdLocationOn className="h-4 w-4 text-[#a3a3a3]" />
+              <span className="text-sm text-neutral-600">Send Location</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <div className={`relative flex items-center rounded-md bg pr-4 ${isMobile ? 'ml-10' : 'ml-28'}`}>
         <div
           onClick={handleAISuggestionClick}
           style={{boxShadow : 'inset 0 1px 2px 0 rgba(0, 0, 0, 0.1)'}}

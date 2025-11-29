@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import FeatureHeader from "./FeatureHeader";
 
 const MultilingualIcon = () => (
   <svg width="18" height="18" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -156,9 +157,11 @@ const ConnectionLines = ({ leftLines, rightLines, words }) => (
 );
 
 const Header = () => (
-  <div className="flex items-center mb-4">
-    <MultilingualIcon />
-    <h1 className="text-base font-medium text-neutral-700">Multilingual</h1>
+  <div className="mb-4">
+    <FeatureHeader 
+      title="Multilingual" 
+      description="Translate messages in real-time over 10+ languages" 
+    />
   </div>
 );
 
@@ -278,7 +281,7 @@ const TransferBox = ({ className = "" }) => {
   return (
     <div
       ref={containerRef}
-      className={`bg-neutral-50 border border-neutral-300 relative rounded-lg col-span-2 px-4 py-6 overflow-visible ${className}`}
+      className={`bg-neutral-50 border border-neutral-300 relative rounded-lg col-span-2 px-4 py-4 overflow-visible ${className}`}
     >
       <Header />
       

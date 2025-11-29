@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import FeatureHeader from "./FeatureHeader";
 
 const RealTimeIcon = () => (
   <svg width="18" height="18" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -27,7 +28,12 @@ const RealTimeMessagingBox = ({ className = "" }) => {
   const handleMouseEnter = () => {
     setIsHovered(true);
     setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      if (messagesContainerRef.current) {
+        messagesContainerRef.current.scrollTo({
+          top: messagesContainerRef.current.scrollHeight,
+          behavior: "smooth"
+        });
+      }
     }, 100);
   };
 
@@ -40,16 +46,16 @@ const RealTimeMessagingBox = ({ className = "" }) => {
 
   return (
     <div
-      className={`bg-neutral-50 border relative border-neutral-300  gap-6 rounded-lg px-4 py-6 ${className}`}
+      className={`bg-neutral-50 border relative border-neutral-300  gap-6 rounded-lg px-4 py-4 ${className}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="flex items-center gap-2">
-        <RealTimeIcon />
-        <h1 className="text-base font-medium text-neutral-700">Real-Time Messaging</h1>
-      </div>
+      <FeatureHeader 
+        title="Real-Time Messaging" 
+        description="Instant messaging for seamless communication" 
+      />
 
-      <div className="h-48 w-64 absolute bottom-6  left-1/2 -translate-x-1/2  bg-white rounded-lg overflow-hidden border border-neutral-200 shadow-sm">
+      <div className="h-48 w-64 absolute bottom-4  left-1/2 -translate-x-1/2  bg-white rounded-lg overflow-hidden border border-neutral-200 shadow-sm">
         <div className="h-6 flex bg-gray-100 items-center px-3 gap-2">
           <div className="w-3 h-3 rounded-full bg-red-500"></div>
           <div className="w-3 h-3 rounded-full bg-yellow-500"></div>

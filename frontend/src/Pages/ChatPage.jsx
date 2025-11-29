@@ -24,11 +24,11 @@ const Chatpage = () => {
 
   return (
     <ChatErrorBoundary>
-      <div className="w-full overflow-hidden bg-black/5 h-screen flex flex-col gap-4 py-4 px-16 2xl:px-16 xl:px-8 lg:px-4 md:px-2">
+      <div className="w-full overflow-hidden bg-black/5 h-screen flex flex-col gap-4 py-4 px-2 sm:px-4 md:px-4 lg:px-4 xl:px-8 2xl:px-16">
         {user && <SideDrawer />}
         <div className="flex w-full flex-1 gap-4 items-center min-h-0">
           {user && <MyChats />}
-          <div className="w-0.5  h-full bg-neutral-300 rounded-md flex-shrink-0"></div>
+          <div className="hidden md:block w-0.5 h-full bg-neutral-300 rounded-md flex-shrink-0"></div>
           {user && (
             <Chatbox fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
           )}

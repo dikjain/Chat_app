@@ -162,7 +162,7 @@ const ScrollableChat = ({ messages }) => {
 
   return (
     <TooltipProvider>
-    <div className="flex flex-col px-3 overflow-y-scroll scrollbar-none relative overflow-x-hidden bg-gradient-to-b from-transparent to-transparent bg-[repeating-linear-gradient(45deg,transparent,transparent_19px,rgba(0,0,0,0.025)_19px,rgba(0,0,0,0.025)_20px)]">
+    <div className="flex flex-col  px-1 sm:px-3 overflow-y-scroll scrollbar-none relative overflow-x-hidden  from-transparent to-transparent bg-[repeating-linear-gradient(45deg,transparent,transparent_19px,rgba(0,0,0,0.025)_19px,rgba(0,0,0,0.025)_20px)]">
       <ScrollableFeed
        className="flex flex-col gap-6 max-w-full overflow-hidden">
         <LoadMoreButton
