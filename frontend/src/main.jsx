@@ -4,7 +4,7 @@ import '@/index.css'
 import 'react-chat-elements/dist/main.css'
 import { BrowserRouter } from 'react-router-dom'
 import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary'
-import { Toaster } from '@/components/ui/sonner'
+import { Toaster } from '@/components/UI/sonner'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 const queryClient = new QueryClient({
