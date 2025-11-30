@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlusIcon } from '@/svg/svgs';
+import { PlusIcon } from '../../svg/svgs';
 
 const BackgroundLines = () => {
   return (

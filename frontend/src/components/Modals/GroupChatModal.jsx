@@ -5,16 +5,16 @@ import {
   DialogFooter,
   DialogTitle,
   DialogTrigger,
-} from "@/components/UI/dialog";
-import { Input } from "@/components/UI/input";
+} from "../UI/dialog";
+import { Input } from "../UI/input";
 import { toast } from "sonner";
 import { useState } from "react";
-import { useChatStore } from "@/stores";
-import { useUserSearch } from "@/hooks/queries";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useCreateGroupChat } from "@/hooks/mutations/useChatMutations";
-import UserBadgeItem from "@/components/UI/UserBadgeItem";
-import UserListItem from "@/components/UI/UserListItem";
+import { useChatStore } from "../../stores";
+import { useUserSearch } from "../../hooks/queries";
+import { useDebounce } from "../../hooks/useDebounce";
+import { useCreateGroupChat } from "../../hooks/mutations/useChatMutations";
+import UserBadgeItem from "../UI/UserBadgeItem";
+import UserListItem from "../UI/UserListItem";
 
 const GroupChatModal = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);

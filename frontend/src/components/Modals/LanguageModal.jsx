@@ -6,11 +6,11 @@ import {
   DialogFooter,
   DialogTitle,
   DialogTrigger,
-} from "@/components/UI/dialog";
-import { Button } from "@/components/UI/button";
-import { Spinner } from "@/components/UI/spinner";
-import { useAuthStore } from '@/stores';
-import { useUpdateUserLanguage } from "@/hooks/mutations/useUserMutations";
+} from "../UI/dialog";
+import { Button } from "../UI/button";
+import { Spinner } from "../UI/spinner";
+import { useAuthStore } from '../../stores';
+import { useUpdateUserLanguage } from "../../hooks/mutations/useUserMutations";
 
 function LanguageModal({children}) {
   const user = useAuthStore((state) => state.user);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import SingleChat from "./SingleChat";
-import { useChatStore } from "@/stores";
+import { useChatStore } from "../../stores";
 
 const Chatbox = ({ fetchAgain, setFetchAgain }) => {
   const selectedChat = useChatStore((state) => state.selectedChat);

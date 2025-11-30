@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
-import { getCurrentLocation, isGeolocationSupported } from "@/utils/locationUtils";
+import { getCurrentLocation, isGeolocationSupported } from "../utils/locationUtils";
 
 const useLocation = () => {
   const [isGettingLocation, setIsGettingLocation] = useState(false);

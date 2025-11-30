@@ -9,8 +9,8 @@ import {
   renameGroupChat,
   addUserToGroup,
   removeUserFromGroup,
-} from '@/api'
-import { queryKeys } from '@/api/queryKeys'
+} from '../../api'
+import { queryKeys } from '../../api/queryKeys'
 import { toast } from 'sonner'
 
 /**

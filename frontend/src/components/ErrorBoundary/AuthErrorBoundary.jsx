@@ -1,5 +1,5 @@
 import ErrorBoundary from "./ErrorBoundary";
-import { useAuthStore } from "@/stores";
+import { useAuthStore } from "../../stores";
 
 const AuthErrorBoundary = ({ children }) => {
   return (

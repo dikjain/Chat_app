@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { updateUser } from '@/api/auth'
-import { updateUserLanguage } from '@/api/user'
-import { queryKeys } from '@/api/queryKeys'
+import { updateUser } from '../../api/auth'
+import { updateUserLanguage } from '../../api/user'
+import { queryKeys } from '../../api/queryKeys'
 import { toast } from 'sonner'
 
 /**

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { uploadImage as uploadImageAPI } from "@/api/cloudinary";
+import { uploadImage as uploadImageAPI } from "../api/cloudinary";
 import { toast } from "sonner";
 
 const useCloudinaryUpload = () => {

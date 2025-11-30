@@ -5,21 +5,21 @@ import {
   DialogHeader,
   DialogFooter,
   DialogTitle,
-} from "@/components/UI/dialog";
-import { Input } from "@/components/UI/input";
-import { Spinner } from "@/components/UI/spinner";
+} from "../UI/dialog";
+import { Input } from "../UI/input";
+import { Spinner } from "../UI/spinner";
 import { toast } from "sonner";
 import { useState } from "react";
-import { useAuthStore, useChatStore } from "@/stores";
-import { useUserSearch } from "@/hooks/queries";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useAuthStore, useChatStore } from "../../stores";
+import { useUserSearch } from "../../hooks/queries";
+import { useDebounce } from "../../hooks/useDebounce";
 import { 
   useRenameGroupChat, 
   useAddUserToGroup, 
   useRemoveUserFromGroup 
-} from "@/hooks/mutations/useChatMutations";
-import UserBadgeItem from "@/components/UI/UserBadgeItem";
-import UserListItem from "@/components/UI/UserListItem";
+} from "../../hooks/mutations/useChatMutations";
+import UserBadgeItem from "../UI/UserBadgeItem";
+import UserListItem from "../UI/UserListItem";
 
 const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
   const [isOpen, setIsOpen] = useState(false);

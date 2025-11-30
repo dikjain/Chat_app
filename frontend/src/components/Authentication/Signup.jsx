@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import useAuth from "@/hooks/useAuth";
-import useCloudinaryUpload from "@/hooks/useCloudinaryUpload";
-import useToast from "@/hooks/useToast";
-import ToastContainer from "@/components/UI/ToastContainer";
+import useAuth from "../../hooks/useAuth";
+import useCloudinaryUpload from "../../hooks/useCloudinaryUpload";
+import useToast from "../../hooks/useToast";
+import ToastContainer from "../UI/ToastContainer";
 import Input from "./Input";
 import Button from "./Button";
 

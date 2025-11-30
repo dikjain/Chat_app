@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { generateContent as generateContentAPI } from "@/api/ai";
+import { generateContent as generateContentAPI } from "../api/ai";
 
 const useAIAssistant = (options = {}) => {
   const { debounceMs = 250 } = options;

@@ -3,7 +3,7 @@ import { SendHorizontal as Send } from "lucide-react";
 import { FiFile } from "react-icons/fi";
 import { MdLocationOn, MdMic } from "react-icons/md";
 import { useEffect } from "react";
-import useMessageInput from "@/hooks/useMessageInput";
+import useMessageInput from "../../hooks/useMessageInput";
 import MessageActionBar from "./MessageActionBar";
 
 const MessageInput = ({ selectedChat, sendMessage, sendFile }) => {

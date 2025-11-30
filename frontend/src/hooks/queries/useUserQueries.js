@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { getUserDetails, searchUsers } from '@/api/user'
-import { queryKeys } from '@/api/queryKeys'
+import { getUserDetails, searchUsers } from '../../api/user'
+import { queryKeys } from '../../api/queryKeys'
 
 /**
  * Get user details by email

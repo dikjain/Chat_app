@@ -1,19 +1,19 @@
-import { Button } from "@/components/UI/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/UI/avatar";
-import { getSender, getSenderFull } from "@/utils/chatLogics";
+import { Button } from "../UI/button";
+import { Avatar, AvatarImage, AvatarFallback } from "../UI/avatar";
+import { getSender, getSenderFull } from "../../utils/chatLogics";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import ProfileModal from "@/components/Modals/ProfileModal";
+import ProfileModal from "../Modals/ProfileModal";
 import ScrollableChat from "./ScrollableChats";
-import UpdateGroupChatModal from "@/components/Modals/UpdateGroupChatModal";
+import UpdateGroupChatModal from "../Modals/UpdateGroupChatModal";
 import MessageInput from "./MessageInput";
 import ChatFeaturesGrid from "./ChatFeaturesGrid";
 import MessageSkeletons from "./MessageSkeleton";
-import { useAuthStore, useChatStore, useNotificationStore } from "@/stores";
-import { useChat, useMessageNotifications } from "@/hooks";
-import { useMessages } from "@/hooks/queries";
-import Notification from "@/assets/notification.mp3";
-import { getUserPics } from "@/lib/utils";
+import { useAuthStore, useChatStore, useNotificationStore } from "../../stores";
+import { useChat, useMessageNotifications } from "../../hooks";
+import { useMessages } from "../../hooks/queries";
+import Notification from "../../assets/notification.mp3";
+import { getUserPics } from "../../lib/utils";
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const sound = useRef(new Audio(Notification));

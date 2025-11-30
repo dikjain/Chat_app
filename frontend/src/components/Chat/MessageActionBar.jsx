@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from "@/components/UI/dropdown-menu";
+} from "../UI/dropdown-menu";
 
 const MessageActionBar = ({
   aiMessage,

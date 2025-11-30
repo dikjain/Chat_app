@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { searchUsers } from "@/api/user";
+import { searchUsers } from "../api/user";
 import { toast } from "sonner";
 
 const useUserSearch = () => {

@@ -5,7 +5,7 @@ import {
   useLocation,
   useFileUpload,
   useMessageSender
-} from "@/hooks";
+} from ".";
 
 const useMessageInput = (selectedChat, sendMessage, sendFile) => {
   const [newMessage, setNewMessage] = useState("");

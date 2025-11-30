@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createStatus, deleteStatus } from '@/api/status'
-import { queryKeys } from '@/api/queryKeys'
+import { createStatus, deleteStatus } from '../../api/status'
+import { queryKeys } from '../../api/queryKeys'
 import { toast } from 'sonner'
 
 /**

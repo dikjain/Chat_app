@@ -1,4 +1,4 @@
-import { config as appConfig } from "@/constants/config";
+import { config as appConfig } from "../constants/config";
 
 /**
  * Upload an image to Cloudinary

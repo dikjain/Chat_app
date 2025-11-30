@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { config as appConfig } from "@/constants/config";
+import { config as appConfig } from "../constants/config";
 import { toast } from "sonner";
 
 const useTranslation = (targetLanguage = "English") => {

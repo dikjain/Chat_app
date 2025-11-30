@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
-import GroupChatModal from "@/components/Modals/GroupChatModal";
-import ButtonWrapper from "@/components/UI/buttonWrapper";
-import TabSlider from "@/components/UI/TabSlider";
+import GroupChatModal from "../Modals/GroupChatModal";
+import ButtonWrapper from "../UI/buttonWrapper";
+import TabSlider from "../UI/TabSlider";
 
 const MyChatsHeader = () => {
   const tabs = ["My Chats", "Online Users"];

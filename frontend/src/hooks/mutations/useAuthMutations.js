@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { login, signup } from '@/api/auth'
-import { useAuthStore } from '@/stores'
+import { login, signup } from '../../api/auth'
+import { useAuthStore } from '../../stores'
 import { toast } from 'sonner'
-import { queryKeys } from '@/api/queryKeys'
+import { queryKeys } from '../../api/queryKeys'
 
 /**
  * Login mutation

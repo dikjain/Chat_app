@@ -3,14 +3,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/UI/dropdown-menu";
+} from "./dropdown-menu";
 // Modals used in NotificationDropdown:
 // None - This dropdown only navigates to chats, no modals are used
 import { Bell } from "lucide-react";
 import NotificationBadge from "react-notification-badge";
 import { Effect } from "react-notification-badge";
-import { getSender } from "@/utils/chatLogics";
-import { useAuthStore, useChatStore, useNotificationStore } from "@/stores";
+import { getSender } from "../../utils/chatLogics";
+import { useAuthStore, useChatStore, useNotificationStore } from "../../stores";
 import ButtonWrapper from "./buttonWrapper";
 
 function NotificationDropdown() {

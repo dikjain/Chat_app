@@ -1,9 +1,9 @@
 import React from 'react'
-import { Button } from "@/components/UI/button";
+import { Button } from "../UI/button";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCards } from 'swiper/modules';
-import { useStatus } from "@/hooks/queries";
-import { useDeleteStatus } from "@/hooks/mutations/useStatusMutations";
+import { useStatus } from "../../hooks/queries";
+import { useDeleteStatus } from "../../hooks/mutations/useStatusMutations";
 import 'swiper/css';
 import 'swiper/css/effect-cards';
 

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchStatus } from '@/api/status'
-import { queryKeys } from '@/api/queryKeys'
+import { fetchStatus } from '../../api/status'
+import { queryKeys } from '../../api/queryKeys'
 
 /**
  * Get status for a specific user

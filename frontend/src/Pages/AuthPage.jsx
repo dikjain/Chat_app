@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "@/stores";
-import AuthErrorBoundary from "@/components/ErrorBoundary/AuthErrorBoundary";
+import { useAuthStore } from "../stores";
+import AuthErrorBoundary from "../components/ErrorBoundary/AuthErrorBoundary";
 import { AnimatePresence } from "framer-motion";
-import LeftSection from "@/components/Authentication/LeftSection";
-import LogoSection from "@/components/Authentication/LogoSection";
-import AuthFormContainer from "@/components/Authentication/AuthFormContainer";
+import LeftSection from "../components/Authentication/LeftSection";
+import LogoSection from "../components/Authentication/LogoSection";
+import AuthFormContainer from "../components/Authentication/AuthFormContainer";
 
 function AuthPage() {
   const [activeTab, setActiveTab] = useState("login");

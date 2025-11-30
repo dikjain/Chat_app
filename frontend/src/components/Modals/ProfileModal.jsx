@@ -7,16 +7,16 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
-} from "@/components/UI/dialog";
-import { Button } from "@/components/UI/button";
-import { Input } from "@/components/UI/input";
-import { Spinner } from "@/components/UI/spinner";
+} from "../UI/dialog";
+import { Button } from "../UI/button";
+import { Input } from "../UI/input";
+import { Spinner } from "../UI/spinner";
 import { toast } from "sonner";
-import { useAuthStore } from "@/stores";
+import { useAuthStore } from "../../stores";
 import { useState, useRef, useEffect } from "react";
-import { useUpdateUser, useUpdateUserLanguage } from "@/hooks/mutations/useUserMutations";
+import { useUpdateUser, useUpdateUserLanguage } from "../../hooks/mutations/useUserMutations";
 import ViewStatusModal from "./ViewStatusModal";
-import useCloudinaryUpload from "@/hooks/useCloudinaryUpload";
+import useCloudinaryUpload from "../../hooks/useCloudinaryUpload";
 
 const ProfileModal = ({ children, profileUser }) => {
   const [isNaam, setisNaam] = useState(false);

@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Input } from "@/components/UI/input";
-import GoButton from "@/components/UI/GoButton";
-import UserListItem from "@/components/UI/UserListItem";
-import ChatLoading from "@/components/Chat/ChatLoading";
+import { Input } from "../UI/input";
+import GoButton from "../UI/GoButton";
+import UserListItem from "../UI/UserListItem";
+import ChatLoading from "./ChatLoading";
 import cursorSvg from "/cursor.svg";
 
 const Step1ChatDemo = () => {

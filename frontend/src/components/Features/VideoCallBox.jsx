@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import PixelBlast from "@/components/Authentication/PixelBlast";
+import PixelBlast from "../Authentication/PixelBlast";
 import FeatureHeader from "./FeatureHeader";
 
 

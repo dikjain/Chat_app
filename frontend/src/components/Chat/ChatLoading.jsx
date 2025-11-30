@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/UI/skeleton";
+import { Skeleton } from "../UI/skeleton";
 
 const ChatLoading = () => {
   return (

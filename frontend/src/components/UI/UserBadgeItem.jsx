@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
-import { Badge } from "@/components/UI/badge";
-import { cn } from "@/lib/utils";
+import { Badge } from "./badge";
+import { cn } from "../../lib/utils";
 
 const UserBadgeItem = ({ user, handleFunction, admin }) => {
   return (

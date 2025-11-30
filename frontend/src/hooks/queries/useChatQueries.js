@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { getAllChats } from '@/api/chat'
-import { getMessages } from '@/api/message'
-import { queryKeys } from '@/api/queryKeys'
+import { getAllChats } from '../../api/chat'
+import { getMessages } from '../../api/message'
+import { queryKeys } from '../../api/queryKeys'
 
 /**
  * Get all chats for the current user

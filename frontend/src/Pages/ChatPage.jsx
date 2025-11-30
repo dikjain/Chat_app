@@ -1,10 +1,10 @@
 import { useState } from "react";
-import Chatbox from "@/components/Chat/ChatBox";
-import MyChats from "@/components/Chat/MyChats";
-import SideDrawer from "@/components/UI/SideDrawer";
-import { useAuthStore } from "@/stores";
-import { useUserDetails } from "@/hooks/queries";
-import ChatErrorBoundary from "@/components/ErrorBoundary/ChatErrorBoundary";
+import Chatbox from "../components/Chat/ChatBox";
+import MyChats from "../components/Chat/MyChats";
+import SideDrawer from "../components/UI/SideDrawer";
+import { useAuthStore } from "../stores";
+import { useUserDetails } from "../hooks/queries";
+import ChatErrorBoundary from "../components/ErrorBoundary/ChatErrorBoundary";
 
 const Chatpage = () => {
   const user = useAuthStore((state) => state.user);

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import io from "socket.io-client";
-import { config as appConfig } from "@/constants/config";
-import { useAuthStore } from "@/stores";
+import { config as appConfig } from "../constants/config";
+import { useAuthStore } from "../stores";
 
 let globalSocket = null;
 const globalListeners = new Map();

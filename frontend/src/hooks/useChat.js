@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from "react";
 import { useSocket } from "./useSocket";
-import { useChatStore, useNotificationStore } from "@/stores";
+import { useChatStore, useNotificationStore } from "../stores";
 import { useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/api/queryKeys";
+import { queryKeys } from "../api/queryKeys";
 import { 
   useSendMessage, 
   useUploadFile, 

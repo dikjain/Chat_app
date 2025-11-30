@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import AuthPage from '@/pages/AuthPage'
-import ChatPage from '@/pages/ChatPage'
-import { validateConfig } from '@/constants/config'
-import LandingPage from '@/pages/LandingPage'
-import { useAuthStore } from '@/stores'
+import AuthPage from './pages/AuthPage'
+import ChatPage from './pages/ChatPage'
+import { validateConfig } from './constants/config'
+import LandingPage from './pages/LandingPage'
+import { useAuthStore } from './stores'
 import "./leafletFix"
 
 // Protected Route Component

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import PixelBlast from "./PixelBlast";
-import logo from "@/assets/logo.png";
+import logo from "../../assets/logo.png";
 
 const LogoSection = () => {
   return (

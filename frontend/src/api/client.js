@@ -1,7 +1,7 @@
 import axios from "axios";
-import { config as appConfig } from "@/constants/config";
+import { config as appConfig } from "../constants/config";
 import { toast } from "sonner";
-import { useAuthStore } from "@/stores";
+import { useAuthStore } from "../stores";
 
 // Create centralized axios instance
 const apiClient = axios.create({

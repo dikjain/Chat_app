@@ -5,14 +5,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/UI/dialog";
-import { Spinner } from "@/components/UI/spinner";
+} from "../UI/dialog";
+import { Spinner } from "../UI/spinner";
 import { toast } from "sonner";
 import { useState, useRef } from "react";
-import { useAuthStore } from "@/stores";
-import { useCreateStatus } from "@/hooks/mutations/useStatusMutations";
-import useCloudinaryUpload from "@/hooks/useCloudinaryUpload";
-import TabSlider from "@/components/UI/TabSlider";
+import { useAuthStore } from "../../stores";
+import { useCreateStatus } from "../../hooks/mutations/useStatusMutations";
+import useCloudinaryUpload from "../../hooks/useCloudinaryUpload";
+import TabSlider from "../UI/TabSlider";
 import ViewStatusModal from './ViewStatusModal';
 import { Upload } from "lucide-react";
 import { motion } from 'framer-motion';

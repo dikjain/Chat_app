@@ -1,10 +1,10 @@
 import React from "react";
-import BackgroundLines from "@/components/Landing/BackgroundLines";
-import HeroSection from "@/components/Landing/HeroSection";
-import FeaturesSection from "@/components/Landing/FeaturesSection";
-import QuoteSection from "@/components/Landing/QuoteSection";
-import Footer from "@/components/Landing/Footer";
-import Navbar from "@/components/Landing/Navbar";
+import BackgroundLines from "../components/Landing/BackgroundLines";
+import HeroSection from "../components/Landing/HeroSection";
+import FeaturesSection from "../components/Landing/FeaturesSection";
+import QuoteSection from "../components/Landing/QuoteSection";
+import Footer from "../components/Landing/Footer";
+import Navbar from "../components/Landing/Navbar";
 
 export default function LandingPage() {
   return (

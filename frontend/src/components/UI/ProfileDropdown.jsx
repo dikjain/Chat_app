@@ -4,16 +4,16 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/UI/dropdown-menu";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/UI/avatar";
+} from "./dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "./avatar";
 import { useNavigate } from "react-router-dom";
 // Modals used in ProfileDropdown:
 // 1. ProfileModal - User profile view/edit (profile picture, name, email, language selection, view status)
 // 2. StatusModal - Create/view user status updates
-import ProfileModal from "@/components/Modals/ProfileModal";
-import StatusModal from "@/components/Modals/StatusModal";
-import { useAuthStore } from "@/stores";
-import { useSocket } from "@/hooks";
+import ProfileModal from "../Modals/ProfileModal";
+import StatusModal from "../Modals/StatusModal";
+import { useAuthStore } from "../../stores";
+import { useSocket } from "../../hooks";
 import ButtonWrapper from "./buttonWrapper";
 
 function ProfileDropdown() {

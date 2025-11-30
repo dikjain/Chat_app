@@ -1,20 +1,20 @@
-import { Button } from "@/components/UI/button";
-import { Input } from "@/components/UI/input";
+import { Button } from "./button";
+import { Input } from "./input";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from "@/components/UI/sheet";
-import { Spinner } from "@/components/UI/spinner";
+} from "./sheet";
+import { Spinner } from "./spinner";
 import { useState } from "react";
-import ChatLoading from "@/components/Chat/ChatLoading";
-import UserListItem from "@/components/UI/UserListItem";
-import { useAuthStore, useChatStore } from "@/stores";
+import ChatLoading from "../Chat/ChatLoading";
+import UserListItem from "./UserListItem";
+import { useAuthStore, useChatStore } from "../../stores";
 import { FaSearch } from "react-icons/fa";
-import { useUserSearch } from "@/hooks/queries";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useAccessChat } from "@/hooks/mutations/useChatMutations";
+import { useUserSearch } from "../../hooks/queries";
+import { useDebounce } from "../../hooks/useDebounce";
+import { useAccessChat } from "../../hooks/mutations/useChatMutations";
 import ButtonWrapper from "./buttonWrapper";
 import NotificationDropdown from "./NotificationDropdown";
 import ProfileDropdown from "./ProfileDropdown";

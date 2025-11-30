@@ -1,6 +1,6 @@
 import React from "react";
-import Noise from "@/components/Noise";
-import { PlusIcon } from "@/svg/svgs.jsx";
+import Noise from "../Noise";
+import { PlusIcon } from "../../svg/svgs.jsx";
 
 export default function QuoteSection() {
   const cornerPositions = [

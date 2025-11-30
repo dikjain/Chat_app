@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StripedPattern } from "@/components/UI/StripedPattern";
+import { StripedPattern } from "../UI/StripedPattern";
 import { motion } from "framer-motion";
 import FeatureHeader from "./FeatureHeader";
 

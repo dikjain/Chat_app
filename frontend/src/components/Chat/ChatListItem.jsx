@@ -1,5 +1,5 @@
-import { getSender } from "@/utils/chatLogics";
-import { getUserPics } from "@/lib/utils";
+import { getSender } from "../../utils/chatLogics";
+import { getUserPics } from "../../lib/utils";
 
 const ChatListItem = ({ chat, loggedUser, user, selectedChat, onlinepeople, setSelectedChat }) => {
   const userPics = getUserPics(chat, user?._id);

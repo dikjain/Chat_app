@@ -1,11 +1,11 @@
-import { TooltipProvider } from "@/components/UI/tooltip";
+import { TooltipProvider } from "../UI/tooltip";
 import ScrollableFeed from "react-scrollable-feed";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { isSameSender } from "@/utils/chatLogics";
-import { useAuthStore, useChatStore } from "@/stores";
+import { isSameSender } from "../../utils/chatLogics";
+import { useAuthStore, useChatStore } from "../../stores";
 import { toast } from "sonner";
-import { useChat, useTranslation, useTextToSpeech } from "@/hooks";
-import { formatMessageTime, getTodayIST } from "@/utils/dateUtils";
+import { useChat, useTranslation, useTextToSpeech } from "../../hooks";
+import { formatMessageTime, getTodayIST } from "../../utils/dateUtils";
 import LoadMoreButton from "./LoadMoreButton";
 import MessageItem from "./MessageItem";
 

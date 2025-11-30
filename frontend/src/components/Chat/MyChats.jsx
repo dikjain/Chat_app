@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import ChatLoading from "./ChatLoading";
 import ChatListItem from "./ChatListItem";
 import MyChatsHeader from "./MyChatsHeader";
-import { useAuthStore, useChatStore } from "@/stores";
-import { useSocket } from "@/hooks";
-import { useChats } from "@/hooks/queries";
+import { useAuthStore, useChatStore } from "../../stores";
+import { useSocket } from "../../hooks";
+import { useChats } from "../../hooks/queries";
 
 const MyChats = () => {
   const { socket, on, off, isConnected, emitUserDisconnected, emitUserReconnected, reconnect } = useSocket();

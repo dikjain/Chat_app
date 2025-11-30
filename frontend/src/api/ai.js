@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { config as appConfig } from "@/constants/config";
+import { config as appConfig } from "../constants/config";
 
 /**
  * Generate content using Groq API with streaming support

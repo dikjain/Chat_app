@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useAuthStore } from "@/stores";
+import { useAuthStore } from "../stores";
 import { useLogin, useSignup } from "./mutations/useAuthMutations";
 
 const useAuth = () => {
