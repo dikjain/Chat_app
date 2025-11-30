@@ -9,12 +9,9 @@ const srcPath = path.resolve(__dirname, './src');
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: [
-      {
-        find: '@',
-        replacement: srcPath,
-      },
-    ],
+    alias: {
+      '@': srcPath,
+    },
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
   },
   server: {
