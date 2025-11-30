@@ -5,9 +5,9 @@ import {
   DialogHeader,
   DialogFooter,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
+} from "@/components/UI/dialog";
+import { Input } from "@/components/UI/input";
+import { Spinner } from "@/components/UI/spinner";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useAuthStore, useChatStore } from "@/stores";

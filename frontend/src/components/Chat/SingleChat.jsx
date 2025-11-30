@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/UI/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/UI/avatar";
 import { getSender, getSenderFull } from "@/utils/chatLogics";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";

@@ -1,4 +1,4 @@
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/UI/tooltip";
 import ScrollableFeed from "react-scrollable-feed";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { isSameSender } from "@/utils/chatLogics";

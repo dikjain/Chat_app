@@ -1,12 +1,12 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/UI/button";
+import { Input } from "@/components/UI/input";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
-import { Spinner } from "@/components/ui/spinner";
+} from "@/components/UI/sheet";
+import { Spinner } from "@/components/UI/spinner";
 import { useState } from "react";
 import ChatLoading from "@/components/Chat/ChatLoading";
 import UserListItem from "@/components/UI/UserListItem";

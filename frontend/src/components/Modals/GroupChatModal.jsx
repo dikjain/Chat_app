@@ -5,8 +5,8 @@ import {
   DialogFooter,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+} from "@/components/UI/dialog";
+import { Input } from "@/components/UI/input";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useChatStore } from "@/stores";

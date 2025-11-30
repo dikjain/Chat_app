@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/UI/button";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCards } from 'swiper/modules';
 import { useStatus } from "@/hooks/queries";

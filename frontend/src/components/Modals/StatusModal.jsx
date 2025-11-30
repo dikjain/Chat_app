@@ -5,8 +5,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Spinner } from "@/components/ui/spinner";
+} from "@/components/UI/dialog";
+import { Spinner } from "@/components/UI/spinner";
 import { toast } from "sonner";
 import { useState, useRef } from "react";
 import { useAuthStore } from "@/stores";

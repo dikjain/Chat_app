@@ -4,8 +4,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+} from "@/components/UI/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/UI/avatar";
 import { useNavigate } from "react-router-dom";
 // Modals used in ProfileDropdown:
 // 1. ProfileModal - User profile view/edit (profile picture, name, email, language selection, view status)

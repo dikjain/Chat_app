@@ -7,10 +7,10 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
+} from "@/components/UI/dialog";
+import { Button } from "@/components/UI/button";
+import { Input } from "@/components/UI/input";
+import { Spinner } from "@/components/UI/spinner";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores";
 import { useState, useRef, useEffect } from "react";

@@ -1,5 +1,5 @@
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/UI/avatar";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/UI/tooltip";
 
 const MessageAvatar = ({ message, isCurrentUser }) => {
   if (!message.sender) return null;

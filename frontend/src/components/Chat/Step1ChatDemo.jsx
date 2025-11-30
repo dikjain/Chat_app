@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/UI/input";
 import GoButton from "@/components/UI/GoButton";
 import UserListItem from "@/components/UI/UserListItem";
 import ChatLoading from "@/components/Chat/ChatLoading";

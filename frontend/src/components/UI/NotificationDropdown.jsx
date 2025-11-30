@@ -3,7 +3,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/UI/dropdown-menu";
 // Modals used in NotificationDropdown:
 // None - This dropdown only navigates to chats, no modals are used
 import { Bell } from "lucide-react";
