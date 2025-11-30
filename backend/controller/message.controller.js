@@ -16,8 +16,8 @@ const allMessages = expressAsyncHandler(async (req, res) => {
 });
 
 const sendMessage = expressAsyncHandler(async (req, res) => {
-  
-  const { content, chatId , type} = req.body;
+
+  const { content, chatId, type } = req.body;
   const file = req.fileMessage;
   if (!content || !chatId) {
     return res.status(400).json({ success: false, message: "Content and chatId are required" });
@@ -28,7 +28,7 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
     content: content,
     chat: chatId,
     file: null,
-    type : `${type ? type : null}`
+    type: `${type ? type : null}`
   };
 
   try {
@@ -54,13 +54,13 @@ const sendFileMessage = expressAsyncHandler(async (req, res) => {
   if (!req.fileMessage) {
     return res.status(400).json({ success: false, message: "File upload failed" });
   }
-  
+
   const { chatId, sender, filename, filepath, size, type, timestamp } = req.fileMessage;
 
   if (!filepath || !chatId) {
     return res.status(400).json({ success: false, message: "Filepath and chatId are required" });
   }
-  
+
   if (!sender) {
     return res.status(400).json({ success: false, message: "Sender information is required" });
   }
@@ -69,11 +69,11 @@ const sendFileMessage = expressAsyncHandler(async (req, res) => {
     content: null,
     chat: chatId,
     file: filepath,
-    type : `${type ? type : null}`
+    type: `${type ? type : null}`
   };
   try {
     let message = await Message.create(newMessage);
-    
+
     message = await message.populate("sender", "name pic")
     message = await message.populate("chat")
     message = await User.populate(message, {
@@ -92,11 +92,11 @@ const sendFileMessage = expressAsyncHandler(async (req, res) => {
 
 
 const deleteMessage = expressAsyncHandler(async (req, res) => {
-  try{
+  try {
     const { messageId } = req.body;
     await Message.findByIdAndDelete(messageId);
     res.status(200).json({ success: true, message: "Message deleted successfully" });
-  }catch(error){
+  } catch (error) {
     console.error(`[${new Date().toISOString()}] ERROR: Delete message failed:`, error.message);
     return res.status(400).json({ success: false, message: "Failed to delete message" });
   }
@@ -104,7 +104,7 @@ const deleteMessage = expressAsyncHandler(async (req, res) => {
 
 const ChangeLatestMessage = expressAsyncHandler(async (req, res) => {
   try {
-    const { chatId , latestMessage } = req.body;
+    const { chatId, latestMessage } = req.body;
     await Chat.findByIdAndUpdate(chatId, { latestMessage: latestMessage });
     res.status(200).json({ success: true, message: "Latest message updated successfully" });
   } catch (error) {
@@ -114,4 +114,4 @@ const ChangeLatestMessage = expressAsyncHandler(async (req, res) => {
 });
 
 
-export { allMessages, sendMessage, deleteMessage , ChangeLatestMessage , sendFileMessage };
+export { allMessages, sendMessage, deleteMessage, ChangeLatestMessage, sendFileMessage };

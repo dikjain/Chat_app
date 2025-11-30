@@ -3,7 +3,7 @@ import logo from "@/assets/logo.png";
 
 export default function Navbar() {
   return (
-    <div className="h-16 flex items-center justify-between px-32 absolute top-0 left-0 right-0">
+    <div className="h-16 flex items-center justify-between px-10 xl:px-32 absolute top-0 left-0 right-0">
       <div className="flex items-center gap-2">
         <img src={logo} alt="logo" className="h-10 w-10" />
         <h1 className="text-2xl font-bold">Chat-ly</h1>

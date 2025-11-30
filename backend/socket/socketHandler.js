@@ -6,9 +6,9 @@ const TIMEOUT_LONG = 1750;
 
 export const initializeSocket = (io) => {
   io.on("connection", (socket) => {
-    
+
     socket.emit("user_details");
-    
+
     socket.on("user_connected", (data) => {
       if (!OnlineUsers.includes(data._id)) {
         OnlineUsers.push(data._id);
@@ -32,13 +32,13 @@ export const initializeSocket = (io) => {
       if (!chat.users) {
         return console.error(`[${new Date().toISOString()}] ERROR: chat.users not defined`);
       }
-      
+
       chat.users.forEach((user) => {
         if (user._id === newMessageReceived.sender._id) return;
         socket.in(user._id).emit("message received", newMessageReceived);
       });
     });
-    
+
     socket.on("userDisconnected", (userData) => {
       OnlineUsers = OnlineUsers.filter(user => user !== userData._id);
       setTimeout(() => {
@@ -54,7 +54,7 @@ export const initializeSocket = (io) => {
         io.emit("onlineUsers", OnlineUsers);
       }, TIMEOUT_MEDIUM);
     });
-    
+
     socket.on("disconnect", () => {
       setTimeout(() => {
         io.emit("onlineUsers", OnlineUsers);

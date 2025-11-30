@@ -12,7 +12,7 @@ function AuthPage() {
   const navigate = useNavigate();
 
   const user = useAuthStore((state) => state.user);
-  
+
   useEffect(() => {
     if (user) navigate("/chats");
   }, [user, navigate]);
@@ -22,7 +22,7 @@ function AuthPage() {
       <div className="w-full gap-6 h-screen bg-stone-100 flex p-6">
         <LeftSection />
 
-        <div className="w-[30%] rounded-xl bg-white flex flex-col border-2 border-neutral-200/70 ring-2 relative ring-black/10 items-center justify-center p-6 mt-[72px] mb-[72px]">
+        <div className="w-[30%] mx-auto shadow-xl rounded-xl bg-white flex flex-col border-2 border-neutral-200/70 ring-2 relative ring-black/10 items-center justify-center py-6 mt-[72px] mb-[72px]">
           <AnimatePresence mode="wait">
             {activeTab === "login" && <LogoSection key="logo" />}
           </AnimatePresence>

@@ -8,7 +8,7 @@ const Step4ChatDemo = () => {
     { id: 1, text: "こんにちは、元気ですか？", original: "こんにちは、元気ですか？", translated: "Hola, ¿cómo estás?", isCurrentUser: false, maxWidth: "65%" },
     { id: 2, text: "Guten Tag, wie geht es dir?", original: "Guten Tag, wie geht es dir?", translated: "Good day, how are you?", isCurrentUser: true, maxWidth: "75%" }
   ]);
-  
+
   const [translatingIndex, setTranslatingIndex] = useState(null);
   const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
   const messageRefs = useRef([]);
@@ -38,15 +38,15 @@ const Step4ChatDemo = () => {
 
     setCursorPosition({
       top: rect.top - containerRect.top + rect.height / 2 - 14,
-      left: isCurrentUser 
-        ? rect.right - containerRect.left - 20 
+      left: isCurrentUser
+        ? rect.right - containerRect.left - 20
         : rect.left - containerRect.left + 20,
     });
   };
 
   const translateMessage = (messageIndex, isRevert = false) => {
     setTranslatingIndex(messageIndex);
-    
+
     const timeoutId = setTimeout(() => {
       setMessages(prev => {
         const updated = [...prev];
@@ -59,7 +59,7 @@ const Step4ChatDemo = () => {
       });
       setTranslatingIndex(null);
     }, 1000);
-    
+
     timeoutRefs.current.push(timeoutId);
   };
 
@@ -93,16 +93,16 @@ const Step4ChatDemo = () => {
       // Wait, then translate
       const timeout1 = setTimeout(() => {
         translateMessage(step.messageIndex, step.isRevert);
-        
+
         // Move to next step
         const timeout2 = setTimeout(() => {
           stepIndex++;
           executeStep();
         }, step.delay);
-        
+
         timeoutRefs.current.push(timeout2);
       }, 1000);
-      
+
       timeoutRefs.current.push(timeout1);
     };
 
@@ -110,7 +110,7 @@ const Step4ChatDemo = () => {
     const initialTimeout = setTimeout(() => {
       executeStep();
     }, 500);
-    
+
     timeoutRefs.current.push(initialTimeout);
 
     return () => {
@@ -119,21 +119,23 @@ const Step4ChatDemo = () => {
     };
   }, []);
 
+
+
+  const isAuthPage = window.location.href.includes("/auth");
+
   return (
-    <div ref={containerRef} className="p-4 px-8  flex flex-col h-full relative">
+    <div ref={containerRef} className={`p-4 ${isAuthPage ? "px-0" : "px-8"} flex flex-col h-full relative`}>
       <div className="flex-1 flex flex-col justify-end gap-3 pb-4">
         {messages.map((msg, idx) => (
           <div
             key={msg.id}
             ref={(el) => (messageRefs.current[idx] = el)}
             style={{ maxWidth: msg.maxWidth || "75%" }}
-            className={`rounded-2xl border bg-white shadow-md ${
-              idx === 0 ? "px-4 py-2.5" : idx === 1 ? "px-5 py-2" : "px-4 py-2"
-            } ${
-              msg.isCurrentUser 
-                ? "ml-auto text-neutral-500 border-neutral-200" 
+            className={`rounded-2xl border bg-white shadow-md ${idx === 0 ? "px-4 py-2.5" : idx === 1 ? "px-5 py-2" : "px-4 py-2"
+              } ${msg.isCurrentUser
+                ? "ml-auto text-neutral-500 border-neutral-200"
                 : "ml-0 text-black border-neutral-100"
-            }`}
+              }`}
           >
             <motion.span
               key={msg.text}

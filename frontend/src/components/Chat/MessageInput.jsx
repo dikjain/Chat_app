@@ -1,5 +1,5 @@
 import { Input } from "react-chat-elements";
-import { SendHorizontal  as Send } from "lucide-react";
+import { SendHorizontal as Send } from "lucide-react";
 import { FiFile } from "react-icons/fi";
 import { MdLocationOn, MdMic } from "react-icons/md";
 import { useEffect } from "react";
@@ -52,7 +52,7 @@ const MessageInput = ({ selectedChat, sendMessage, sendFile }) => {
   const rightButtons = (
     <button
       onClick={() => onKeyDown({ key: 'Enter' })}
-      className="px-3 py-1  flex bg-black/70 rounded-md shadow-[inset_-1px_1px_2px_0_rgba(255,255,255,0.6),inset_1px_-1px_2px_0_rgba(0,0,0,0.4),0_1px_2px_0_rgba(0,0,0,0.3)]  items-center justify-center     transition-colors " 
+      className="px-3 py-1  flex bg-black/70   rounded-md shadow-[inset_-1px_1px_2px_0_rgba(255,255,255,0.6),inset_1px_-1px_2px_0_rgba(0,0,0,0.4),0_1px_2px_0_rgba(0,0,0,0.3)]  items-center justify-center     transition-colors "
       aria-label="Send Message"
       disabled={!newMessage.trim()}
     >
@@ -62,18 +62,17 @@ const MessageInput = ({ selectedChat, sendMessage, sendFile }) => {
 
   return (
     <div className="px-2 py-1 bg-neutral-100 border-t border-neutral-200">
-      <div 
-        style={{ boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.2)" }} 
+      <div
+        style={{ boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.2)" }}
         className="flex flex-col items-center mb-1 relative border rounded-lg overflow-hidden mt-1"
       >
-        {/* Hidden File Input */}
         <input
           ref={fileInputRef}
           type="file"
           accept="image/*,audio/*,application/pdf"
           className="hidden"
         />
-        
+
         {/* React Chat Elements Input */}
         <div className="w-full bg-white">
           <Input
@@ -93,7 +92,7 @@ const MessageInput = ({ selectedChat, sendMessage, sendFile }) => {
             }}
           />
         </div>
-        
+
         {/* AI Assistant Suggestion with Action Buttons */}
         <MessageActionBar
           aiMessage={aiMessage}

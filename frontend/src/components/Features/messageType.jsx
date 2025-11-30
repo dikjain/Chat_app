@@ -122,14 +122,14 @@ const MessageTypeBox = ({ className = "" }) => {
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`bg-neutral-50 border border-neutral-300 h-full relative overflow-hidden rounded-lg px-4 py-4 group ${className}`}
+      className={`bg-neutral-50 border border-neutral-300 h-full relative overflow-hidden rounded-lg px-4 py-4 group flex flex-col ${className}`}
     >
       <FeatureHeader 
         title="Media Sharing" 
         description="Share images, videos, and documents seamlessly" 
       />
 
-      <div className="flex items-center justify-center gap-2 mt-4 size-full  relative z-10">
+      <div className="flex items-center justify-center gap-2 mt-4 flex-1 relative z-10">
         <Video isHovered={isHovered} />
       <File isHovered={isHovered}   />
       <Image isHovered={isHovered} />

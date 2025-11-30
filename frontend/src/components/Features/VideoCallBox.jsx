@@ -1,26 +1,7 @@
+import { useState, useEffect } from "react";
 import PixelBlast from "@/components/Authentication/PixelBlast";
 import FeatureHeader from "./FeatureHeader";
 
-const VideoCallIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M5.5 7.5C5.5 6.94772 5.94772 6.5 6.5 6.5H13.5C14.0523 6.5 14.5 6.94772 14.5 7.5V17.5C14.5 18.0523 14.0523 18.5 13.5 18.5H6.5C5.94772 18.5 5.5 18.0523 5.5 17.5V7.5Z"
-      stroke="currentColor"
-      strokeMiterlimit="10"
-      strokeLinejoin="round"
-      strokeLinecap="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M14.5 9.5L19.5 6.5V18.5L14.5 15.5"
-      stroke="currentColor"
-      strokeMiterlimit="10"
-      strokeLinejoin="round"
-      strokeLinecap="round"
-      strokeWidth="1.5"
-    />
-  </svg>
-);
 
 const VideoPreview = ({translateX, translateY, translateZ,rotateY,rotateX,scale}) => {
   return (

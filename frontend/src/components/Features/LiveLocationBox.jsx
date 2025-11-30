@@ -21,7 +21,7 @@ const LiveLocationBox = ({ className = "" }) => {
 
   return (
     <div
-      className={`bg-neutral-50 h-full relative overflow-hidden border border-neutral-300  gap-6 rounded-lg px-4 py-4 ${className}`}
+      className={`bg-neutral-50 h-full relative overflow-hidden border border-neutral-300 gap-6 rounded-lg px-4 py-4 flex flex-col ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -30,8 +30,8 @@ const LiveLocationBox = ({ className = "" }) => {
         description="Share your real-time location with friends" 
       />
 
-      <div className="absolute bottom-8 right-4 scale-150">
-        <svg xmlns="http://www.w3.org/2000/svg" width="330" height="430" fill="none" viewBox="0 0 330 430" className="w-64 h-80">
+      <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" width="330" height="430" fill="none" viewBox="0 0 330 430" className="w-full h-full max-w-[280px] max-h-[360px] scale-110">
           <g clipPath="url(#a)">
             <mask id="c" width="501" height="307" x="-72" y="194" maskUnits="userSpaceOnUse" style={{maskType: 'alpha'}}>
               <path fill="url(#b)" d="M-71.32 194.31H428.9v306.136H-71.32z"/>

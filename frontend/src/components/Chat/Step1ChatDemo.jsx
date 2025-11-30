@@ -12,7 +12,7 @@ const Step1ChatDemo = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showUser, setShowUser] = useState(false);
   const [currentUserIndex, setCurrentUserIndex] = useState(0);
-  
+
   const inputRef = useRef(null);
   const buttonRef = useRef(null);
   const containerRef = useRef(null);
@@ -38,10 +38,10 @@ const Step1ChatDemo = () => {
   // Position cursor at input
   const positionCursorAtInput = () => {
     if (!inputRef.current || !containerRef.current) return;
-    
+
     const inputRect = inputRef.current.getBoundingClientRect();
     const containerRect = containerRef.current.getBoundingClientRect();
-    
+
     setCursorPosition({
       top: inputRect.top - containerRect.top + inputRect.height / 2 - 14,
       left: inputRect.right - containerRect.left - 20,
@@ -66,7 +66,7 @@ const Step1ChatDemo = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
-    
+
     let callbackCalled = false;
     intervalRef.current = setInterval(() => {
       setSearchText((prevText) => {
@@ -90,7 +90,7 @@ const Step1ChatDemo = () => {
   // Type text with animation
   const typeText = (textToType, callback) => {
     let currentIndex = 0;
-    
+
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
@@ -122,28 +122,28 @@ const Step1ChatDemo = () => {
       // After typing, move cursor to button
       timeoutRef.current = setTimeout(() => {
         moveCursorToButton();
-        
+
         // After cursor reaches button, click it and show loading
         timeoutRef.current = setTimeout(() => {
           setIsLoading(true);
-          
+
           // After 1 second of loading, show user
           timeoutRef.current = setTimeout(() => {
             setIsLoading(false);
             setShowUser(true);
             setCurrentUserIndex(userIndex);
-            
+
             // After showing user for 2 seconds, clear and move to next
             timeoutRef.current = setTimeout(() => {
               setShowUser(false);
               // Move cursor back to input
               positionCursorAtInput();
-              
+
               // Clear search text
               clearSearchText(() => {
                 // Move to next user (loop back to first after last)
                 const nextIndex = (userIndex + 1) % mockUsers.length;
-                
+
                 // Start animation for the next user after a brief delay
                 timeoutRef.current = setTimeout(() => {
                   startAnimationSequence(nextIndex);
@@ -160,7 +160,7 @@ const Step1ChatDemo = () => {
   useEffect(() => {
     // Initial cursor position at input
     positionCursorAtInput();
-    
+
     // Start with first user after a brief delay
     timeoutRef.current = setTimeout(() => {
       startAnimationSequence(0);
@@ -176,8 +176,10 @@ const Step1ChatDemo = () => {
     };
   }, []);
 
+  const isAuthPage = window.location.href.includes("/auth");
+
   return (
-    <div ref={containerRef} className="flex  px-8 flex-col gap-2 h-full relative">
+    <div ref={containerRef} className={`flex ${isAuthPage ? "px-0" : "px-8"} flex-col gap-2 h-full relative`}>
       <div className="flex gap-2 pb-2 flex-shrink-0">
         <Input
           ref={inputRef}
@@ -187,7 +189,7 @@ const Step1ChatDemo = () => {
           readOnly
         />
         <div ref={buttonRef} className="flex items-center justify-center">
-          <GoButton onClick={() => {}} />
+          <GoButton onClick={() => { }} />
         </div>
       </div>
 
@@ -198,7 +200,7 @@ const Step1ChatDemo = () => {
           <div className="space-y-2">
             <UserListItem
               user={mockUsers[currentUserIndex]}
-              handleFunction={() => {}}
+              handleFunction={() => { }}
             />
           </div>
         ) : null}

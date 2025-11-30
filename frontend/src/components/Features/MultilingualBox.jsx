@@ -2,31 +2,12 @@ import React, { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import FeatureHeader from "./FeatureHeader";
 
-const MultilingualIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M12.5 3.5C8.63401 3.5 5.5 6.63401 5.5 10.5C5.5 14.366 8.63401 17.5 12.5 17.5C16.366 17.5 19.5 14.366 19.5 10.5C19.5 6.63401 16.366 3.5 12.5 3.5Z"
-      stroke="currentColor"
-      strokeMiterlimit="10"
-      strokeLinejoin="round"
-      strokeLinecap="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M2.5 10.5H22.5M12.5 2.5V18.5"
-      stroke="currentColor"
-      strokeMiterlimit="10"
-      strokeLinejoin="round"
-      strokeLinecap="round"
-      strokeWidth="1.5"
-    />
-  </svg>
-);
+
 
 export const WordBox = React.forwardRef(({ children, className = "", translateX = 0 }, ref) => (
   <span
     ref={ref}
-    className={`bg-black/10 text-neutral-500 rounded-lg overflow-hidden p-1 flex items-center justify-center relative w-fit shadow-[inset_0_1px_2px_0_rgba(0,0,0,0.3)] ${className}`}
+    className={`bg-black/10 text-neutral-500 rounded-lg overflow-hidden p-0.5 sm:p-1 flex items-center justify-center relative w-fit shadow-[inset_0_1px_2px_0_rgba(0,0,0,0.3)] ${className}`}
     style={{ transform: `translateX(${translateX}px)` }}
   >
     <span
@@ -34,7 +15,7 @@ export const WordBox = React.forwardRef(({ children, className = "", translateX 
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
     transition={{ duration: 0.3 }}
-      className="bg-white px-2 z-10 flex items-center justify-center py-0.5 relative rounded-md font-medium font-saira text-xs text-neutral-500 shadow-[0_1px_2px_0_rgba(0,0,0,0.3)]"
+      className="bg-white px-2 z-10 flex items-center justify-center py-0.5 relative rounded-md font-medium font-saira text-[10px] md:text-xs text-neutral-500 shadow-[0_1px_2px_0_rgba(0,0,0,0.3)]"
     >
       {children}
     </span>
@@ -46,12 +27,12 @@ const EnglishBox = React.forwardRef(({ language }, ref) => (
   <span
     ref={ref}
     style={{ boxShadow: "inset 0 1px 2px 0 rgba(0, 0, 0, 0.3)" }}
-    className="bg-black/10 text-neutral-500 rounded-lg overflow-hidden p-1 flex items-center justify-center relative"
+    className="bg-black/10 text-neutral-500 rounded-lg overflow-hidden p-0.5 sm:p-1 flex items-center justify-center relative"
   >
     <span
     
       style={{ boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.3)" }}
-      className="bg-white px-2 z-10 flex items-center text-lg justify-center py-0.5 relative rounded-md font-medium font-saira"
+      className="bg-white px-2 z-10 flex items-center text-sm md:text-lg justify-center py-0.5 relative rounded-md font-medium font-saira"
     >
       {language ? language.charAt(0).toUpperCase() + language.slice(1) : "English"}
     </span>
@@ -281,7 +262,7 @@ const TransferBox = ({ className = "" }) => {
   return (
     <div
       ref={containerRef}
-      className={`bg-neutral-50 border border-neutral-300 relative rounded-lg col-span-2 px-4 py-4 overflow-visible ${className}`}
+      className={`bg-neutral-50 border border-neutral-300 relative rounded-lg col-span-1 md:col-span-2  px-2 sm:px-4 py-2 md:py-4 overflow-visible ${className}`}
     >
       <Header />
       
@@ -299,7 +280,7 @@ const TransferBox = ({ className = "" }) => {
         </div>
         
         <div 
-        className="flex items-center justify-center  text-sm text-neutral-500 font-medium font-saira relative z-30">
+        className="flex items-center justify-center text-xs md:text-sm text-neutral-500 font-medium font-saira relative z-30">
           <EnglishBox ref={englishBoxRef} language={currentLanguage} />
         </div>
 

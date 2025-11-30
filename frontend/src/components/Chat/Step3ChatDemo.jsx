@@ -13,7 +13,7 @@ const Step3ChatDemo = () => {
   const [animationStep, setAnimationStep] = useState(0);
   const [sentMessage, setSentMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
-  
+
   const inputRef = useRef(null);
   const sendButtonRef = useRef(null);
   const suggestionBarRef = useRef(null);
@@ -45,10 +45,10 @@ const Step3ChatDemo = () => {
   // Position cursor at input
   const positionCursorAtInput = () => {
     if (!inputRef.current || !containerRef.current) return;
-    
+
     const inputRect = inputRef.current.getBoundingClientRect();
     const containerRect = containerRef.current.getBoundingClientRect();
-    
+
     setCursorPosition({
       top: inputRect.top - containerRect.top + inputRect.height / 2 - 14,
       left: inputRect.right - containerRect.left - 30,
@@ -84,7 +84,7 @@ const Step3ChatDemo = () => {
   // Type text with animation
   const typeText = (textToType, callback) => {
     let currentIndex = 0;
-    
+
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
@@ -109,7 +109,7 @@ const Step3ChatDemo = () => {
     setAiSuggestion("");
     setDisplayText("");
     setIsRemoving(false);
-    
+
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
@@ -135,7 +135,7 @@ const Step3ChatDemo = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
-    
+
     let callbackCalled = false;
     intervalRef.current = setInterval(() => {
       setMessage((prevText) => {
@@ -166,18 +166,18 @@ const Step3ChatDemo = () => {
       setIsRemoving(false);
       if (callback) callback();
     }, textLength * 10 + 100);
-    
+
     return () => clearTimeout(timer);
   };
 
   // Main animation sequence
   const startAnimationSequence = (demoIndex) => {
     const currentDemo = demoMessages[demoIndex];
-    
+
     // Step 1: Position cursor at input
     setAnimationStep(1);
     positionCursorAtInput();
-    
+
     timeoutRef.current = setTimeout(() => {
       // Step 2: Type initial message
       setAnimationStep(2);
@@ -190,41 +190,41 @@ const Step3ChatDemo = () => {
               // Step 4: Move cursor to suggestion bar
               setAnimationStep(4);
               moveCursorToSuggestion();
-              
+
               timeoutRef.current = setTimeout(() => {
                 // Step 5: Click suggestion (update message)
                 setAnimationStep(5);
                 setMessage(currentDemo.final);
                 clearAISuggestion();
-                
+
                 timeoutRef.current = setTimeout(() => {
                   // Step 6: Move cursor to send button
                   setAnimationStep(6);
                   moveCursorToSendButton();
-                  
+
                   timeoutRef.current = setTimeout(() => {
                     // Step 7: Click send (simulate sending)
                     setAnimationStep(7);
                     setIsSending(true);
                     // Show the message as sent
                     setSentMessage(currentDemo.final);
-                    
+
                     timeoutRef.current = setTimeout(() => {
                       // Clear input but keep sent message visible
                       setMessage("");
                       setAiSuggestion("");
                       setDisplayText("");
                       setIsSending(false);
-                      
+
                       timeoutRef.current = setTimeout(() => {
                         // Step 8: Clear sent message and reset
                         setAnimationStep(8);
                         setSentMessage("");
                         positionCursorAtInput();
-                        
+
                         const nextIndex = (demoIndex + 1) % demoMessages.length;
                         setCurrentDemoIndex(nextIndex);
-                        
+
                         timeoutRef.current = setTimeout(() => {
                           startAnimationSequence(nextIndex);
                         }, 800);
@@ -243,7 +243,7 @@ const Step3ChatDemo = () => {
   // Start animation on mount
   useEffect(() => {
     positionCursorAtInput();
-    
+
     timeoutRef.current = setTimeout(() => {
       startAnimationSequence(0);
     }, 500);
@@ -271,7 +271,7 @@ const Step3ChatDemo = () => {
     const textarea = getTextarea();
     if (textarea && textarea.value !== message) {
       const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value")?.set ||
-                     Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set;
+        Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set;
       if (setter) {
         setter.call(textarea, message);
         textarea.dispatchEvent(new Event('input', { bubbles: true }));
@@ -282,11 +282,10 @@ const Step3ChatDemo = () => {
   const rightButtons = (
     <button
       ref={sendButtonRef}
-      className={`h-8 w-8  flex items-center justify-center rounded-full transition-all duration-300 ${
-        isSending
-          ? "bg-green-500 shadow-[inset_0_1px_3px_0_rgba(255,255,255,0.8),0_1px_2px_0_rgba(0,0,0,0.3)]"
-          : "bg-neutral-600 shadow-[inset_0_1px_3px_0_rgba(255,255,255,0.8),0_1px_2px_0_rgba(0,0,0,0.3)]"
-      }`}
+      className={`h-8 w-8  flex items-center justify-center rounded-full transition-all duration-300 ${isSending
+        ? "bg-green-500 shadow-[inset_0_1px_3px_0_rgba(255,255,255,0.8),0_1px_2px_0_rgba(0,0,0,0.3)]"
+        : "bg-neutral-600 shadow-[inset_0_1px_3px_0_rgba(255,255,255,0.8),0_1px_2px_0_rgba(0,0,0,0.3)]"
+        }`}
       aria-label="Send Message"
       disabled={!message.trim()}
     >
@@ -297,6 +296,8 @@ const Step3ChatDemo = () => {
       )}
     </button>
   );
+
+  const isAuthPage = window.location.href.includes("/auth");
 
   return (
     <div ref={containerRef} className="flex   flex-col  px-2 py-1 relative">
@@ -320,9 +321,9 @@ const Step3ChatDemo = () => {
         )}
       </AnimatePresence>
 
-      <div 
-        style={{ boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.2)" }} 
-        className="flex flex-col mx-6 items-center mb-1 relative border rounded-lg overflow-hidden h-full bg-gr-5"
+      <div
+        style={{ boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.2)" }}
+        className={`flex flex-col ${isAuthPage ? "mx-0" : "mx-6"} items-center mb-1 relative border rounded-lg overflow-hidden h-full bg-gr-5`}
       >
         {/* React Chat Elements Input */}
         <div className="w-full bg-white">
@@ -330,7 +331,7 @@ const Step3ChatDemo = () => {
             referance={inputRef}
             placeholder="Enter a message.."
             value={message}
-            onChange={() => {}}
+            onChange={() => { }}
             multiline={true}
             autoHeight={true}
             minHeight={25}
@@ -344,13 +345,13 @@ const Step3ChatDemo = () => {
             readOnly
           />
         </div>
-        
+
         {/* AI Suggestion Bar (simplified MessageActionBar) */}
         <div className="relative py-1 w-full focus:outline-none outline-none bg-white shadow-sm">
           <div className="relative flex items-center ml-2 rounded-md pr-4">
             <div
               ref={suggestionBarRef}
-              style={{boxShadow: 'inset 0 1px 2px 0 rgba(0, 0, 0, 0.1)'}}
+              style={{ boxShadow: 'inset 0 1px 2px 0 rgba(0, 0, 0, 0.1)' }}
               className="text-sm w-full px-2 pr-16 bg-neutral-100 rounded-md text-neutral-400 cursor-pointer min-h-[28px] flex items-center"
             >
               <AnimatePresence mode='popLayout'>
@@ -403,11 +404,11 @@ const Step3ChatDemo = () => {
               className="absolute bg-white rounded-sm h-fit px-1 right-5 top-1/2 -translate-y-1/2 text-xs flex items-center text-neutral-500 font-medium border border-neutral-200"
             >
               Tab
-              <img 
-                src="https://static.thenounproject.com/png/enter-icon-3552033-512.png" 
-                alt="enter icon" 
-                width="18" 
-                height="18" 
+              <img
+                src="https://static.thenounproject.com/png/enter-icon-3552033-512.png"
+                alt="enter icon"
+                width="18"
+                height="18"
                 fetchPriority="high"
                 className="object-contain opacity-50"
               />

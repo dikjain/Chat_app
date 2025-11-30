@@ -10,7 +10,7 @@ import MultilingualBox from "@/components/Features/MultilingualBox";
 export default function FeaturesSection() {
   return (
     <section className="w-full flex items-center justify-center">
-      <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[600px] w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-auto md:h-[1200px] lg:h-[600px] w-full" style={{ gridAutoRows: '1fr' }}>
         {/* First row - 4 equal boxes */}
         <RealTimeMessagingBox />
         <AudioCallBox />
@@ -19,8 +19,8 @@ export default function FeaturesSection() {
 
         {/* Second row */}
         <LiveLocationBox />
-        <MultilingualBox />
         <MessageTypeBox />
+        <MultilingualBox />
       </div>
     </section>
   );

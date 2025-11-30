@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { 
-  sendMessage as sendMessageAPI, 
+import {
+  sendMessage as sendMessageAPI,
   uploadFile as uploadFileAPI,
   deleteMessage as deleteMessageAPI,
   updateLatestMessage,
@@ -21,7 +21,7 @@ export const useSendMessage = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ content, chatId, type = 'text' }) => 
+    mutationFn: ({ content, chatId, type = 'text' }) =>
       sendMessageAPI(content, chatId, type),
     onSuccess: (message, variables) => {
       // Optimistically update messages cache
@@ -29,7 +29,7 @@ export const useSendMessage = () => {
         queryKeys.messages.list(variables.chatId),
         (oldMessages = []) => [...oldMessages, message]
       )
-      
+
       // Invalidate chats to update latest message
       queryClient.invalidateQueries({ queryKey: queryKeys.chats.list() })
     },
@@ -52,13 +52,13 @@ export const useUploadFile = () => {
     mutationFn: (formData) => uploadFileAPI(formData),
     onSuccess: (message, variables) => {
       const chatId = variables.get('chatId')
-      
+
       // Optimistically update messages
       queryClient.setQueryData(
         queryKeys.messages.list(chatId),
         (oldMessages = []) => [...oldMessages, message]
       )
-      
+
       // Invalidate chats
       queryClient.invalidateQueries({ queryKey: queryKeys.chats.list() })
     },
@@ -80,7 +80,7 @@ export const useDeleteMessage = () => {
   return useMutation({
     mutationFn: async ({ messageId, chatId }) => {
       const currentMessages = queryClient.getQueryData(queryKeys.messages.list(chatId)) || []
-      const latestMessageId = 
+      const latestMessageId =
         messageId === currentMessages[currentMessages.length - 1]?._id
           ? (currentMessages[currentMessages.length - 2]?._id || null)
           : currentMessages[currentMessages.length - 1]?._id
@@ -89,7 +89,7 @@ export const useDeleteMessage = () => {
         deleteMessageAPI(messageId),
         updateLatestMessage(chatId, latestMessageId)
       ])
-      
+
       return { messageId, chatId }
     },
     onMutate: async ({ messageId, chatId }) => {

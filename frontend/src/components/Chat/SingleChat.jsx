@@ -7,7 +7,7 @@ import ProfileModal from "@/components/Modals/ProfileModal";
 import ScrollableChat from "./ScrollableChats";
 import UpdateGroupChatModal from "@/components/Modals/UpdateGroupChatModal";
 import MessageInput from "./MessageInput";
-import EmptyChatState from "./EmptyChatState";
+import ChatFeaturesGrid from "./ChatFeaturesGrid";
 import MessageSkeletons from "./MessageSkeleton";
 import { useAuthStore, useChatStore, useNotificationStore } from "@/stores";
 import { useChat, useMessageNotifications } from "@/hooks";
@@ -24,11 +24,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const setSelectedChat = useChatStore((state) => state.setSelectedChat);
   const notifications = useNotificationStore((state) => state.notifications);
 
-  const { data: messages = [], isLoading: messagesLoading } = useMessages(selectedChat?._id,{enabled: !!selectedChat?._id,}
+  const { data: messages = [], isLoading: messagesLoading } = useMessages(selectedChat?._id, { enabled: !!selectedChat?._id, }
   );
 
-  const { 
-    sendMessage: sendMessageHook, 
+  const {
+    sendMessage: sendMessageHook,
     sendFile,
     fetchChats,
   } = useChat();
@@ -51,15 +51,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, []);
 
   // Get group member pics (up to 3, excluding current user)
-  const groupMemberPics = selectedChat?.isGroupChat 
-    ? getUserPics(selectedChat, user?._id) 
+  const groupMemberPics = selectedChat?.isGroupChat
+    ? getUserPics(selectedChat, user?._id)
     : [];
 
   // Get group member user objects (up to 3, excluding current user)
   const groupMembers = selectedChat?.isGroupChat && selectedChat?.users
     ? selectedChat.users
-        .filter(u => u?._id?.toString() !== user?._id?.toString())
-        .slice(0, 3)
+      .filter(u => u?._id?.toString() !== user?._id?.toString())
+      .slice(0, 3)
     : [];
 
   return (
@@ -83,8 +83,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 <>
                   <div className="flex gap-2 items-center" >
                     <Avatar className="h-8 w-8 border" style={{ borderColor: "#10b981" }}>
-                      <AvatarImage 
-                        src={getSenderFull(user, selectedChat.users).pic} 
+                      <AvatarImage
+                        src={getSenderFull(user, selectedChat.users).pic}
                         alt={getSender(user, selectedChat.users)}
                         onError={(e) => {
                           e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png';
@@ -107,15 +107,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     {groupMemberPics.length > 0 && (
                       <div className="flex items-center shrink-0 -space-x-1">
                         {groupMembers.map((member, index) => (
-                          <Avatar 
-                            key={member._id} 
+                          <Avatar
+                            key={member._id}
                             className="h-7 w-7 border-2 border-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.2)]"
-                            style={{ 
+                            style={{
                               zIndex: groupMembers.length - index,
                             }}
                           >
-                            <AvatarImage 
-                              src={member.pic} 
+                            <AvatarImage
+                              src={member.pic}
                               alt={member.name}
                               onError={(e) => {
                                 e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png';
@@ -139,31 +139,31 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           <div
             className="flex flex-col justify-end bg-stone-100 shadow-[inset_0_1px_3px_0_rgba(0,0,0,0.1)]  w-full h-full rounded-lg overflow-y-hidden border-2">
             {messagesLoading ? (
-              <div className="flex flex-col overflow-y-scroll scrollbar-none relative overflow-x-hidden bg-gradient-to-b from-transparent to-transparent" 
-                   style={{
-                     backgroundImage: `repeating-linear-gradient(
+              <div className="flex flex-col overflow-y-scroll scrollbar-none relative overflow-x-hidden bg-gradient-to-b from-transparent to-transparent"
+                style={{
+                  backgroundImage: `repeating-linear-gradient(
                        45deg,
                        transparent,
                        transparent 19px,
                        rgba(0, 0, 0, 0.025) 19px,
                        rgba(0, 0, 0, 0.025) 20px
                      )`
-                   }}>
+                }}>
                 <MessageSkeletons />
               </div>
             ) : (
-                <ScrollableChat messages={messages} />
+              <ScrollableChat messages={messages} />
             )}
 
-            <MessageInput 
-              selectedChat={selectedChat} 
-              sendMessage={sendMessageHook} 
-              sendFile={sendFile} 
+            <MessageInput
+              selectedChat={selectedChat}
+              sendMessage={sendMessageHook}
+              sendFile={sendFile}
             />
           </div>
         </>
       ) : (
-        <EmptyChatState />
+        <ChatFeaturesGrid />
       )}
     </>
   );

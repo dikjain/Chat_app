@@ -8,10 +8,10 @@ import Navbar from "@/components/Landing/Navbar";
 
 export default function LandingPage() {
   return (
-    <div className="bg-white w-screen min-h-screen overflow-hidden px-16 relative">
+    <div className=" w-screen min-h-screen overflow-hidden    xl:px-16 relative">
       <Navbar />
       <BackgroundLines />
-      <div className="h-full w-full p-16">
+      <div className="h-full w-full px-6 md:px-16 py-16 ">
         <HeroSection />
         <FeaturesSection />
         <QuoteSection />

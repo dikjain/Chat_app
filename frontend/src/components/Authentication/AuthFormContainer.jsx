@@ -4,7 +4,7 @@ import Signup from "./Signup";
 
 const AuthFormContainer = ({ activeTab, onSwitchToSignup, onSwitchToLogin }) => {
   return (
-    <div className="mt-auto w-full relative overflow-hidden">
+    <div className="mt-auto px-6 w-full relative overflow-hidden">
       <AnimatePresence mode="wait">
         {activeTab === "login" && (
           <Login key="login" onSwitchToSignup={onSwitchToSignup} />

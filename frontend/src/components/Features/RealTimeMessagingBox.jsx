@@ -46,7 +46,7 @@ const RealTimeMessagingBox = ({ className = "" }) => {
 
   return (
     <div
-      className={`bg-neutral-50 border relative border-neutral-300  gap-6 rounded-lg px-4 py-4 ${className}`}
+      className={`bg-neutral-50 overflow-hidden border relative border-neutral-300  gap-6 rounded-lg px-4 py-4 ${className}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -55,7 +55,7 @@ const RealTimeMessagingBox = ({ className = "" }) => {
         description="Instant messaging for seamless communication" 
       />
 
-      <div className="h-48 w-64 absolute bottom-4  left-1/2 -translate-x-1/2  bg-white rounded-lg overflow-hidden border border-neutral-200 shadow-sm">
+      <div className="h-48 w-64 absolute md:bottom-4 bottom-0 scale-75 md:scale-100  left-1/2 -translate-x-1/2  bg-white rounded-lg overflow-hidden border border-neutral-200 shadow-sm">
         <div className="h-6 flex bg-gray-100 items-center px-3 gap-2">
           <div className="w-3 h-3 rounded-full bg-red-500"></div>
           <div className="w-3 h-3 rounded-full bg-yellow-500"></div>

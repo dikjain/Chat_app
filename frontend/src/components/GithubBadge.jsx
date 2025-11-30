@@ -14,7 +14,7 @@ export default function GithubBadge() {
   ];
 
   return (
-    <div className="p-2 relative  border w-fit  mx-auto"> 
+    <div className="p-2 relative  scale-75 md:scale-100  border w-fit  mx-auto"> 
       {cornerPositions.map((corner, index) => (
         <PlusIcon 
           key={index}
