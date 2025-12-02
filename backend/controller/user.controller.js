@@ -44,30 +44,49 @@ const updatelanguage = expressAsyncHandler(async (req, res) => {
 const registeruser = expressAsyncHandler (async (req,res) => {
     const {name,email,password,pic} = req.body
 
+    // Validate required fields
     if (!name || !email || !password) {
         return res.status(400).json({ success: false, message: "Please provide all fields" });
     }
 
-    if (name.length < 2 || name.length > 50) {
+    // Validate name length
+    const trimmedName = name.trim();
+    if (trimmedName.length < 2 || trimmedName.length > 50) {
         return res.status(400).json({ success: false, message: "Name must be between 2 and 50 characters" });
     }
     
+    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    const trimmedEmail = email.trim().toLowerCase();
+    if (!emailRegex.test(trimmedEmail)) {
         return res.status(400).json({ success: false, message: "Please provide a valid email address" });
     }
     
+    // Validate password strength
     if (password.length < 6) {
         return res.status(400).json({ success: false, message: "Password must be at least 6 characters long" });
     }
+    
+    // Additional password validation: check for at least one letter and one number
+    if (!/(?=.*[a-zA-Z])(?=.*\d)/.test(password)) {
+        return res.status(400).json({ success: false, message: "Password must contain at least one letter and one number" });
+    }
 
 
-    const userExists = await User.findOne({email})
+    // Check if user already exists
+    const userExists = await User.findOne({ email: trimmedEmail })
 
     if(userExists) {
         return res.status(409).json({ success: false, message: "User already exists" });
     }
-    const user = await User.create({name, email, password,pic})
+    
+    // Create new user with trimmed and normalized data
+    const user = await User.create({
+        name: trimmedName, 
+        email: trimmedEmail, 
+        password,
+        pic: pic || undefined
+    })
 
     if(user){
         res.status(201).json({
