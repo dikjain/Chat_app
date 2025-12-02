@@ -3,10 +3,22 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import ScrollableChats from '../ScrollableChats';
 
+// Mock QueryClient
+vi.mock('@tanstack/react-query', () => ({
+  QueryClientProvider: ({ children }) => children,
+  useQuery: () => ({
+    data: [
+      { _id: 'chat1', chatName: 'Chat 1' },
+      { _id: 'chat2', chatName: 'Chat 2' },
+    ],
+    isLoading: false,
+  }),
+}));
+
 // Mock dependencies
-vi.mock('../../../hooks/useChat', () => ({
-  default: () => ({
-    chats: [
+vi.mock('../../../hooks/queries/useChatQueries', () => ({
+  useChats: () => ({
+    data: [
       { _id: 'chat1', chatName: 'Chat 1' },
       { _id: 'chat2', chatName: 'Chat 2' },
     ],

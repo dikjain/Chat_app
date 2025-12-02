@@ -19,6 +19,14 @@ vi.mock('../../../hooks/useMessageSender', () => ({
 
 vi.mock('../../../stores', () => ({
   useAuthStore: () => ({ user: { _id: 'user1', name: 'Test User' } }),
+  useChatStore: () => ({
+    selectedChat: null,
+    setSelectedChat: vi.fn(),
+  }),
+  useNotificationStore: () => ({
+    notifications: [],
+    addNotification: vi.fn(),
+  }),
 }));
 
 const mockSelectedChat = {

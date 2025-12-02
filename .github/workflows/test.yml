@@ -37,6 +37,13 @@ jobs:
       - name: Generate coverage report
         working-directory: ./frontend
         run: npm test -- --coverage --run || true
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./frontend/coverage/coverage-final.json
+          flags: frontend
+          fail_ci_if_error: false
 
   backend-tests:
     name: Backend Tests
