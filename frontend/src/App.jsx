@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import AuthPage from './pages/AuthPage'
-import ChatPage from './pages/ChatPage'
+import AuthPage from './Pages/AuthPage.jsx'
+import ChatPage from './Pages/ChatPage.jsx'
 import { validateConfig } from './constants/config'
-import LandingPage from './pages/LandingPage'
+import LandingPage from './Pages/landingPage.jsx'
 import { useAuthStore } from './stores'
 import "./leafletFix"
 
