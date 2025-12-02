@@ -3,10 +3,28 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import MyChats from '../MyChats';
 
+// Mock QueryClient
+vi.mock('@tanstack/react-query', () => ({
+  QueryClient: vi.fn(() => ({
+    invalidateQueries: vi.fn(),
+    setQueryData: vi.fn(),
+  })),
+  QueryClientProvider: ({ children }) => children,
+  useQuery: () => ({
+    data: [],
+    isLoading: false,
+    error: null,
+  }),
+  useQueryClient: () => ({
+    invalidateQueries: vi.fn(),
+    setQueryData: vi.fn(),
+  }),
+}));
+
 // Mock dependencies
-vi.mock('../../../hooks/useChat', () => ({
-  default: () => ({
-    chats: [],
+vi.mock('../../../hooks/queries/useChatQueries', () => ({
+  useChats: () => ({
+    data: [],
     isLoading: false,
     error: null,
   }),

@@ -3,6 +3,15 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import ViewStatusModal from '../ViewStatusModal';
 
+// Mock QueryClient
+vi.mock('@tanstack/react-query', () => ({
+  QueryClientProvider: ({ children }) => children,
+  useQuery: () => ({
+    data: null,
+    isLoading: false,
+  }),
+}));
+
 // Mock dependencies
 vi.mock('@radix-ui/react-dialog', () => ({
   Root: ({ children, open }) => open ? <div data-testid="dialog">{children}</div> : null,
