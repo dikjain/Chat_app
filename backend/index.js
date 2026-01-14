@@ -19,7 +19,7 @@ const app = express();
 
 const allowedOrigins = process.env.NODE_ENV === 'production' 
     ? ['https://chat-app-3-2cid.onrender.com'] 
-    : ['http://localhost:3000', 'http://localhost:5173'];
+    : ['http://localhost:3000','http://localhost:3001','http://localhost:3002', 'http://localhost:5173'];
 
 app.use(cors({
     origin: allowedOrigins,
